@@ -51,7 +51,7 @@ body{display:flex;flex-direction:column}
 .card.dragging .lift{transform:scale(1.08)!important;transition:none}
 .card.dragging .face{box-shadow:0 12px 24px rgba(0,0,0,.6)}
 
-/* Décor */
+/* page et fond du plateau */
 .spot{position:absolute;border:2px dashed rgba(255,255,255,.14);border-radius:10%;pointer-events:none;
   transition:left .55s,top .55s,width .55s,height .55s;z-index:0}
 .pills{position:absolute;display:flex;gap:3px;transform:translateX(-50%);pointer-events:none;z-index:0;
@@ -113,21 +113,21 @@ body{display:flex;flex-direction:column}
   <button id="rules">Règles</button>
   <button id="histBtn">Historique</button>
   <button id="pass">Passer</button>
-  <div id="copy">© Yohann Lecarpentier — Losanges · 7shorcut</div>
+  <div id="copy">© Yohann Lecarpentier — @2026· 7shorcut</div>
 </div>
 
 <div id="help" class="overlay">
-  <h2>Règles — 7shorcut</h2>
+  <h2>Règles du jeu 7-shorcut</h2>
   <p><b>But :</b> être le premier à avoir posé ses 4 cartes <b>Point</b> (3, 2, 1, 0).</p>
-  <p><b>Mise en place :</b> chaque joueur a une couleur et 3 cartes en main. Quatre cartes sont posées autour d'un point central (un îlot) : chaque carte va à l'emplacement qui fait toucher son coin coloré au centre (coin bas-droite → emplacement haut-gauche, bas-gauche → haut-droite, haut-droite → bas-gauche, haut-gauche → bas-droite).</p>
-  <p><b>Ton tour :</b> joue une carte de ta main sur un emplacement correspondant à son coin coloré, par-dessus la carte déjà présente. Survole une carte pour voir les emplacements possibles, puis glisse-la ou touche-la et touche l'emplacement.</p>
-  <p><b>Total :</b> on additionne les valeurs des cartes <i>visibles</i> de la couleur jouée sur cet îlot (les pastilles sous chaque îlot les affichent). Si le total de la couleur jouée est <b>égal ou supérieur</b> aux totaux de toutes les autres couleurs de l'îlot, tu <b>repioches</b> obligatoirement une carte. S'il est <b>strictement inférieur</b> à celui d'une autre couleur, tu ne repioches pas.</p>
-  <p><b>Cartes Point :</b> une carte Point ne peut jamais être recouverte : un cadenas doré apparaît et l'emplacement est verrouillé.</p>
- une carte Point sur cet îlot, et le joueur dont c'est le tour peut lui aussi en poser une. Si c'est le même joueur, il en pose 2.</p>
+  <p><b>Mise en place :</b> chaque joueur a une couleur et 3 cartes en main. Quatre cartes sont posées autour d'un point central (un îlot). Durant la partie, il y aura 6 îlots au maximum.</p>
+  <p><b>Tour du joueur/joueuse :</b> jouer une carte de sa main sur un emplacement correspondant à son coin coloré, par-dessus la carte déjà présente si il y a déjà une carte.</p>
+  <p><b>Total de la couleur active:</b> on additionne les valeurs des cartes <i>visibles</i> de la couleur jouée sur cet îlot (les pastilles sous chaque îlot les affichent). Si le total de la couleur jouée est <b>égal ou supérieur</b> aux totaux de toutes les autres couleurs de l'îlot, le joueur actif <b>repioches</b> obligatoirement une carte. S'il est <b>strictement inférieur</b> à celui d'une autre couleur, le joueur actif ne repioche pas.</p>
+  <p><b>Cartes Point :</b> une carte Point ne peut jamais être recouverte. L'emplacement est verrouillé.</p>
+ 
   <p><b>Îlot détruit :</b> quand un îlot porte 3 cartes Point (3 cadenas), il est détruit au tour suivant : les cartes retournent sous la pioche, les cartes Point disparaissent et la place est libérée.</p>
-  <p><b>Dernière carte :</b> si tu joues ta dernière carte sans repiocher, tu poses une carte Point (n'importe quel îlot), puis tu reprends 3 cartes.</p>
-  <p><b>Aimant (2 par couleur) :</b> se joue comme un joker (nouvel îlot), mais attire sur lui toutes les cartes visibles de sa couleur présentes sur le plateau. Si une carte de la même couleur est révélée dessous, elle est attirée aussi, jusqu'à ce que la couleur ne soit plus que sur le nouvel îlot. Tu choisis l'ordre (la dernière carte posée sur un emplacement recouvre les autres) pour viser un total de 7. Les cartes Point verrouillées ne bougent pas. Tu repioches toujours après un aimant.</p>
-  <p><b>Joker (2 dans le jeu) :</b> ouvre un nouvel îlot. On révèle des cartes jusqu'à en trouver une seule qui a une valeur ; elle est posée à son emplacement, les autres emplacements restent vides. Cette carte étant seule, tu repioches toujours après un joker. 6 îlots au maximum.</p>
+  <p><b>Dernière carte :</b> si le joueur actif joue sa dernière carte sans repiocher, il pose alors une carte Point (n'importe quel îlot), puis il reprend 3 cartes.</p>
+  <p><b>Aimant (2 exemplaires par couleur dans le jeu) :</b> il se joue comme un joker (nouvel îlot), mais attire sur lui toutes les cartes visibles de sa couleur présentes sur le plateau. Si une carte de la même couleur est révélée dessous, elle est attirée aussi, jusqu'à ce que la couleur ne soit plus que sur le nouvel îlot. Le joueur actif en choisit l'ordre (la dernière carte posée sur un emplacement recouvre les autres) pour viser un total de 7. Les cartes Point verrouillées ne bougent pas. Comme pour les autres tours, la règle du total s'applique et le joueur actif repiochera systématiquement une carte après avoir joué un joker de ce type.</p>
+  <p><b>Joker (2 dans le jeu) :</b> ouvre un nouvel îlot. On révèle des cartes jusqu'à en trouver une seule qui a une valeur ; elle est posée à son emplacement, les autres emplacements restent vides.</p>
   <button onclick="document.getElementById('help').style.display='none'">Fermer</button>
 </div>
 <div id="hist" class="overlay">
