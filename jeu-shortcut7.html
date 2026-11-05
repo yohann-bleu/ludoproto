@@ -1,0 +1,877 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>7shorcut — Losanges</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:#1a1c21;color:#eee;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  overflow:hidden;touch-action:none;-webkit-user-select:none;user-select:none}
+body{display:flex;flex-direction:column}
+#stage{position:relative;flex:1;min-height:0;overflow:hidden;
+  background:radial-gradient(ellipse at 50% 45%,#2c4a3a 0%,#1f3329 55%,#16221c 100%)}
+#bar{flex:none;padding:6px 10px calc(6px + env(safe-area-inset-bottom));display:flex;flex-wrap:wrap;
+  align-items:center;gap:8px;background:#111317;border-top:1px solid #2a2d34;font-size:13px}
+#bar select,#bar button{font:inherit;color:#eee;background:#262a32;border:1px solid #3a3f4a;border-radius:8px;padding:6px 10px}
+#bar button#restart{background:#3b6fd8;border-color:#4d82ee;font-weight:600}
+#bar button#pass{display:none;background:#b8741a;border-color:#e0932f;font-weight:600}
+#copy{width:100%;font-size:10px;opacity:.55;text-align:center}
+
+/* Cartes : 100px de base, mises à l'échelle par transform */
+.card{position:absolute;left:0;top:0;width:100px;height:100px;transform-origin:50% 50%;perspective:700px;will-change:transform}
+.lift,.inner{position:absolute;left:0;top:0;right:0;bottom:0;transform-style:preserve-3d;-webkit-transform-style:preserve-3d}
+.lift{transition:transform .15s ease-out}
+.face,.back{position:absolute;left:0;top:0;right:0;bottom:0;border-radius:9%;overflow:hidden;
+  backface-visibility:hidden;-webkit-backface-visibility:hidden;box-shadow:0 2px 7px rgba(0,0,0,.5)}
+.back{transform:rotateY(180deg)}
+.face svg,.back svg{width:100%;height:100%;display:block}
+.card.mine{cursor:pointer}
+.card.mine:hover .lift{transform:translateY(-14px) scale(1.05)}
+.card.sel .lift{transform:translateY(-24px) scale(1.08)}
+.card.dim{filter:brightness(.55)}
+.card.dragging .lift{transform:scale(1.08)!important;transition:none}
+.card.dragging .face{box-shadow:0 12px 24px rgba(0,0,0,.6)}
+
+/* Décor */
+.spot{position:absolute;border:2px dashed rgba(255,255,255,.14);border-radius:10%;pointer-events:none;
+  transition:left .55s,top .55s,width .55s,height .55s;z-index:0}
+.pills{position:absolute;display:flex;gap:3px;transform:translateX(-50%);pointer-events:none;z-index:0;
+  transition:left .55s,top .55s}
+.pill{font-size:11px;font-weight:800;padding:0 6px;border-radius:9px;color:#111;line-height:16px;min-width:18px;text-align:center}
+.pill.seven{outline:2px solid #fff;box-shadow:0 0 8px #fff}
+.plabel{position:absolute;transform:translateX(-50%);font-size:11px;white-space:nowrap;padding:2px 9px;border-radius:11px;
+  background:rgba(0,0,0,.4);pointer-events:none;z-index:0}
+.plabel.active{box-shadow:0 0 0 2px #fff}
+.plabel i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+#count{position:absolute;transform:translateX(-50%);font-size:12px;opacity:.85;white-space:nowrap;pointer-events:none}
+#msg{position:absolute;left:50%;transform:translateX(-50%);max-width:94%;padding:4px 12px;border-radius:12px;
+  background:rgba(0,0,0,.5);font-size:13px;text-align:center;pointer-events:none;z-index:6000}
+.target{position:absolute;border:3px solid #fff;border-radius:9px;cursor:pointer;z-index:4000;
+  background:rgba(255,255,255,.14);box-shadow:0 0 18px 4px rgba(255,255,255,.65);animation:pulse 1s ease-in-out infinite}
+.target.hot{background:rgba(255,255,255,.4);box-shadow:0 0 30px 10px #fff}
+.target.zone{background:transparent;border-style:dashed;border-radius:14px;display:flex;align-items:flex-start;
+  justify-content:center;padding-top:6px;font-size:13px;font-weight:700;text-shadow:0 1px 3px #000;box-shadow:none}
+.target.zone.hot{background:rgba(255,255,255,.14)}
+@keyframes pulse{50%{opacity:.55}}
+.lock{position:absolute;transform:translate(-50%,-50%);pointer-events:none;z-index:3500;
+  filter:drop-shadow(0 0 5px #ffd24d);animation:glow 1.7s ease-in-out infinite alternate;
+  transition:left .55s,top .55s,width .55s,height .55s}
+.lock svg{width:100%;height:100%;display:block}
+@keyframes glow{from{opacity:0}to{opacity:1}}
+.spot.doomed{border:2px dashed #ff5a5a;animation:pulse 1s ease-in-out infinite}
+.card.pickable{cursor:pointer;z-index:9800!important}
+.card.pickable .face{box-shadow:0 0 0 3px #fff,0 0 16px 5px rgba(255,255,255,.8)}
+.card.pickable .lift{animation:bob .9s ease-in-out infinite alternate}
+@keyframes bob{to{transform:translateY(-6px)}}
+.overlay{position:fixed;inset:0;background:rgba(10,12,16,.93);z-index:9000;display:none;overflow:auto;
+  padding:18px;font-size:14px;line-height:1.5;touch-action:pan-y}
+.overlay h2{margin:0 0 8px}
+.overlay button{font:inherit;color:#fff;background:#3b6fd8;border:0;border-radius:8px;padding:8px 16px;margin-top:10px;font-weight:600}
+#win{text-align:center;padding-top:30vh}
+#win h1{font-size:30px;margin:0 0 6px}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <pattern id="bk" patternUnits="userSpaceOnUse" width="20" height="20">
+      <polygon points="5,0.8 9.2,5 5,9.2 0.8,5" fill="#e070d0"/>
+      <polygon points="15,0.8 19.2,5 15,9.2 10.8,5" fill="#ff9f1a"/>
+      <polygon points="5,10.8 9.2,15 5,19.2 0.8,15" fill="#34c759"/>
+      <polygon points="15,10.8 19.2,15 15,19.2 10.8,15" fill="#00b4ff"/>
+    </pattern>
+  </defs>
+</svg>
+
+<div id="stage"></div>
+<div id="bar">
+  <select id="nplayers" aria-label="Nombre de joueurs">
+    <option value="2">2 joueurs</option>
+    <option value="3">3 joueurs</option>
+    <option value="4">4 joueurs</option>
+  </select>
+  <button id="restart">Nouvelle partie</button>
+  <button id="rules">Règles</button>
+  <button id="pass">Passer</button>
+  <div id="copy">© Yohann Lecarpentier — Losanges · 7shorcut</div>
+</div>
+
+<div id="help" class="overlay">
+  <h2>Règles — 7shorcut</h2>
+  <p><b>But :</b> être le premier à avoir posé ses 4 cartes <b>Point</b> (3, 2, 1, 0).</p>
+  <p><b>Mise en place :</b> chaque joueur a une couleur et 3 cartes en main. Quatre cartes sont posées autour d'un point central (un îlot) : chaque carte va à l'emplacement qui fait toucher son coin coloré au centre (coin bas-droite → emplacement haut-gauche, bas-gauche → haut-droite, haut-droite → bas-gauche, haut-gauche → bas-droite).</p>
+  <p><b>Ton tour :</b> joue une carte de ta main sur un emplacement correspondant à son coin coloré, par-dessus la carte déjà présente. Survole une carte pour voir les emplacements possibles, puis glisse-la ou touche-la et touche l'emplacement.</p>
+  <p><b>Total :</b> on additionne les valeurs des cartes <i>visibles</i> de la couleur jouée sur cet îlot (les pastilles sous chaque îlot les affichent). Si le total de la couleur jouée est <b>égal ou supérieur</b> aux totaux de toutes les autres couleurs de l'îlot, tu <b>repioches</b> obligatoirement une carte. S'il est <b>strictement inférieur</b> à celui d'une autre couleur, tu ne repioches pas.</p>
+  <p><b>Cartes Point :</b> une carte Point ne peut jamais être recouverte : un cadenas doré apparaît et l'emplacement est verrouillé.</p>
+  <p><b>Total exactement 7 :</b> le joueur à qui appartient cette couleur pose une carte Point sur cet îlot, et le joueur dont c'est le tour peut lui aussi en poser une. Si c'est le même joueur, il en pose 2.</p>
+  <p><b>Îlot détruit :</b> quand un îlot porte 3 cartes Point (3 cadenas), il est détruit au tour suivant : les cartes retournent sous la pioche, les cartes Point disparaissent et la place est libérée.</p>
+  <p><b>Dernière carte :</b> si tu joues ta dernière carte sans repiocher, tu poses une carte Point (n'importe quel îlot), puis tu reprends 3 cartes.</p>
+  <p><b>Aimant (2 par couleur) :</b> se joue comme un joker (nouvel îlot), mais attire sur lui toutes les cartes visibles de sa couleur présentes sur le plateau. Si une carte de la même couleur est révélée dessous, elle est attirée aussi, jusqu'à ce que la couleur ne soit plus que sur le nouvel îlot. Tu choisis l'ordre (la dernière carte posée sur un emplacement recouvre les autres) pour viser un total de 7. Les cartes Point verrouillées ne bougent pas. Tu repioches toujours après un aimant.</p>
+  <p><b>Joker (2 dans le jeu) :</b> ouvre un nouvel îlot. On révèle des cartes jusqu'à en trouver une seule qui a une valeur ; elle est posée à son emplacement, les autres emplacements restent vides. Cette carte étant seule, tu repioches toujours après un joker. 6 îlots au maximum.</p>
+  <button onclick="document.getElementById('help').style.display='none'">Fermer</button>
+</div>
+<div id="win" class="overlay"><h1 id="wintxt"></h1><button id="again">Rejouer</button></div>
+
+<script>
+"use strict";
+
+/* ====================== Constantes ====================== */
+const SPD = /fast/.test(location.search) ? 0.04 : 1;      // ?fast pour les tests
+const COLORS = {
+  rose:  {bg:'#e070d0', q:'#ff9bff', dk:'#a8329a', name:'Rose'},
+  orange:{bg:'#ff9f1a', q:'#ffd24d', dk:'#b86a00', name:'Orange'},
+  vert:  {bg:'#34c759', q:'#92ecaa', dk:'#1c8a3a', name:'Vert'},
+  bleu:  {bg:'#00b4ff', q:'#9adcff', dk:'#0a78a8', name:'Bleu'}
+};
+const CK = Object.keys(COLORS);
+const CORNERS = ['tl','tr','bl','br'];
+const SLOT_FOR = {br:'tl', bl:'tr', tr:'bl', tl:'br'};            // coin coloré -> emplacement
+const SLOT_OFF = {tl:[-.5,-.5], tr:[.5,-.5], bl:[-.5,.5], br:[.5,.5]};
+const CXY = {tl:[0,0], tr:[100,0], bl:[0,100], br:[100,100]};
+const POINT_CORNER = {3:'tl', 2:'tr', 1:'bl', 0:'br'};            // coin de chaque carte Point
+const HAND = 3, TARGET = 7, MAX_ISLANDS = 6, N_JOKERS = 2, N_MAGNETS = 2;   // 2 jokers + 2 aimants par couleur
+const isWild = c => c.kind==='joker' || c.kind==='magnet';                 // cartes qui ouvrent un îlot
+const TPL = {1:[[1]], 2:[[2],[1,1]], 3:[[3],[2,1],[1,2],[1,1,1]], 4:[[2,2],[4],[3,1]], 5:[[3,2],[2,3],[2,1,2]], 6:[[3,3],[2,2,2],[2,2,2]]};
+
+const stage = document.getElementById('stage');
+const passBtn = document.getElementById('pass');
+let G = null, epoch = 0, msg = null, count = null;
+const L = {};
+const UI = {mode:null, drag:null, targets:[], hover:null, pick:null};
+
+/* ====================== Utilitaires ====================== */
+const sc = w => w/100;
+const tf = (x,y,rot,s) => 'translate3d('+(x-50)+'px,'+(y-50)+'px,0) rotate('+rot+'deg) scale('+s+')';
+const chkE = e => { if(e !== epoch) throw 'cancel'; };
+const sleep = ms => { const e = epoch; return new Promise(r => setTimeout(r, ms*SPD)).then(() => chkE(e)); };
+function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+const setMsg = t => { if(msg) msg.textContent = t; };
+
+/* ====================== Dessin des cartes ====================== */
+const FONT = '"Montserrat","Avenir Next","Arial Rounded MT Bold",system-ui,sans-serif';
+function pawn(x,y,k,fill){
+  return '<g transform="translate('+x+' '+y+') scale('+k+') translate(0 3)" fill="'+fill+'">'+
+    '<circle cx="0" cy="-19" r="8.5"/><rect x="-11" y="-10.5" width="22" height="4.6" rx="2.3"/>'+
+    '<path d="M-7,-6 C-6,4 -10,8 -13,15 L13,15 C10,8 6,4 7,-6 Z"/>'+
+    '<rect x="-17" y="15" width="34" height="6.5" rx="3"/></g>';
+}
+function digit(v,corner,fill,stroke){
+  const p = CXY[corner], dx = p[0]===0?7:-7, dy = p[1]===0?7:-7, cx = 50+dx, cy = 50+dy;
+  return '<text x="'+cx+'" y="'+(cy+16)+'" text-anchor="middle" font-size="46" font-weight="800" font-family=\''+FONT+'\' '+
+    'fill="'+fill+'" stroke="'+stroke+'" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">'+v+'</text>'+
+    '<rect x="'+(cx-14)+'" y="'+(cy+22)+'" width="28" height="2.8" rx="1" fill="'+fill+'"/>';
+}
+const wrap = inner => '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">'+inner+'</svg>';
+function numSVG(v,color,corner){
+  const C = COLORS[color], p = CXY[corner];
+  return wrap('<rect width="100" height="100" fill="'+C.bg+'"/><circle cx="'+p[0]+'" cy="'+p[1]+'" r="40" fill="'+C.q+'"/>'+
+    pawn(p[0],p[1],1.2,'#b5440a')+digit(v,corner,'#fff','rgba(0,0,0,.3)'));
+}
+function pointSVG(v,color){
+  const C = COLORS[color], corner = POINT_CORNER[v], p = CXY[corner];
+  let leaves = '';
+  for(let i=0;i<14;i++){
+    const a = 295 + i*(310/13), r = a*Math.PI/180;
+    leaves += '<ellipse rx="3.4" ry="8" transform="translate('+(50+33*Math.cos(r)).toFixed(1)+' '+(50+33*Math.sin(r)).toFixed(1)+
+      ') rotate('+a.toFixed(0)+')" fill="'+C.bg+'" opacity=".9"/>';
+  }
+  return wrap('<rect width="100" height="100" fill="#fff"/><circle cx="'+p[0]+'" cy="'+p[1]+'" r="40" fill="'+C.bg+'"/>'+
+    leaves+digit(v,corner,'#f4f4f4',C.dk));
+}
+function jokerSVG(){
+  let q = '';
+  CORNERS.forEach(c => { q += '<circle cx="'+CXY[c][0]+'" cy="'+CXY[c][1]+'" r="40" fill="#9aa0a8"/>'; });
+  return wrap('<rect width="100" height="100" fill="#3a3d46"/>'+q+pawn(50,46,1.9,'#d2691e')+
+    '<text x="50" y="94" text-anchor="middle" font-size="9" font-weight="800" letter-spacing="2" fill="#fff" font-family=\''+FONT+'\'>JOKER</text>');
+}
+function magnetSVG(color){
+  const C = COLORS[color];
+  const chev = (x,y,a,col) => '<polyline points="-6,-8 2,0 -6,8" fill="none" stroke="'+col+'" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round" transform="translate('+x+' '+y+') rotate('+a+')"/>';
+  let ch = '';
+  [[1,1,45],[99,1,135],[1,99,-45],[99,99,-135]].forEach(q => {
+    const dx = q[0]<50?1:-1, dy = q[1]<50?1:-1;
+    ch += chev(q[0]+dx*13, q[1]+dy*13, q[2], C.q) + chev(q[0]+dx*21, q[1]+dy*21, q[2], C.q) +
+          chev(q[0]+dx*29, q[1]+dy*29, q[2], '#2c2c30') + chev(q[0]+dx*36, q[1]+dy*36, q[2], '#2c2c30');
+  });
+  return wrap('<rect width="100" height="100" fill="#3a3d46"/><circle cx="50" cy="50" r="40" fill="'+C.bg+'"/>'+ch+
+    '<rect x="46.5" y="24" width="7" height="52" rx="1.5" fill="#2c2c30"/><rect x="24" y="46.5" width="52" height="7" rx="1.5" fill="#2c2c30"/>');
+}
+const BACK = wrap('<rect width="100" height="100" fill="#252a36"/><rect x="7" y="7" width="86" height="86" rx="4" fill="url(#bk)"/>'+
+  '<rect x="7" y="7" width="86" height="86" rx="4" fill="none" stroke="#e8e0cc" stroke-width="1.6"/>');
+
+function buildCard(c){
+  c = Object.assign({x:0,y:0,rot:0,s:1,up:false,zone:'deck',owner:-1,sz:0}, c);
+  const el = document.createElement('div');
+  el.className = 'card';
+  const face = c.kind==='joker' ? jokerSVG() : c.kind==='magnet' ? magnetSVG(c.color) : c.kind==='point' ? pointSVG(c.value,c.color) : numSVG(c.value,c.color,c.corner);
+  el.innerHTML = '<div class="lift"><div class="inner"><div class="face">'+face+'</div><div class="back">'+BACK+'</div></div></div>';
+  c.el = el; c.lift = el.firstChild; c.inner = c.lift.firstChild; el._c = c;
+  return c;
+}
+
+/* ====================== Mise en page ====================== */
+function arrange(){
+  const k = Math.max(1, G.islands.length);
+  const aw = L.vw - 16, ah = L.y1 - L.y0, d = 2.45;
+  let best = null;
+  for(const rows of TPL[k]){
+    const cols = Math.max.apply(null, rows), wU = (cols-1)*d+2, hU = (rows.length-1)*d+2.35;
+    const W = Math.min(aw/wU, ah/hU, 120);
+    if(!best || W > best.W) best = {W, rows, hU};
+  }
+  L.tw = Math.max(best.W, 22);
+  const y0 = L.y0 + ah/2 - best.hU*L.tw/2 + L.tw;
+  const pts = [];
+  best.rows.forEach((cnt,r) => { for(let j=0;j<cnt;j++) pts.push({x:L.vw/2+(j-(cnt-1)/2)*d*L.tw, y:y0+r*d*L.tw}); });
+  L.isl = pts;
+}
+function computeLayout(){
+  L.vw = stage.clientWidth; L.vh = stage.clientHeight;
+  const nopp = G.n-1;
+  L.hw = Math.max(54, Math.min(L.vw/4.4, L.vh*0.2, 112));
+  L.pw = L.hw*0.5;
+  L.ow = Math.max(30, Math.min(L.hw*0.6, L.vw/Math.max(nopp,1)/3.3, 64));
+  L.qw = L.ow*0.5;
+  L.dw = L.hw*0.7;
+  L.oc = nopp===1 ? [L.vw/2] : nopp===2 ? [L.vw*.27, L.vw*.73] : [L.vw/6, L.vw/2, L.vw*5/6];
+  L.topH = 24 + L.ow + 4 + L.qw + 6;
+  L.handY = L.vh - L.hw/2 - 14;
+  L.ptY = L.handY - L.hw/2 - L.pw/2 - 8;
+  L.hLabelY = L.ptY - L.pw/2 - 22;
+  L.deckX = L.dw/2 + 6; L.deckY = L.vh - L.dw/2 - 10;
+  L.y0 = L.topH + 28; L.y1 = L.hLabelY - 4;
+  arrange();
+}
+function deckPose(k){ return {x:L.deckX+k*0.08, y:L.deckY-k*0.14, rot:0, s:sc(L.dw), up:false, z:k}; }
+function revealPose(){ return {x:L.deckX+L.dw*0.3, y:L.deckY-L.dw*1.35, rot:0, s:sc(L.hw*0.9), up:true, z:9000}; }
+function handPose(pid,i,n){
+  const d = i-(n-1)/2;
+  if(pid===0){
+    const sp = Math.min(L.hw*0.8, (L.vw-L.hw-2*(L.dw+10))/Math.max(n-1,1));
+    return {x:L.vw/2+d*sp, y:L.handY+Math.abs(d)*L.hw*0.04, rot:d*4, s:sc(L.hw), up:true, z:5000+i};
+  }
+  return {x:L.oc[pid-1]+d*L.ow*0.5, y:24+L.ow/2+Math.abs(d)*2, rot:d*5, s:sc(L.ow), up:false, z:5000+i};
+}
+function ptPose(c){
+  if(c.owner===0) return {x:L.vw/2+(c.pi-1.5)*L.pw*1.12, y:L.ptY, rot:0, s:sc(L.pw), up:true, z:4600};
+  return {x:L.oc[c.owner-1]+(c.pi-1.5)*L.qw*0.95, y:24+L.ow+4+L.qw/2, rot:0, s:sc(L.qw), up:true, z:4600};
+}
+function slotXY(isl,slot){ const o = SLOT_OFF[slot], ic = L.isl[isl.i]; return {x:ic.x+o[0]*L.tw, y:ic.y+o[1]*L.tw}; }
+function poseOf(c){
+  switch(c.zone){
+    case 'deck':   return deckPose(G.deck.indexOf(c));
+    case 'hand':   { const p = G.players[c.owner]; return handPose(c.owner, p.hand.indexOf(c), p.hand.length); }
+    case 'pt':     return ptPose(c);
+    case 'slot':   { const q = slotXY(c.isl,c.slot); return {x:q.x, y:q.y, rot:0, s:sc(L.tw), up:true, z:200+c.sz}; }
+    case 'center': { const ic = L.isl[c.isl.i]; return {x:ic.x, y:ic.y, rot:0, s:sc(L.tw), up:true, z:190}; }
+    default:       return revealPose();
+  }
+}
+function refreshMine(c){ c.el.classList.toggle('mine', c.owner===0 && (c.zone==='hand'||c.zone==='pt')); }
+function setPose(c,t){
+  c.x=t.x; c.y=t.y; c.rot=t.rot; c.s=t.s; c.up=t.up;
+  c.el.style.transform = tf(t.x,t.y,t.rot,t.s);
+  c.inner.style.transform = 'rotateY('+(t.up?0:180)+'deg)';
+  c.el.style.zIndex = t.z;
+  refreshMine(c);
+}
+function positionDecor(){
+  G.islands.forEach(isl => {
+    const ic = L.isl[isl.i];
+    Object.assign(isl.spot.style, {left:(ic.x-L.tw)+'px', top:(ic.y-L.tw)+'px', width:(2*L.tw)+'px', height:(2*L.tw)+'px'});
+    Object.assign(isl.pills.style, {left:ic.x+'px', top:(ic.y+L.tw+3)+'px'});
+  });
+  G.players.forEach((p,i) => {
+    p.label.style.left = (i===0 ? L.vw/2 : L.oc[i-1])+'px';
+    p.label.style.top  = (i===0 ? L.hLabelY : 2)+'px';
+  });
+  G.all.forEach(c => {
+    if(!c.lock || c.zone!=='slot') return;
+    const q = slotXY(c.isl,c.slot), o = SLOT_OFF[c.slot], z = L.tw*0.3;
+    Object.assign(c.lock.style, {left:(q.x-o[0]*L.tw*0.7)+'px', top:(q.y-o[1]*L.tw*0.7)+'px', width:z+'px', height:(z*1.15)+'px'});
+  });
+  count.style.left = L.deckX+'px'; count.style.top = (L.deckY-L.dw/2-20)+'px';
+  msg.style.top = (L.topH+2)+'px';
+}
+function reposition(){ G.all.forEach(c => { if(c.zone!=='trans' && c.zone!=='gone') setPose(c, poseOf(c)); }); positionDecor(); }
+
+/* ====================== Animations ====================== */
+async function move(c,t,dur,delay){
+  const e = epoch;
+  dur = (dur||600)*SPD; delay = (delay||0)*SPD;
+  c.el.style.zIndex = 10000 + (++G.fz);
+  const from = tf(c.x,c.y,c.rot,c.s), to = tf(t.x,t.y,t.rot,t.s);
+  const A = [
+    c.el.animate([{transform:from},{transform:to}], {duration:dur, delay, easing:'cubic-bezier(.25,.8,.25,1)', fill:'both'}),
+    c.lift.animate([{transform:'scale(1)'},{transform:'scale(1.14)',offset:.45},{transform:'scale(1)'}], {duration:dur, delay, easing:'ease-in-out'})
+  ];
+  if(c.up !== t.up){
+    A.push(c.inner.animate([{transform:'rotateY('+(c.up?0:180)+'deg)'},{transform:'rotateY('+(t.up?0:180)+'deg)'}],
+      {duration:dur*0.7, delay:delay+dur*0.1, easing:'ease-in-out', fill:'both'}));
+  }
+  await Promise.all(A.map(a => a.finished));
+  chkE(e);
+  setPose(c,t);
+  A.forEach(a => a.cancel());
+}
+async function shake(c){
+  const a = c.lift.animate([{transform:'translateX(0)'},{transform:'translateX(-7px) rotate(-3deg)'},
+    {transform:'translateX(7px) rotate(3deg)'},{transform:'translateX(-4px)'},{transform:'translateX(0)'}], {duration:380*SPD});
+  const e = epoch; await a.finished; chkE(e);
+}
+async function shuffleAnim(){
+  for(let r=0;r<3;r++){
+    G.deck.forEach((c,k) => {
+      const side = (k%2) ? 1 : -1, w = L.dw;
+      c.el.animate([{transform:tf(c.x,c.y,c.rot,c.s)},
+        {transform:tf(c.x+side*w*0.6,c.y-side*4,c.rot+side*7,c.s), offset:.5},
+        {transform:tf(c.x,c.y,c.rot,c.s)}], {duration:420*SPD, delay:k*3*SPD, easing:'ease-in-out'});
+    });
+    await sleep(430 + G.deck.length*3);
+  }
+}
+function restack(){ G.deck.forEach((c,k) => setPose(c, deckPose(k))); }
+function updateCount(){ count.textContent = 'Pioche : '+G.deck.length; }
+function needsMove(c,t){ return Math.abs(c.x-t.x)+Math.abs(c.y-t.y)+Math.abs(c.rot-t.rot)+Math.abs(c.s-t.s)*100>0.5 || c.up!==t.up; }
+async function layoutHand(p,dur){
+  await Promise.all(p.hand.map(c => { const t = poseOf(c); return needsMove(c,t) ? move(c,t,dur||420) : null; }));
+}
+async function relayoutTable(){
+  arrange(); positionDecor();
+  const cs = G.all.filter(c => c.zone==='slot' || c.zone==='center');
+  await Promise.all(cs.map(c => move(c, poseOf(c), 600)));
+}
+
+/* ====================== Règles ====================== */
+function islandTotal(isl,color){
+  let sum = 0;
+  CORNERS.forEach(s => { const st = isl.slots[s], top = st[st.length-1]; if(top && top.color===color) sum += top.value; });
+  return sum;
+}
+function totalWith(isl,slot,c){
+  let sum = 0;
+  CORNERS.forEach(s => { const st = isl.slots[s], top = s===slot ? c : st[st.length-1]; if(top && top.color===c.color) sum += top.value; });
+  return sum;
+}
+function updateTotals(){
+  G.islands.forEach(isl => {
+    let h = '';
+    CK.forEach(k => { const n = islandTotal(isl,k);
+      if(n>0) h += '<span class="pill'+(n===TARGET?' seven':'')+'" style="background:'+COLORS[k].bg+'">'+n+'</span>'; });
+    isl.pills.innerHTML = h;
+  });
+}
+function updateLabels(){
+  G.players.forEach((p,i) => {
+    p.label.innerHTML = '<i style="background:'+COLORS[p.color].bg+'"></i>'+p.name+' · '+COLORS[p.color].name+' · ★ '+p.pts.length;
+    p.label.classList.toggle('active', i===G.turn && !G.over);
+  });
+}
+const isLocked = (isl,slot) => { const st = isl.slots[slot], t = st[st.length-1]; return !!t && t.kind==='point'; };
+function nominalTargets(c){
+  if(isWild(c)) return G.islands.length < MAX_ISLANDS ? [{joker:true}] : [];
+  return G.islands.filter(isl => !isLocked(isl, SLOT_FOR[c.corner])).map(isl => ({isl, slot:SLOT_FOR[c.corner]}));
+}
+function othersMax(isl,slot,c){
+  let m = 0;
+  CK.forEach(k => {
+    if(k===c.color) return;
+    let sum = 0;
+    CORNERS.forEach(s => { const st = isl.slots[s], top = s===slot ? c : st[st.length-1]; if(top && top.color===k) sum += top.value; });
+    if(sum>m) m = sum;
+  });
+  return m;
+}
+const LOCK = '<svg viewBox="0 0 24 28" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="lg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe680"/><stop offset="1" stop-color="#d49a00"/></linearGradient></defs>'+
+  '<path d="M6 12V8a6 6 0 0 1 12 0v4" fill="none" stroke="#f0b400" stroke-width="3"/>'+
+  '<rect x="2" y="11" width="20" height="15" rx="3" fill="url(#lg)" stroke="#8a5d00" stroke-width="1"/>'+
+  '<circle cx="12" cy="17.5" r="2.4" fill="#6b4600"/><rect x="11" y="18" width="2" height="5" fill="#6b4600"/>'+
+  '<path d="M20 3 l1 2.5 2.5 1 -2.5 1 -1 2.5 -1 -2.5 -2.5 -1 2.5 -1z" fill="#fff"/></svg>';
+function addLock(c){
+  const d = document.createElement('div'); d.className = 'lock'; d.innerHTML = LOCK;
+  stage.appendChild(d); c.lock = d; positionDecor();
+}
+function getCands(p){ return p.hand.map(c => ({card:c, targets:nominalTargets(c)})).filter(x => x.targets.length); }
+
+function addIsland(){
+  const isl = {i:G.islands.length, slots:{tl:[],tr:[],bl:[],br:[]}, joker:null};
+  isl.spot = document.createElement('div'); isl.spot.className = 'spot';
+  isl.pills = document.createElement('div'); isl.pills.className = 'pills';
+  stage.insertBefore(isl.pills, stage.firstChild); stage.insertBefore(isl.spot, stage.firstChild);
+  G.islands.push(isl);
+  return isl;
+}
+
+async function recycle(){
+  const cs = [];
+  G.islands.forEach(isl => CORNERS.forEach(s => { const st = isl.slots[s]; while(st.length>1) cs.push(st.shift()); }));
+  if(!cs.length) return false;
+  setMsg('Les cartes recouvertes sont remélangées dans la pioche…');
+  shuffle(cs);
+  cs.forEach(c => { c.zone='deck'; c.owner=-1; G.deck.push(c); });
+  updateCount(); updateTotals();
+  await Promise.all(cs.map((c,i) => move(c, deckPose(G.deck.indexOf(c)), 600, i*20)));
+  restack();
+  return true;
+}
+async function toBottom(c){
+  G.deck.unshift(c); c.zone='deck'; c.owner=-1; updateCount();
+  await move(c, deckPose(0), 500); restack();
+}
+async function drawN(p,n){
+  for(let i=0;i<n;i++){
+    if(!G.deck.length) await recycle();
+    if(!G.deck.length) break;
+    const c = G.deck.pop();
+    c.zone='hand'; c.owner=p.id; p.hand.push(c); updateCount(); updateLabels();
+    await layoutHand(p,480);
+  }
+}
+
+async function fillIsland(isl,single){
+  let rej = 0;
+  while(CORNERS.some(s => isl.slots[s].length===0)){
+    if(single && CORNERS.some(s => isl.slots[s].length>0)) break;   // joker : une seule carte à valeur
+    // aucune carte utile dans toute la pioche : on remélange les cartes recouvertes, sinon on s'arrête
+    if(!G.deck.length || rej > G.deck.length){
+      rej = 0;
+      if(!(await recycle())) break;
+    }
+    if(!G.deck.length) break;
+    const c = G.deck.pop();
+    updateCount(); c.zone='reveal';
+    await move(c, revealPose(), 500);
+    await sleep(250);
+    const s = c.kind==='num' ? SLOT_FOR[c.corner] : null;
+    if(s && isl.slots[s].length===0){
+      c.zone='slot'; c.isl=isl; c.slot=s; c.sz=++G.sz; isl.slots[s].push(c);
+      await move(c, poseOf(c), 600); updateTotals(); rej = 0;
+    } else {
+      rej++; await shake(c); await toBottom(c);
+    }
+  }
+}
+/* --- aimant : attire les cartes visibles de sa couleur (récursif), dans l'ordre choisi par le joueur --- */
+function attractable(isl,color){
+  const out = [];
+  G.islands.forEach(o => { if(o===isl) return;
+    CORNERS.forEach(s => { const st = o.slots[s], t = st[st.length-1]; if(t && t.kind==='num' && t.color===color) out.push(t); }); });
+  return out;
+}
+async function pickCard(p,list,isl){
+  if(list.length===1){ await sleep(350); return list[0]; }
+  if(p.human){
+    setMsg('Aimant : choisis la carte '+COLORS[list[0].color].name+' à attirer (l’ordre compte)');
+    return new Promise(res => {
+      UI.pick = {set:new Set(list), isl, res};
+      list.forEach(c => c.el.classList.add('pickable'));
+    });
+  }
+  await sleep(600);
+  const m = Math.min.apply(null, list.map(c => c.value));        // l'IA pose les petites valeurs d'abord : les grandes recouvrent
+  const low = list.filter(c => c.value===m);
+  return low[Math.floor(Math.random()*low.length)];
+}
+async function magnetGather(p,isl,color){
+  let n = 0;
+  for(;;){
+    const list = attractable(isl,color);
+    if(!list.length) break;
+    const c = await pickCard(p,list,isl);
+    const s = SLOT_FOR[c.corner];
+    c.isl.slots[c.slot].pop();                                    // la carte du dessous (même couleur ?) est révélée
+    c.isl = isl; c.slot = s; c.sz = ++G.sz; isl.slots[s].push(c);
+    updateTotals();
+    await move(c, poseOf(c), 750);
+    updateTotals(); n++;
+  }
+  return n;
+}
+async function openIsland(card,p){
+  const isl = addIsland();
+  card.zone='trans'; card.isl=isl; isl.joker=card;
+  arrange(); positionDecor();
+  const tgt = {x:L.isl[isl.i].x, y:L.isl[isl.i].y, rot:0, s:sc(L.tw), up:true, z:190};
+  await Promise.all([relayoutTable(), move(card, tgt, 700)]);
+  card.zone='center';
+  let n = 0;
+  if(card.kind==='magnet'){ setMsg('Aimant '+COLORS[card.color].name+' : les cartes de la couleur arrivent…'); n = await magnetGather(p,isl,card.color); }
+  if(n===0){ setMsg('Nouvel îlot : on révèle une carte à valeur…'); await fillIsland(isl,true); }
+  return isl;
+}
+
+/* --- îlot détruit : les cartes retournent sous la pioche, les cartes Point disparaissent --- */
+async function destroyIsland(isl){
+  const back = [], pts = [];
+  CORNERS.forEach(s => { isl.slots[s].forEach(c => (c.kind==='point' ? pts : back).push(c)); isl.slots[s] = []; });
+  if(isl.joker) back.push(isl.joker);
+  setMsg('Îlot détruit : il libère de la place');
+  shuffle(back);
+  const jobs = [];
+  pts.forEach(c => {
+    c.zone = 'gone';
+    if(c.lock){ c.lock.remove(); c.lock = null; }
+    c.el.style.zIndex = 9500;
+    jobs.push(c.el.animate([{opacity:1, transform:tf(c.x,c.y,0,c.s)}, {opacity:0, transform:tf(c.x,c.y,25,c.s*0.2)}],
+      {duration:700*SPD, fill:'forwards', easing:'ease-in'}).finished.then(() => { c.el.style.display = 'none'; }));
+  });
+  back.forEach(c => { c.zone='deck'; c.owner=-1; c.lock=null; G.deck.unshift(c); });
+  updateCount();
+  back.forEach((c,i) => jobs.push(move(c, deckPose(G.deck.indexOf(c)), 700, i*60)));
+  await Promise.all(jobs); chkE(epoch);
+  restack();
+  isl.spot.remove(); isl.pills.remove();
+  G.islands = G.islands.filter(o => o!==isl);
+  G.islands.forEach((o,i) => { o.i = i; });
+  await relayoutTable();
+}
+async function destroyDoomed(){
+  for(const isl of G.islands.slice()){
+    if(isl.doomed && isl.doomAt < G.turnNo) await destroyIsland(isl);
+  }
+  if(!G.islands.length){                                           // plus aucun îlot : on en rouvre un, comme au début
+    const ni = addIsland(); arrange(); positionDecor();
+    setMsg('Nouvel îlot au centre…'); await fillIsland(ni);
+  }
+}
+
+/* ====================== IA ====================== */
+function scoreMove(p,c,t){
+  let s = Math.random();
+  if(c.kind==='joker') return s + 1.5;                              // le joker fait toujours repiocher
+  if(c.kind==='magnet'){
+    const n = attractable({}, c.color).length, tot = attractable({}, c.color).reduce((a,x) => a+x.value, 0);
+    return s + 1 + (n ? 1 : -0.5) + (G.players[p.id].color===c.color ? 1 : 0) + (tot>=5 && tot<=9 ? 1.5 : 0);
+  }
+  const tot = totalWith(t.isl, t.slot, c), oth = othersMax(t.isl, t.slot, c);
+  const owner = G.players.find(q => q.color===c.color);
+  if(tot < oth){ s += 2; if(p.hand.length===1) s += 2; }          // pas de pioche : la main diminue
+  if(tot===TARGET){
+    if(owner===p && owner.pts.length) s += 6;
+    else if(owner && owner.pts.length) s -= 3;
+  } else if(owner===p) s += tot/TARGET*0.5;
+  return s;
+}
+function aiPick(p,cands){
+  let best = null, bs = -1e9;
+  cands.forEach(x => x.targets.forEach(t => { const s = scoreMove(p,x.card,t); if(s>bs){ bs=s; best={card:x.card, target:t}; } }));
+  return best;
+}
+
+/* ====================== Interaction humaine ====================== */
+function clearTargets(){ UI.targets.forEach(d => d.remove()); UI.targets = []; }
+function drawTargets(list){
+  clearTargets();
+  list.forEach(t => {
+    const d = document.createElement('div'); d.className = 'target';
+    if(t.joker){
+      d.classList.add('zone'); d.textContent = '✚ Ouvrir un nouvel îlot';
+      Object.assign(d.style, {left:'8px', top:L.y0+'px', width:(L.vw-16)+'px', height:(L.y1-L.y0)+'px'});
+    } else {
+      const q = slotXY(t.isl,t.slot); t.cx = q.x; t.cy = q.y;
+      Object.assign(d.style, {left:(q.x-L.tw/2)+'px', top:(q.y-L.tw/2)+'px', width:L.tw+'px', height:L.tw+'px'});
+    }
+    d._t = t;
+    d.addEventListener('click', () => { if(UI.mode && UI.mode.sel) UI.mode.finish(UI.mode.sel, t); });
+    stage.appendChild(d); UI.targets.push(d);
+  });
+}
+function targetsOf(c){
+  if(UI.mode) return UI.mode.map.get(c) || [];
+  return nominalTargets(c);
+}
+const showTargets = c => drawTargets(targetsOf(c));
+function endChoose(){
+  const p = G.players[0];
+  p.hand.concat(p.pts).forEach(c => c.el.classList.remove('dim','sel'));
+  clearTargets(); UI.mode = null; UI.hover = null; passBtn.style.display = 'none';
+}
+function humanChoose(cands,opt){
+  return new Promise(res => {
+    const map = new Map(cands.map(x => [x.card, x.targets]));
+    UI.mode = {map, sel:null,
+      finish:(c,t) => { endChoose(); res({card:c, target:t}); },
+      pass:() => { endChoose(); res(null); }};
+    const p = G.players[0];
+    p.hand.concat(p.pts).forEach(c => c.el.classList.toggle('dim', !map.has(c)));
+    passBtn.style.display = opt.optional ? 'inline-block' : 'none';
+  });
+}
+function flash(t){ drawTargets([t]); setTimeout(clearTargets, 500*SPD+50); }
+
+stage.addEventListener('pointerover', ev => {
+  if(UI.pick){
+    const e2 = ev.target.closest && ev.target.closest('.card'), c2 = e2 && e2._c;
+    if(c2 && UI.pick.set.has(c2)) drawTargets([{isl:UI.pick.isl, slot:SLOT_FOR[c2.corner]}]);
+    return;
+  }
+  if(UI.drag || (UI.mode && UI.mode.sel)) return;
+  const el = ev.target.closest && ev.target.closest('.card'); if(!el) return;
+  const c = el._c;
+  if(!c || c.owner!==0 || !(c.zone==='hand' || c.zone==='pt')) return;
+  UI.hover = c; showTargets(c);
+});
+stage.addEventListener('pointerout', ev => {
+  if(UI.pick){ clearTargets(); return; }
+  if(UI.drag || (UI.mode && UI.mode.sel)) return;
+  const el = ev.target.closest && ev.target.closest('.card');
+  if(el && el._c === UI.hover){ clearTargets(); UI.hover = null; }
+});
+stage.addEventListener('pointerdown', ev => {
+  if(UI.pick){
+    const e2 = ev.target.closest && ev.target.closest('.card'), c2 = e2 && e2._c;
+    if(c2 && UI.pick.set.has(c2)){
+      ev.preventDefault();
+      const pk = UI.pick; UI.pick = null; clearTargets();
+      pk.set.forEach(x => x.el.classList.remove('pickable'));
+      pk.res(c2);
+    }
+    return;
+  }
+  if(!UI.mode) return;
+  const el = ev.target.closest && ev.target.closest('.card'); if(!el) return;
+  const c = el._c; if(!c || !UI.mode.map.has(c)) return;
+  ev.preventDefault();
+  UI.drag = {c, sx:ev.clientX, sy:ev.clientY, moved:false, hot:null};
+});
+document.addEventListener('pointermove', ev => {
+  const d = UI.drag; if(!d) return;
+  const c = d.c;
+  if(!d.moved){
+    if(Math.hypot(ev.clientX-d.sx, ev.clientY-d.sy) < 8) return;
+    d.moved = true; c.el.classList.add('dragging'); c.el.classList.remove('sel');
+    c.el.style.zIndex = 20000; showTargets(c);
+  }
+  const r = stage.getBoundingClientRect(), px = ev.clientX-r.left, py = ev.clientY-r.top;
+  c.x = px; c.y = py; c.rot = 0; c.s = sc(L.tw);
+  c.el.style.transform = tf(px,py,0,c.s);
+  let best = null, bd = 1e9;
+  UI.targets.forEach(el => {
+    const t = el._t;
+    const dist = t.joker ? ((py>=L.y0 && py<=L.y1) ? 0 : 1e9) : Math.hypot(px-t.cx, py-t.cy);
+    const lim = t.joker ? 1 : L.tw*0.65;
+    if(dist<lim && dist<bd){ bd = dist; best = el; }
+  });
+  UI.targets.forEach(el => el.classList.toggle('hot', el===best));
+  d.hot = best ? best._t : null;
+});
+function dragEnd(){
+  const d = UI.drag; if(!d) return; UI.drag = null;
+  const c = d.c; c.el.classList.remove('dragging');
+  if(!UI.mode) return;
+  if(d.moved){
+    if(d.hot) UI.mode.finish(c, d.hot);
+    else { clearTargets(); move(c, poseOf(c), 350).catch(() => {}); }
+  } else {
+    if(UI.mode.sel === c){ c.el.classList.remove('sel'); UI.mode.sel = null; clearTargets(); }
+    else {
+      if(UI.mode.sel) UI.mode.sel.el.classList.remove('sel');
+      UI.mode.sel = c; c.el.classList.add('sel'); showTargets(c);
+    }
+  }
+}
+document.addEventListener('pointerup', dragEnd);
+document.addEventListener('pointercancel', dragEnd);
+passBtn.addEventListener('click', () => { if(UI.mode) UI.mode.pass(); });
+
+/* ====================== Déroulement d'un tour ====================== */
+// mode : 'last' (dernière carte), 'owner' (propriétaire de la couleur à 7), 'turn' (joueur du tour, facultatif), 'second' (même joueur : 2e point)
+async function pointPhase(owner,isl,mode){
+  const forced = mode !== 'turn';
+  if(!owner.pts.length) return;
+  const cands = owner.pts.map(c => ({card:c,
+    targets: isl ? (isLocked(isl,SLOT_FOR[c.corner]) ? [] : [{isl, slot:SLOT_FOR[c.corner]}]) : nominalTargets(c)}))
+    .filter(x => x.targets.length);
+  if(!cands.length) return;
+  let ch;
+  if(owner.human){
+    setMsg({last:'Dernière carte jouée : pose une carte Point',
+      owner:'Total 7 en '+COLORS[owner.color].name+' (ta couleur) : pose une carte Point sur cet îlot',
+      second:'Tu as aussi le tour : pose un 2e point sur cet îlot',
+      turn:'Total 7 ! Tu peux aussi poser une carte Point sur cet îlot (ou passer)'}[mode]);
+    ch = await humanChoose(cands, {optional:!forced});
+  } else {
+    setMsg(owner.name+' pose une carte Point…');
+    await sleep(700);
+    const x = cands[Math.floor(Math.random()*cands.length)];
+    ch = {card:x.card, target:x.targets[Math.floor(Math.random()*x.targets.length)]};
+    flash(ch.target); await sleep(450);
+  }
+  if(!ch) return;
+  const c = ch.card, t = ch.target;
+  owner.pts = owner.pts.filter(x => x !== c);
+  c.zone='slot'; c.isl=t.isl; c.slot=t.slot; c.sz=++G.sz; t.isl.slots[t.slot].push(c); refreshMine(c);
+  await move(c, poseOf(c), 650);
+  addLock(c);
+  updateTotals(); updateLabels();
+  // îlot à 3 points verrouillés : condamné, détruit au tour suivant
+  const li = t.isl;
+  if(!li.doomed && CORNERS.filter(s => isLocked(li,s)).length >= 3){
+    li.doomed = true; li.doomAt = G.turnNo; li.spot.classList.add('doomed');
+    setMsg('3 points sur cet îlot : il sera détruit au tour suivant');
+    await sleep(600);
+  }
+  if(!owner.pts.length) win(owner);
+}
+async function executePlay(p,ch){
+  const c = ch.card, t = ch.target;
+  p.hand = p.hand.filter(x => x !== c);
+  let tot = 0, oth = 0, color = null, isl = null;
+  const lh = layoutHand(p,420);
+  if(isWild(c)){
+    c.zone='trans'; refreshMine(c);
+    const ni = await openIsland(c,p);
+    if(c.kind==='magnet'){ isl = ni; color = c.color; tot = islandTotal(ni,color); oth = 0; }   // seule couleur sur l'îlot
+    else { color = 'joker'; tot = 0; oth = 0; }   // carte révélée seule : total ≥ aux autres → pioche obligatoire
+  } else {
+    isl = t.isl; color = c.color;
+    c.zone='slot'; c.isl=isl; c.slot=t.slot; c.sz=++G.sz; isl.slots[t.slot].push(c); refreshMine(c);
+    await move(c, poseOf(c), 650);
+    updateTotals(); tot = islandTotal(isl,color);
+    oth = Math.max.apply(null, CK.filter(k => k!==color).map(k => islandTotal(isl,k)));
+  }
+  await lh; updateLabels();
+  if(color && tot===TARGET){
+    // 7 : le propriétaire de la couleur pose un point ET le joueur du tour peut en poser un (même joueur : 2 points)
+    const owner = G.players.find(q => q.color===color);
+    if(owner && owner.pts.length){ await pointPhase(owner, isl, 'owner'); if(G.over) return; }
+    if(p.pts.length){ await pointPhase(p, isl, p===owner ? 'second' : 'turn'); if(G.over) return; }
+  }
+  if(color && tot>=oth){             // total égal ou supérieur aux autres couleurs : pioche obligatoire
+    setMsg(p.name+' repioche'); await drawN(p,1);
+  } else if(p.hand.length===0){
+    await pointPhase(p, null, 'last'); if(G.over) return;
+    setMsg(p.name+' reprend '+HAND+' cartes'); await drawN(p,HAND);
+  }
+}
+async function doTurn(p){
+  let cands = getCands(p), tries = 0;
+  while(!cands.length && tries++<4){
+    // aucune carte jouable (emplacements verrouillés, 5 îlots…) : la main retourne sous la pioche
+    for(const j of p.hand.slice()){ p.hand = p.hand.filter(x => x!==j); j.zone='trans'; await toBottom(j); }
+    await drawN(p, HAND);
+    cands = getCands(p);
+  }
+  if(!cands.length) return false;
+  let ch;
+  if(p.human){
+    setMsg('À toi ('+COLORS[p.color].name+') — glisse une carte, ou touche-la puis touche l’emplacement');
+    ch = await humanChoose(cands, {optional:false});
+  } else {
+    setMsg(p.name+' réfléchit…');
+    await sleep(800);
+    ch = aiPick(p,cands);
+    if(!isWild(ch.card)) flash(ch.target);
+    await sleep(450);
+  }
+  await executePlay(p,ch);
+  return true;
+}
+async function loop(){
+  let stuck = 0;
+  while(!G.over){
+    const p = G.players[G.turn];
+    await destroyDoomed();                    // îlots à 3 points posés au tour précédent
+    updateLabels();
+    const played = await doTurn(p);
+    G.turnNo++;
+    if(G.over) break;
+    if(played) stuck = 0;
+    else {
+      await sleep(300);
+      if(++stuck >= G.n){
+        G.over = true; setMsg('Partie bloquée : plus aucune carte jouable.');
+        document.getElementById('wintxt').textContent = 'Partie bloquée — plus de cartes jouables';
+        document.getElementById('win').style.display = 'block';
+        break;
+      }
+    }
+    G.turn = (G.turn+1) % G.n;
+  }
+}
+function win(p){
+  G.over = true; updateLabels();
+  setMsg(p.human ? 'Tu as gagné !' : p.name+' a gagné !');
+  document.getElementById('wintxt').textContent = (p.human ? 'Bravo, tu as gagné ! 🏆' : p.name+' ('+COLORS[p.color].name+') a gagné');
+  setTimeout(() => { document.getElementById('win').style.display = 'block'; }, 900);
+}
+
+/* ====================== Nouvelle partie ====================== */
+function newGame(n){
+  epoch++;
+  UI.mode = null; UI.drag = null; UI.targets = []; UI.hover = null; passBtn.style.display = 'none';
+  document.getElementById('win').style.display = 'none';
+  stage.innerHTML = '';
+  msg = document.createElement('div'); msg.id = 'msg';
+  count = document.createElement('div'); count.id = 'count';
+  stage.append(msg, count);
+
+  UI.pick = null;
+  G = {n, players:[], islands:[], deck:[], turn:0, turnNo:0, over:false, sz:0, fz:0, all:[]};
+  const keys = shuffle(CK.slice());
+  for(let i=0;i<n;i++){
+    const lab = document.createElement('div'); lab.className = 'plabel'; stage.appendChild(lab);
+    G.players.push({id:i, human:i===0, color:keys[i], name:i===0?'Toi':'Joueur '+(i+1), hand:[], pts:[], label:lab});
+  }
+  // paquet : 64 cartes + 2 jokers + 8 aimants (2 par couleur)
+  const deck = [];
+  CK.forEach(color => { for(let v=0; v<=3; v++) CORNERS.forEach(corner => deck.push(buildCard({kind:'num', value:v, color, corner}))); });
+  for(let j=0;j<N_JOKERS;j++) deck.push(buildCard({kind:'joker'}));
+  CK.forEach(color => { for(let j=0;j<N_MAGNETS;j++) deck.push(buildCard({kind:'magnet', color})); });
+  shuffle(deck); G.deck = deck; G.all = deck.slice();
+  // cartes Point
+  G.players.forEach(p => [3,2,1,0].forEach((v,pi) => {
+    const c = buildCard({kind:'point', value:v, color:p.color, corner:POINT_CORNER[v], owner:p.id, pi, zone:'pt'});
+    p.pts.push(c); G.all.push(c);
+  }));
+  G.all.forEach(c => stage.appendChild(c.el));
+
+  addIsland();                       // premier îlot
+  computeLayout();
+  G.deck.forEach((c,k) => setPose(c, deckPose(k)));
+  G.players.forEach(p => p.pts.forEach(c => {
+    setPose(c, ptPose(c));
+    c.el.animate([{opacity:0},{opacity:1}], {duration:600*SPD, delay:300*SPD, fill:'backwards'});
+  }));
+  positionDecor(); updateCount(); updateLabels(); updateTotals();
+
+  const e = epoch;
+  (async () => {
+    setMsg('Mélange…'); await sleep(300); await shuffleAnim();
+    setMsg('Distribution… Ta couleur : '+COLORS[G.players[0].color].name);
+    const flights = [];
+    for(let r=0;r<HAND;r++){
+      for(const p of G.players){
+        const c = G.deck.pop();
+        c.zone='hand'; c.owner=p.id; p.hand.push(c); updateCount();
+        flights.push(move(c, handPose(p.id, r, HAND), 620));
+        await sleep(170);
+      }
+    }
+    await Promise.all(flights);
+    setMsg('Mise en place du premier îlot…');
+    await sleep(300);
+    await fillIsland(G.islands[0]);
+    await loop();
+  })().catch(err => { if(err !== 'cancel' && e === epoch) console.error(err); });
+}
+
+/* ====================== Interface ====================== */
+const startFromUI = () => newGame(parseInt(document.getElementById('nplayers').value,10));
+document.getElementById('restart').addEventListener('click', startFromUI);
+document.getElementById('again').addEventListener('click', startFromUI);
+document.getElementById('rules').addEventListener('click', () => { document.getElementById('help').style.display = 'block'; });
+let rzT = null;
+window.addEventListener('resize', () => {
+  if(!G) return;
+  computeLayout(); reposition();
+  clearTimeout(rzT); rzT = setTimeout(() => { if(G){ computeLayout(); reposition(); } }, 700);
+});
+window.addEventListener('load', () => newGame(2));
+window.__dbg = () => G;   // aide au test
+</script>
+</body>
+</html>
