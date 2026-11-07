@@ -1,0 +1,1062 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>7shorcut — Losanges</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:#1a1c21;color:#eee;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  overflow:hidden;touch-action:none;-webkit-user-select:none;user-select:none}
+body{display:flex;flex-direction:column}
+#stage{position:relative;flex:1;min-height:0;overflow:hidden;
+  background:radial-gradient(ellipse at 50% 45%,#2c4a3a 0%,#1f3329 55%,#16221c 100%)}
+#bar{flex:none;padding:6px 10px calc(6px + env(safe-area-inset-bottom));display:flex;flex-wrap:wrap;
+  align-items:center;gap:8px;background:#111317;border-top:1px solid #2a2d34;font-size:13px}
+#bar select,#bar button{font:inherit;color:#eee;background:#262a32;border:1px solid #3a3f4a;border-radius:8px;padding:6px 10px}
+#bar button#restart{background:#3b6fd8;border-color:#4d82ee;font-weight:600}
+#bar button#pass{display:none;background:#b8741a;border-color:#e0932f;font-weight:600}
+#copy{width:100%;font-size:10px;opacity:.55;text-align:center}
+
+/* Cartes : 100px de base, mises à l'échelle par transform */
+.card{position:absolute;left:0;top:0;width:100px;height:100px;transform-origin:50% 50%;perspective:700px;will-change:transform}
+.lift,.inner{position:absolute;left:0;top:0;right:0;bottom:0;transform-style:preserve-3d;-webkit-transform-style:preserve-3d}
+.lift{transition:transform .15s ease-out}
+.face,.back{position:absolute;left:0;top:0;right:0;bottom:0;border-radius:9%;overflow:hidden;
+  backface-visibility:hidden;-webkit-backface-visibility:hidden;box-shadow:0 2px 7px rgba(0,0,0,.5)}
+.back{transform:rotateY(180deg);background:#04090f url("data:image/jpeg;base64,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") center/100% auto no-repeat;
+  box-shadow:0 2px 7px rgba(0,0,0,.5),inset 0 0 0 2px rgba(255,255,255,.16)}
+/* animation « 7 » */
+.fx7{position:absolute;transform:translate(-50%,-50%);pointer-events:none;z-index:9400}
+.fx7 svg{position:absolute;inset:0;width:100%;height:100%;filter:drop-shadow(0 4px 14px rgba(0,0,0,.7))}
+.fx7 .st{position:absolute;height:3px;border-radius:2px;background:linear-gradient(90deg,rgba(255,255,255,0),#fff 40%,#fff)}
+.fx7 .st.r{background:linear-gradient(90deg,rgba(255,40,40,0),#ff3030 40%,#ff3030)}
+.fx7 .bn{position:absolute;left:0;right:0;bottom:2%;text-align:center;font-weight:900;font-style:italic;letter-spacing:2px;
+  font-size:calc(var(--w) * .1);color:#fff;text-shadow:0 2px 8px #000}
+/* historique */
+#hist .row{padding:5px 0;border-bottom:1px solid #2a2d34}
+#hist .th{font-weight:700;margin-top:10px;padding-top:4px}
+#hist .row i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:-1px}
+#hist .ev{padding-left:16px;opacity:.9;font-size:13px}
+#hist .bonus{color:#ff8a8a;font-weight:600}
+#hist .btns{position:sticky;top:0;background:rgba(10,12,16,.95);padding-bottom:8px;display:flex;gap:8px;align-items:center}
+#hist .btns button{margin:0}
+.face svg,.back svg{width:100%;height:100%;display:block}
+.card.mine{cursor:pointer}
+.card.mine:hover .lift{transform:translateY(-14px) scale(1.05)}
+.card.sel .lift{transform:translateY(-24px) scale(1.08)}
+.card.dim{filter:brightness(.55)}
+.card.dragging .lift{transform:scale(1.08)!important;transition:none}
+.card.dragging .face{box-shadow:0 12px 24px rgba(0,0,0,.6)}
+
+/* Décor */
+.spot{position:absolute;border:2px dashed rgba(255,255,255,.14);border-radius:10%;pointer-events:none;
+  transition:left .55s,top .55s,width .55s,height .55s;z-index:0}
+.pills{position:absolute;display:flex;gap:3px;transform:translateX(-50%);pointer-events:none;z-index:0;
+  transition:left .55s,top .55s}
+.pill{font-size:11px;font-weight:800;padding:0 6px;border-radius:9px;color:#111;line-height:16px;min-width:18px;text-align:center}
+.pill.seven{outline:2px solid #fff;box-shadow:0 0 8px #fff}
+.plabel{position:absolute;transform:translateX(-50%);font-size:11px;white-space:nowrap;padding:2px 9px;border-radius:11px;
+  background:rgba(0,0,0,.4);pointer-events:none;z-index:0}
+.plabel.active{box-shadow:0 0 0 2px #fff}
+.plabel i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+#count{position:absolute;transform:translateX(-50%);font-size:12px;opacity:.85;white-space:nowrap;pointer-events:none}
+#msg{position:absolute;left:50%;transform:translateX(-50%);max-width:94%;padding:4px 12px;border-radius:12px;
+  background:rgba(0,0,0,.5);font-size:13px;text-align:center;pointer-events:none;z-index:6000}
+.target{position:absolute;border:3px solid #fff;border-radius:9px;cursor:pointer;z-index:4000;
+  background:rgba(255,255,255,.14);box-shadow:0 0 18px 4px rgba(255,255,255,.65);animation:pulse 1s ease-in-out infinite}
+.target.hot{background:rgba(255,255,255,.4);box-shadow:0 0 30px 10px #fff}
+.target.zone{background:transparent;border-style:dashed;border-radius:14px;display:flex;align-items:flex-start;
+  justify-content:center;padding-top:6px;font-size:13px;font-weight:700;text-shadow:0 1px 3px #000;box-shadow:none}
+.target.zone.hot{background:rgba(255,255,255,.14)}
+@keyframes pulse{50%{opacity:.55}}
+.lock{position:absolute;transform:translate(-50%,-50%);pointer-events:none;z-index:3500;
+  filter:drop-shadow(0 0 5px #ffd24d);animation:glow 1.7s ease-in-out infinite alternate;
+  transition:left .55s,top .55s,width .55s,height .55s}
+.lock svg{width:100%;height:100%;display:block}
+@keyframes glow{from{opacity:0}to{opacity:1}}
+.spot.doomed{border:2px dashed #ff5a5a;animation:pulse 1s ease-in-out infinite}
+.card.pickable{cursor:pointer;z-index:9800!important}
+.card.pickable .face{box-shadow:0 0 0 3px #fff,0 0 16px 5px rgba(255,255,255,.8)}
+.card.pickable .lift{animation:bob .9s ease-in-out infinite alternate}
+@keyframes bob{to{transform:translateY(-6px)}}
+.overlay{position:fixed;inset:0;background:rgba(10,12,16,.93);z-index:9000;display:none;overflow:auto;
+  padding:18px;font-size:14px;line-height:1.5;touch-action:pan-y}
+.overlay h2{margin:0 0 8px}
+.overlay button{font:inherit;color:#fff;background:#3b6fd8;border:0;border-radius:8px;padding:8px 16px;margin-top:10px;font-weight:600}
+#hist{z-index:9100}
+#win{text-align:center;padding-top:30vh;background:rgba(10,12,16,.82)}
+#win button{margin:10px 4px 0}
+#win h1{font-size:30px;margin:0 0 6px}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <pattern id="bk" patternUnits="userSpaceOnUse" width="20" height="20">
+      <polygon points="5,0.8 9.2,5 5,9.2 0.8,5" fill="#e070d0"/>
+      <polygon points="15,0.8 19.2,5 15,9.2 10.8,5" fill="#ff9f1a"/>
+      <polygon points="5,10.8 9.2,15 5,19.2 0.8,15" fill="#34c759"/>
+      <polygon points="15,10.8 19.2,15 15,19.2 10.8,15" fill="#00b4ff"/>
+    </pattern>
+  </defs>
+</svg>
+
+<div id="stage"></div>
+<div id="bar">
+  <select id="nplayers" aria-label="Nombre de joueurs">
+    <option value="2">2 joueurs</option>
+    <option value="3">3 joueurs</option>
+    <option value="4">4 joueurs</option>
+  </select>
+  <button id="restart">Nouvelle partie</button>
+  <button id="rules">Règles</button>
+  <button id="histBtn">Historique</button>
+  <button id="pass">Passer</button>
+  <div id="copy">© Yohann Lecarpentier — Losanges · 7shorcut</div>
+</div>
+
+<div id="help" class="overlay">
+  <h2>Règles — 7shorcut</h2>
+  <p><b>But :</b> être le premier à avoir posé ses 4 cartes <b>Point</b> (3, 2, 1, 0).</p>
+  <p><b>Mise en place :</b> chaque joueur a une couleur et 3 cartes en main. Quatre cartes sont posées autour d'un point central (un îlot) : chaque carte va à l'emplacement qui fait toucher son coin coloré au centre (coin bas-droite → emplacement haut-gauche, bas-gauche → haut-droite, haut-droite → bas-gauche, haut-gauche → bas-droite).</p>
+  <p><b>Ton tour :</b> joue une carte de ta main sur un emplacement correspondant à son coin coloré, par-dessus la carte déjà présente. Survole une carte pour voir les emplacements possibles, puis glisse-la ou touche-la et touche l'emplacement.</p>
+  <p><b>Total :</b> on additionne les valeurs des cartes <i>visibles</i> de la couleur jouée sur cet îlot (les pastilles sous chaque îlot les affichent). Si le total de la couleur jouée est <b>égal ou supérieur</b> aux totaux de toutes les autres couleurs de l'îlot, tu <b>repioches</b> obligatoirement une carte. S'il est <b>strictement inférieur</b> à celui d'une autre couleur, tu ne repioches pas.</p>
+  <p><b>Cartes Point :</b> une carte Point ne peut jamais être recouverte : un cadenas doré apparaît et l'emplacement est verrouillé.</p>
+  <p><b>Total de 7 ou plus (bonus) :</b> dès que le total de la couleur jouée atteint ou dépasse 7 sur un îlot, une animation « 7 » se déclenche. Le joueur à qui appartient cette couleur pose alors une carte Point sur l'îlot de son choix, et le joueur dont c'est le tour peut lui aussi en poser une, sur l'îlot de son choix. Si c'est le même joueur, il en pose 2. La victoire n'est constatée qu'une fois ces points posés : si les deux joueurs posent leur dernier point, ils gagnent ensemble. Si une carte Point ne peut pas être posée (emplacement verrouillé, plus de cartes Point), le bonus est perdu : c'est indiqué dans l'historique.</p>
+  <p><b>Îlot détruit :</b> quand un îlot porte 3 cartes Point (3 cadenas), il est détruit au tour suivant : les cartes retournent sous la pioche, les cartes Point disparaissent et la place est libérée.</p>
+  <p><b>Dernière carte :</b> si tu joues ta dernière carte sans repiocher, tu poses une carte Point (n'importe quel îlot), puis tu reprends 3 cartes.</p>
+  <p><b>Aimant (2 par couleur) :</b> se joue comme un joker (nouvel îlot), mais attire sur lui toutes les cartes visibles de sa couleur présentes sur le plateau. Si une carte de la même couleur est révélée dessous, elle est attirée aussi, jusqu'à ce que la couleur ne soit plus que sur le nouvel îlot. Tu choisis l'ordre (la dernière carte posée sur un emplacement recouvre les autres) pour viser un total de 7 ou plus. Les cartes Point verrouillées ne bougent pas. Tu repioches toujours après un aimant.</p>
+  <p><b>Joker (2 dans le jeu) :</b> ouvre un nouvel îlot. On révèle des cartes jusqu'à en trouver une seule qui a une valeur ; elle est posée à son emplacement, les autres emplacements restent vides. Cette carte étant seule, tu repioches toujours après un joker. 6 îlots au maximum.</p>
+  <button onclick="document.getElementById('help').style.display='none'">Fermer</button>
+</div>
+<div id="hist" class="overlay">
+  <div class="btns"><h2 style="margin:0;flex:1">Historique</h2>
+    <select id="histSel" style="font:inherit;color:#eee;background:#262a32;border:1px solid #3a3f4a;border-radius:8px;padding:6px;max-width:48vw"></select>
+    <button id="histCopy">Copier</button><button onclick="document.getElementById('hist').style.display='none'">Fermer</button></div>
+  <div id="histBody"></div>
+</div>
+<div id="win" class="overlay"><h1 id="wintxt"></h1>
+  <button id="viewBoard">Voir le plateau</button> <button id="winHist">Historique</button> <button id="again">Rejouer</button></div>
+
+<script>
+"use strict";
+
+/* ====================== Constantes ====================== */
+const SPD = /fast/.test(location.search) ? 0.04 : 1;      // ?fast pour les tests
+const COLORS = {
+  rose:  {bg:'#e070d0', q:'#ff9bff', dk:'#a8329a', name:'Rose'},
+  orange:{bg:'#ff9f1a', q:'#ffd24d', dk:'#b86a00', name:'Orange'},
+  vert:  {bg:'#34c759', q:'#92ecaa', dk:'#1c8a3a', name:'Vert'},
+  bleu:  {bg:'#00b4ff', q:'#9adcff', dk:'#0a78a8', name:'Bleu'}
+};
+const CK = Object.keys(COLORS);
+const CORNERS = ['tl','tr','bl','br'];
+const SLOT_FOR = {br:'tl', bl:'tr', tr:'bl', tl:'br'};            // coin coloré -> emplacement
+const SLOT_OFF = {tl:[-.5,-.5], tr:[.5,-.5], bl:[-.5,.5], br:[.5,.5]};
+const CXY = {tl:[0,0], tr:[100,0], bl:[0,100], br:[100,100]};
+const POINT_CORNER = {3:'tl', 2:'tr', 1:'bl', 0:'br'};            // coin de chaque carte Point
+const HAND = 3, TARGET = 7, MAX_ISLANDS = 6, N_JOKERS = 2, N_MAGNETS = 2;   // 2 jokers + 2 aimants par couleur
+const isWild = c => c.kind==='joker' || c.kind==='magnet';                 // cartes qui ouvrent un îlot
+const TPL = {1:[[1]], 2:[[2],[1,1]], 3:[[3],[2,1],[1,2],[1,1,1]], 4:[[2,2],[4],[3,1]], 5:[[3,2],[2,3],[2,1,2]], 6:[[3,3],[2,2,2],[2,2,2]]};
+
+const stage = document.getElementById('stage');
+const passBtn = document.getElementById('pass');
+let G = null, epoch = 0, msg = null, count = null;
+const L = {};
+const UI = {mode:null, drag:null, targets:[], hover:null, pick:null};
+
+/* ====================== Utilitaires ====================== */
+const sc = w => w/100;
+const tf = (x,y,rot,s) => 'translate3d('+(x-50)+'px,'+(y-50)+'px,0) rotate('+rot+'deg) scale('+s+')';
+const chkE = e => { if(e !== epoch) throw 'cancel'; };
+const sleep = ms => { const e = epoch; return new Promise(r => setTimeout(r, ms*SPD)).then(() => chkE(e)); };
+function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+const setMsg = t => { if(msg) msg.textContent = t; };
+
+/* ====================== Historique ====================== */
+const SLOT_NAME = {tl:'haut-gauche', tr:'haut-droite', bl:'bas-gauche', br:'bas-droite'};
+const cardName = c => c.kind==='joker' ? 'Joker' : c.kind==='magnet' ? 'Aimant '+COLORS[c.color].name :
+  c.kind==='point' ? 'Point '+c.value+' '+COLORS[c.color].name : c.value+' '+COLORS[c.color].name;
+const islName = isl => 'îlot '+isl.n;
+function hlog(txt, kind){
+  if(!G) return;
+  G.log.push({t: G.setup ? 0 : G.turnNo+1, p: G.setup ? -1 : G.turn, txt, kind: kind||''});
+}
+function histLines(){
+  const out = []; let last = -1;
+  G.log.forEach(e => {
+    if(e.t !== last){
+      last = e.t;
+      if(e.t===0) out.push({h:true, txt:'Mise en place'});
+      else { const p = G.players[e.p]; out.push({h:true, txt:'Tour '+e.t+' · '+p.name+' ('+COLORS[p.color].name+')', color:p.color}); }
+    }
+    out.push({txt:e.txt, kind:e.kind});
+  });
+  return out;
+}
+/* parties terminées : conservées dans le navigateur (10 dernières) */
+const HKEY = 'losanges7_hist';
+function loadSaved(){ try{ return JSON.parse(localStorage.getItem(HKEY)) || []; }catch(e){ return []; } }
+function saveGame(result){
+  if(!G || G.saved || !G.log.length) return;
+  G.saved = true;
+  try{
+    const arr = loadSaved();
+    arr.unshift({date:new Date().toLocaleString('fr-FR'), n:G.n, result,
+      players:G.players.map(p => p.name+' ('+COLORS[p.color].name+')').join(', '), lines:histLines()});
+    localStorage.setItem(HKEY, JSON.stringify(arr.slice(0,10)));
+  }catch(e){}
+}
+let histShown = null;
+function renderHistory(lines){
+  histShown = lines;
+  const body = document.getElementById('histBody');
+  body.innerHTML = '';
+  lines.forEach(l => {
+    const d = document.createElement('div');
+    d.className = 'row ' + (l.h ? 'th' : 'ev ' + l.kind);
+    if(l.h && l.color){ const i = document.createElement('i'); i.style.background = COLORS[l.color].bg; d.appendChild(i); }
+    d.appendChild(document.createTextNode(l.txt));
+    body.appendChild(d);
+  });
+}
+function showHistory(){
+  const sel = document.getElementById('histSel'), saved = loadSaved();
+  sel.innerHTML = '';
+  const cur = document.createElement('option'); cur.value = 'cur'; cur.textContent = 'Partie en cours'; sel.appendChild(cur);
+  saved.forEach((g,i) => { const o = document.createElement('option'); o.value = i;
+    o.textContent = g.date+' — '+g.n+' joueurs — '+g.result; sel.appendChild(o); });
+  sel.onchange = () => renderHistory(sel.value==='cur' ? (G ? histLines() : []) : saved[+sel.value].lines);
+  renderHistory(G ? histLines() : []);
+  document.getElementById('hist').style.display = 'block';
+  document.getElementById('hist').scrollTop = 1e9;
+}
+function copyHistory(){
+  const txt = (histShown || []).map(l => (l.h ? '\n== ' : '  - ') + l.txt).join('\n');
+  const btn = document.getElementById('histCopy');
+  const done = ok => { btn.textContent = ok ? 'Copié ✓' : 'Copie impossible'; setTimeout(() => { btn.textContent = 'Copier'; }, 1500); };
+  try{ navigator.clipboard.writeText(txt).then(() => done(true), () => done(false)); }
+  catch(e){ done(false); }
+}
+
+/* ====================== Animation « 7 » (bonus) ====================== */
+async function sevenFx(isl,color){
+  const ic = L.isl[isl.i], w = Math.max(L.tw*2.7, 150), h = w*0.64;
+  const d = document.createElement('div'); d.className = 'fx7';
+  d.style.cssText = 'left:'+ic.x+'px;top:'+ic.y+'px;width:'+w+'px;height:'+h+'px;--w:'+w+'px';
+  const C = COLORS[color];
+  d.innerHTML =
+    '<svg viewBox="0 0 260 166" xmlns="http://www.w3.org/2000/svg">'+
+      '<path d="M82 34 H198 L132 138" fill="none" stroke="#fff" stroke-width="30" stroke-linecap="round" stroke-linejoin="round"/>'+
+      '<path d="M82 34 H198 L132 138" fill="none" stroke="'+C.bg+'" stroke-width="22" stroke-linecap="round" stroke-linejoin="round" opacity=".55"/>'+
+      '<path d="M86 34 H196 L136 134" fill="none" stroke="#ff2b2b" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>'+
+      '<path d="M104 78 H178" fill="none" stroke="#ff2b2b" stroke-width="5" stroke-linecap="round"/>'+
+    '</svg><div class="bn">BONUS</div>';
+  const streaks = [];
+  [[.12,.30,.46,0],[.06,.40,.30,1],[.20,.52,.34,0],[.10,.60,.40,0],[.52,.28,.40,0],[.60,.44,.34,1],[.50,.66,.44,0],[.64,.76,.30,0]]
+    .forEach(a => {
+      const s = document.createElement('div'); s.className = 'st' + (a[3] ? ' r' : '');
+      s.style.cssText = 'left:'+(a[0]*100)+'%;top:'+(a[1]*100)+'%;width:'+(a[2]*100)+'%';
+      d.appendChild(s); streaks.push(s);
+    });
+  stage.appendChild(d);
+  const T = 1100*SPD, ease = 'cubic-bezier(.2,.9,.25,1)';
+  const base = 'translate(-50%,-50%)';
+  const a1 = d.animate([
+    {opacity:0, transform:base+' scale(.4) rotate(-8deg)'},
+    {opacity:1, transform:base+' scale(1.12) rotate(2deg)', offset:.28},
+    {opacity:1, transform:base+' scale(1) rotate(0deg)', offset:.7},
+    {opacity:0, transform:base+' scale(1.3) rotate(0deg)'}
+  ], {duration:T, easing:ease, fill:'forwards'});
+  streaks.forEach((s,i) => s.animate([
+    {opacity:0, transform:'translateX('+(i<4?-70:70)+'px)'},
+    {opacity:1, transform:'translateX(0)', offset:.3},
+    {opacity:0, transform:'translateX('+(i<4?40:-40)+'px)'}
+  ], {duration:T, delay:i*18*SPD, easing:'ease-out', fill:'both'}));
+  isl.spot.animate([{boxShadow:'0 0 0 0 rgba(255,60,60,0)'},{boxShadow:'0 0 40px 12px rgba(255,60,60,.8)', offset:.3},{boxShadow:'0 0 0 0 rgba(255,60,60,0)'}],
+    {duration:T});
+  const e = epoch;
+  await a1.finished;
+  d.remove();
+  chkE(e);
+}
+
+/* ====================== Dessin des cartes ====================== */
+const FONT = '"Montserrat","Avenir Next","Arial Rounded MT Bold",system-ui,sans-serif';
+function pawn(x,y,k,fill){
+  return '<g transform="translate('+x+' '+y+') scale('+k+') translate(0 3)" fill="'+fill+'">'+
+    '<circle cx="0" cy="-19" r="8.5"/><rect x="-11" y="-10.5" width="22" height="4.6" rx="2.3"/>'+
+    '<path d="M-7,-6 C-6,4 -10,8 -13,15 L13,15 C10,8 6,4 7,-6 Z"/>'+
+    '<rect x="-17" y="15" width="34" height="6.5" rx="3"/></g>';
+}
+function digit(v,corner,fill,stroke){
+  const p = CXY[corner], dx = p[0]===0?7:-7, dy = p[1]===0?7:-7, cx = 50+dx, cy = 50+dy;
+  return '<text x="'+cx+'" y="'+(cy+16)+'" text-anchor="middle" font-size="46" font-weight="800" font-family=\''+FONT+'\' '+
+    'fill="'+fill+'" stroke="'+stroke+'" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">'+v+'</text>'+
+    '<rect x="'+(cx-14)+'" y="'+(cy+22)+'" width="28" height="2.8" rx="1" fill="'+fill+'"/>';
+}
+const wrap = inner => '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">'+inner+'</svg>';
+function numSVG(v,color,corner){
+  const C = COLORS[color], p = CXY[corner];
+  return wrap('<rect width="100" height="100" fill="'+C.bg+'"/><circle cx="'+p[0]+'" cy="'+p[1]+'" r="40" fill="'+C.q+'"/>'+
+    pawn(p[0],p[1],1.2,'#b5440a')+digit(v,corner,'#fff','rgba(0,0,0,.3)'));
+}
+function pointSVG(v,color){
+  const C = COLORS[color], corner = POINT_CORNER[v], p = CXY[corner];
+  let leaves = '';
+  for(let i=0;i<14;i++){
+    const a = 295 + i*(310/13), r = a*Math.PI/180;
+    leaves += '<ellipse rx="3.4" ry="8" transform="translate('+(50+33*Math.cos(r)).toFixed(1)+' '+(50+33*Math.sin(r)).toFixed(1)+
+      ') rotate('+a.toFixed(0)+')" fill="'+C.bg+'" opacity=".9"/>';
+  }
+  return wrap('<rect width="100" height="100" fill="#fff"/><circle cx="'+p[0]+'" cy="'+p[1]+'" r="40" fill="'+C.bg+'"/>'+
+    leaves+digit(v,corner,'#f4f4f4',C.dk));
+}
+function jokerSVG(){
+  let q = '';
+  CORNERS.forEach(c => { q += '<circle cx="'+CXY[c][0]+'" cy="'+CXY[c][1]+'" r="40" fill="#9aa0a8"/>'; });
+  return wrap('<rect width="100" height="100" fill="#3a3d46"/>'+q+pawn(50,46,1.9,'#d2691e')+
+    '<text x="50" y="94" text-anchor="middle" font-size="9" font-weight="800" letter-spacing="2" fill="#fff" font-family=\''+FONT+'\'>JOKER</text>');
+}
+function magnetSVG(color){
+  const C = COLORS[color];
+  const chev = (x,y,a,col) => '<polyline points="-6,-8 2,0 -6,8" fill="none" stroke="'+col+'" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round" transform="translate('+x+' '+y+') rotate('+a+')"/>';
+  let ch = '';
+  [[1,1,45],[99,1,135],[1,99,-45],[99,99,-135]].forEach(q => {
+    const dx = q[0]<50?1:-1, dy = q[1]<50?1:-1;
+    ch += chev(q[0]+dx*13, q[1]+dy*13, q[2], C.q) + chev(q[0]+dx*21, q[1]+dy*21, q[2], C.q) +
+          chev(q[0]+dx*29, q[1]+dy*29, q[2], '#2c2c30') + chev(q[0]+dx*36, q[1]+dy*36, q[2], '#2c2c30');
+  });
+  return wrap('<rect width="100" height="100" fill="#3a3d46"/><circle cx="50" cy="50" r="40" fill="'+C.bg+'"/>'+ch+
+    '<rect x="46.5" y="24" width="7" height="52" rx="1.5" fill="#2c2c30"/><rect x="24" y="46.5" width="52" height="7" rx="1.5" fill="#2c2c30"/>');
+}
+
+function buildCard(c){
+  c = Object.assign({x:0,y:0,rot:0,s:1,up:false,zone:'deck',owner:-1,sz:0}, c);
+  const el = document.createElement('div');
+  el.className = 'card';
+  const face = c.kind==='joker' ? jokerSVG() : c.kind==='magnet' ? magnetSVG(c.color) : c.kind==='point' ? pointSVG(c.value,c.color) : numSVG(c.value,c.color,c.corner);
+  el.innerHTML = '<div class="lift"><div class="inner"><div class="face">'+face+'</div><div class="back"></div></div></div>';
+  c.el = el; c.lift = el.firstChild; c.inner = c.lift.firstChild; el._c = c;
+  return c;
+}
+
+/* ====================== Mise en page ====================== */
+function arrange(){
+  const k = Math.max(1, G.islands.length);
+  const aw = L.vw - 16, ah = L.y1 - L.y0, d = 2.45;
+  let best = null;
+  for(const rows of TPL[k]){
+    const cols = Math.max.apply(null, rows), wU = (cols-1)*d+2, hU = (rows.length-1)*d+2.35;
+    const W = Math.min(aw/wU, ah/hU, 120);
+    if(!best || W > best.W) best = {W, rows, hU};
+  }
+  L.tw = Math.max(best.W, 22);
+  const y0 = L.y0 + ah/2 - best.hU*L.tw/2 + L.tw;
+  const pts = [];
+  best.rows.forEach((cnt,r) => { for(let j=0;j<cnt;j++) pts.push({x:L.vw/2+(j-(cnt-1)/2)*d*L.tw, y:y0+r*d*L.tw}); });
+  L.isl = pts;
+}
+function computeLayout(){
+  L.vw = stage.clientWidth; L.vh = stage.clientHeight;
+  const nopp = G.n-1;
+  L.hw = Math.max(54, Math.min(L.vw/4.4, L.vh*0.2, 112));
+  L.pw = L.hw*0.5;
+  L.ow = Math.max(30, Math.min(L.hw*0.6, L.vw/Math.max(nopp,1)/3.3, 64));
+  L.qw = L.ow*0.5;
+  L.dw = L.hw*0.7;
+  L.oc = nopp===1 ? [L.vw/2] : nopp===2 ? [L.vw*.27, L.vw*.73] : [L.vw/6, L.vw/2, L.vw*5/6];
+  L.topH = 24 + L.ow + 4 + L.qw + 6;
+  L.handY = L.vh - L.hw/2 - 14;
+  L.ptY = L.handY - L.hw/2 - L.pw/2 - 8;
+  L.hLabelY = L.ptY - L.pw/2 - 22;
+  L.deckX = L.dw/2 + 6; L.deckY = L.vh - L.dw/2 - 10;
+  L.y0 = L.topH + 28; L.y1 = L.hLabelY - 4;
+  arrange();
+}
+function deckPose(k){ return {x:L.deckX+k*0.08, y:L.deckY-k*0.14, rot:0, s:sc(L.dw), up:false, z:k}; }
+function revealPose(){ return {x:L.deckX+L.dw*0.3, y:L.deckY-L.dw*1.35, rot:0, s:sc(L.hw*0.9), up:true, z:9000}; }
+function handPose(pid,i,n){
+  const d = i-(n-1)/2;
+  if(pid===0){
+    const sp = Math.min(L.hw*0.8, (L.vw-L.hw-2*(L.dw+10))/Math.max(n-1,1));
+    return {x:L.vw/2+d*sp, y:L.handY+Math.abs(d)*L.hw*0.04, rot:d*4, s:sc(L.hw), up:true, z:5000+i};
+  }
+  return {x:L.oc[pid-1]+d*L.ow*0.5, y:24+L.ow/2+Math.abs(d)*2, rot:d*5, s:sc(L.ow), up:false, z:5000+i};
+}
+function ptPose(c){
+  if(c.owner===0) return {x:L.vw/2+(c.pi-1.5)*L.pw*1.12, y:L.ptY, rot:0, s:sc(L.pw), up:true, z:4600};
+  return {x:L.oc[c.owner-1]+(c.pi-1.5)*L.qw*0.95, y:24+L.ow+4+L.qw/2, rot:0, s:sc(L.qw), up:true, z:4600};
+}
+function slotXY(isl,slot){ const o = SLOT_OFF[slot], ic = L.isl[isl.i]; return {x:ic.x+o[0]*L.tw, y:ic.y+o[1]*L.tw}; }
+function poseOf(c){
+  switch(c.zone){
+    case 'deck':   return deckPose(G.deck.indexOf(c));
+    case 'hand':   { const p = G.players[c.owner]; return handPose(c.owner, p.hand.indexOf(c), p.hand.length); }
+    case 'pt':     return ptPose(c);
+    case 'slot':   { const q = slotXY(c.isl,c.slot); return {x:q.x, y:q.y, rot:0, s:sc(L.tw), up:true, z:200+c.sz}; }
+    case 'center': { const ic = L.isl[c.isl.i]; return {x:ic.x, y:ic.y, rot:0, s:sc(L.tw), up:true, z:190}; }
+    default:       return revealPose();
+  }
+}
+function refreshMine(c){ c.el.classList.toggle('mine', c.owner===0 && (c.zone==='hand'||c.zone==='pt')); }
+function setPose(c,t){
+  c.x=t.x; c.y=t.y; c.rot=t.rot; c.s=t.s; c.up=t.up;
+  c.el.style.transform = tf(t.x,t.y,t.rot,t.s);
+  c.inner.style.transform = 'rotateY('+(t.up?0:180)+'deg)';
+  c.el.style.zIndex = t.z;
+  refreshMine(c);
+}
+function positionDecor(){
+  G.islands.forEach(isl => {
+    const ic = L.isl[isl.i];
+    Object.assign(isl.spot.style, {left:(ic.x-L.tw)+'px', top:(ic.y-L.tw)+'px', width:(2*L.tw)+'px', height:(2*L.tw)+'px'});
+    Object.assign(isl.pills.style, {left:ic.x+'px', top:(ic.y+L.tw+3)+'px'});
+  });
+  G.players.forEach((p,i) => {
+    p.label.style.left = (i===0 ? L.vw/2 : L.oc[i-1])+'px';
+    p.label.style.top  = (i===0 ? L.hLabelY : 2)+'px';
+  });
+  G.all.forEach(c => {
+    if(!c.lock || c.zone!=='slot') return;
+    const q = slotXY(c.isl,c.slot), o = SLOT_OFF[c.slot], z = L.tw*0.3;
+    Object.assign(c.lock.style, {left:(q.x-o[0]*L.tw*0.7)+'px', top:(q.y-o[1]*L.tw*0.7)+'px', width:z+'px', height:(z*1.15)+'px'});
+  });
+  count.style.left = L.deckX+'px'; count.style.top = (L.deckY-L.dw/2-20)+'px';
+  msg.style.top = (L.topH+2)+'px';
+}
+function reposition(){ G.all.forEach(c => { if(c.zone!=='trans' && c.zone!=='gone') setPose(c, poseOf(c)); }); positionDecor(); }
+
+/* ====================== Animations ====================== */
+async function move(c,t,dur,delay){
+  const e = epoch;
+  dur = (dur||600)*SPD; delay = (delay||0)*SPD;
+  c.el.style.zIndex = 10000 + (++G.fz);
+  const from = tf(c.x,c.y,c.rot,c.s), to = tf(t.x,t.y,t.rot,t.s);
+  const A = [
+    c.el.animate([{transform:from},{transform:to}], {duration:dur, delay, easing:'cubic-bezier(.25,.8,.25,1)', fill:'both'}),
+    c.lift.animate([{transform:'scale(1)'},{transform:'scale(1.14)',offset:.45},{transform:'scale(1)'}], {duration:dur, delay, easing:'ease-in-out'})
+  ];
+  if(c.up !== t.up){
+    A.push(c.inner.animate([{transform:'rotateY('+(c.up?0:180)+'deg)'},{transform:'rotateY('+(t.up?0:180)+'deg)'}],
+      {duration:dur*0.7, delay:delay+dur*0.1, easing:'ease-in-out', fill:'both'}));
+  }
+  await Promise.all(A.map(a => a.finished));
+  chkE(e);
+  setPose(c,t);
+  A.forEach(a => a.cancel());
+}
+async function shake(c){
+  const a = c.lift.animate([{transform:'translateX(0)'},{transform:'translateX(-7px) rotate(-3deg)'},
+    {transform:'translateX(7px) rotate(3deg)'},{transform:'translateX(-4px)'},{transform:'translateX(0)'}], {duration:380*SPD});
+  const e = epoch; await a.finished; chkE(e);
+}
+async function shuffleAnim(){
+  for(let r=0;r<3;r++){
+    G.deck.forEach((c,k) => {
+      const side = (k%2) ? 1 : -1, w = L.dw;
+      c.el.animate([{transform:tf(c.x,c.y,c.rot,c.s)},
+        {transform:tf(c.x+side*w*0.6,c.y-side*4,c.rot+side*7,c.s), offset:.5},
+        {transform:tf(c.x,c.y,c.rot,c.s)}], {duration:420*SPD, delay:k*3*SPD, easing:'ease-in-out'});
+    });
+    await sleep(430 + G.deck.length*3);
+  }
+}
+function restack(){ G.deck.forEach((c,k) => setPose(c, deckPose(k))); }
+function updateCount(){ count.textContent = 'Pioche : '+G.deck.length; }
+function needsMove(c,t){ return Math.abs(c.x-t.x)+Math.abs(c.y-t.y)+Math.abs(c.rot-t.rot)+Math.abs(c.s-t.s)*100>0.5 || c.up!==t.up; }
+async function layoutHand(p,dur){
+  await Promise.all(p.hand.map(c => { const t = poseOf(c); return needsMove(c,t) ? move(c,t,dur||420) : null; }));
+}
+async function relayoutTable(){
+  arrange(); positionDecor();
+  const cs = G.all.filter(c => c.zone==='slot' || c.zone==='center');
+  await Promise.all(cs.map(c => move(c, poseOf(c), 600)));
+}
+
+/* ====================== Règles ====================== */
+function islandTotal(isl,color){
+  let sum = 0;
+  CORNERS.forEach(s => { const st = isl.slots[s], top = st[st.length-1]; if(top && top.color===color) sum += top.value; });
+  return sum;
+}
+function totalWith(isl,slot,c){
+  let sum = 0;
+  CORNERS.forEach(s => { const st = isl.slots[s], top = s===slot ? c : st[st.length-1]; if(top && top.color===c.color) sum += top.value; });
+  return sum;
+}
+function updateTotals(){
+  G.islands.forEach(isl => {
+    let h = '';
+    CK.forEach(k => { const n = islandTotal(isl,k);
+      if(n>0) h += '<span class="pill'+(n>=TARGET?' seven':'')+'" style="background:'+COLORS[k].bg+'">'+n+'</span>'; });
+    isl.pills.innerHTML = h;
+  });
+}
+function updateLabels(){
+  G.players.forEach((p,i) => {
+    p.label.innerHTML = '<i style="background:'+COLORS[p.color].bg+'"></i>'+p.name+' · '+COLORS[p.color].name+' · ★ '+p.pts.length;
+    p.label.classList.toggle('active', i===G.turn && !G.over);
+  });
+}
+const isLocked = (isl,slot) => { const st = isl.slots[slot], t = st[st.length-1]; return !!t && t.kind==='point'; };
+function nominalTargets(c){
+  if(isWild(c)) return G.islands.length < MAX_ISLANDS ? [{joker:true}] : [];
+  return G.islands.filter(isl => !isLocked(isl, SLOT_FOR[c.corner])).map(isl => ({isl, slot:SLOT_FOR[c.corner]}));
+}
+function othersMax(isl,slot,c){
+  let m = 0;
+  CK.forEach(k => {
+    if(k===c.color) return;
+    let sum = 0;
+    CORNERS.forEach(s => { const st = isl.slots[s], top = s===slot ? c : st[st.length-1]; if(top && top.color===k) sum += top.value; });
+    if(sum>m) m = sum;
+  });
+  return m;
+}
+const LOCK = '<svg viewBox="0 0 24 28" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="lg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe680"/><stop offset="1" stop-color="#d49a00"/></linearGradient></defs>'+
+  '<path d="M6 12V8a6 6 0 0 1 12 0v4" fill="none" stroke="#f0b400" stroke-width="3"/>'+
+  '<rect x="2" y="11" width="20" height="15" rx="3" fill="url(#lg)" stroke="#8a5d00" stroke-width="1"/>'+
+  '<circle cx="12" cy="17.5" r="2.4" fill="#6b4600"/><rect x="11" y="18" width="2" height="5" fill="#6b4600"/>'+
+  '<path d="M20 3 l1 2.5 2.5 1 -2.5 1 -1 2.5 -1 -2.5 -2.5 -1 2.5 -1z" fill="#fff"/></svg>';
+function addLock(c){
+  const d = document.createElement('div'); d.className = 'lock'; d.innerHTML = LOCK;
+  stage.appendChild(d); c.lock = d; positionDecor();
+}
+function getCands(p){ return p.hand.map(c => ({card:c, targets:nominalTargets(c)})).filter(x => x.targets.length); }
+
+function addIsland(){
+  const isl = {i:G.islands.length, n:++G.islSeq, slots:{tl:[],tr:[],bl:[],br:[]}, joker:null};
+  isl.spot = document.createElement('div'); isl.spot.className = 'spot';
+  isl.pills = document.createElement('div'); isl.pills.className = 'pills';
+  stage.insertBefore(isl.pills, stage.firstChild); stage.insertBefore(isl.spot, stage.firstChild);
+  G.islands.push(isl);
+  return isl;
+}
+
+async function recycle(){
+  const cs = [];
+  G.islands.forEach(isl => CORNERS.forEach(s => { const st = isl.slots[s]; while(st.length>1) cs.push(st.shift()); }));
+  if(!cs.length) return false;
+  setMsg('Les cartes recouvertes sont remélangées dans la pioche…');
+  hlog('pioche vide : '+cs.length+' cartes recouvertes remélangées dans la pioche');
+  shuffle(cs);
+  cs.forEach(c => { c.zone='deck'; c.owner=-1; G.deck.push(c); });
+  updateCount(); updateTotals();
+  await Promise.all(cs.map((c,i) => move(c, deckPose(G.deck.indexOf(c)), 600, i*20)));
+  restack();
+  return true;
+}
+async function toBottom(c){
+  G.deck.unshift(c); c.zone='deck'; c.owner=-1; updateCount();
+  await move(c, deckPose(0), 500); restack();
+}
+async function drawN(p,n){
+  for(let i=0;i<n;i++){
+    if(!G.deck.length) await recycle();
+    if(!G.deck.length) break;
+    const c = G.deck.pop();
+    c.zone='hand'; c.owner=p.id; p.hand.push(c); updateCount(); updateLabels();
+    await layoutHand(p,480);
+  }
+}
+
+async function fillIsland(isl,single){
+  let rej = 0;
+  while(CORNERS.some(s => isl.slots[s].length===0)){
+    if(single && CORNERS.some(s => isl.slots[s].length>0)) break;   // joker : une seule carte à valeur
+    // aucune carte utile dans toute la pioche : on remélange les cartes recouvertes, sinon on s'arrête
+    if(!G.deck.length || rej > G.deck.length){
+      rej = 0;
+      if(!(await recycle())) break;
+    }
+    if(!G.deck.length) break;
+    const c = G.deck.pop();
+    updateCount(); c.zone='reveal';
+    await move(c, revealPose(), 500);
+    await sleep(250);
+    const s = c.kind==='num' ? SLOT_FOR[c.corner] : null;
+    if(s && isl.slots[s].length===0){
+      c.zone='slot'; c.isl=isl; c.slot=s; c.sz=++G.sz; isl.slots[s].push(c);
+      await move(c, poseOf(c), 600); updateTotals(); rej = 0;
+      hlog('révèle '+cardName(c)+' → '+islName(isl)+', emplacement '+SLOT_NAME[s]);
+    } else {
+      rej++; await shake(c); await toBottom(c);
+    }
+  }
+}
+/* --- aimant : attire les cartes visibles de sa couleur (récursif), dans l'ordre choisi par le joueur --- */
+function attractable(isl,color){
+  const out = [];
+  G.islands.forEach(o => { if(o===isl) return;
+    CORNERS.forEach(s => { const st = o.slots[s], t = st[st.length-1]; if(t && t.kind==='num' && t.color===color) out.push(t); }); });
+  return out;
+}
+async function pickCard(p,list,isl){
+  if(list.length===1){ await sleep(350); return list[0]; }
+  if(p.human){
+    setMsg('Aimant : choisis la carte '+COLORS[list[0].color].name+' à attirer (l’ordre compte)');
+    return new Promise(res => {
+      UI.pick = {set:new Set(list), isl, res};
+      list.forEach(c => c.el.classList.add('pickable'));
+    });
+  }
+  await sleep(600);
+  const m = Math.min.apply(null, list.map(c => c.value));        // l'IA pose les petites valeurs d'abord : les grandes recouvrent
+  const low = list.filter(c => c.value===m);
+  return low[Math.floor(Math.random()*low.length)];
+}
+async function magnetGather(p,isl,color){
+  let n = 0;
+  for(;;){
+    const list = attractable(isl,color);
+    if(!list.length) break;
+    const c = await pickCard(p,list,isl);
+    const s = SLOT_FOR[c.corner];
+    hlog('aimant : '+cardName(c)+' ('+islName(c.isl)+') → '+islName(isl)+', emplacement '+SLOT_NAME[s]);
+    c.isl.slots[c.slot].pop();                                    // la carte du dessous (même couleur ?) est révélée
+    c.isl = isl; c.slot = s; c.sz = ++G.sz; isl.slots[s].push(c);
+    updateTotals();
+    await move(c, poseOf(c), 750);
+    updateTotals(); n++;
+  }
+  return n;
+}
+async function openIsland(card,p){
+  const isl = addIsland();
+  hlog('joue '+cardName(card)+' → ouvre l’'+islName(isl)+' ('+G.islands.length+'/'+MAX_ISLANDS+')');
+  card.zone='trans'; card.isl=isl; isl.joker=card;
+  arrange(); positionDecor();
+  const tgt = {x:L.isl[isl.i].x, y:L.isl[isl.i].y, rot:0, s:sc(L.tw), up:true, z:190};
+  await Promise.all([relayoutTable(), move(card, tgt, 700)]);
+  card.zone='center';
+  let n = 0;
+  if(card.kind==='magnet'){ setMsg('Aimant '+COLORS[card.color].name+' : les cartes de la couleur arrivent…'); n = await magnetGather(p,isl,card.color); }
+  if(n===0){ setMsg('Nouvel îlot : on révèle une carte à valeur…'); await fillIsland(isl,true); }
+  return isl;
+}
+
+/* --- îlot détruit : les cartes retournent sous la pioche, les cartes Point disparaissent --- */
+async function destroyIsland(isl){
+  const back = [], pts = [];
+  CORNERS.forEach(s => { isl.slots[s].forEach(c => (c.kind==='point' ? pts : back).push(c)); isl.slots[s] = []; });
+  if(isl.joker) back.push(isl.joker);
+  setMsg('Îlot détruit : il libère de la place');
+  hlog(islName(isl)+' détruit (3 cartes Point) : '+back.length+' cartes sous la pioche, '+pts.length+' cartes Point retirées', 'bonus');
+  shuffle(back);
+  const jobs = [];
+  pts.forEach(c => {
+    c.zone = 'gone';
+    if(c.lock){ c.lock.remove(); c.lock = null; }
+    c.el.style.zIndex = 9500;
+    jobs.push(c.el.animate([{opacity:1, transform:tf(c.x,c.y,0,c.s)}, {opacity:0, transform:tf(c.x,c.y,25,c.s*0.2)}],
+      {duration:700*SPD, fill:'forwards', easing:'ease-in'}).finished.then(() => { c.el.style.display = 'none'; }));
+  });
+  back.forEach(c => { c.zone='deck'; c.owner=-1; c.lock=null; G.deck.unshift(c); });
+  updateCount();
+  back.forEach((c,i) => jobs.push(move(c, deckPose(G.deck.indexOf(c)), 700, i*60)));
+  await Promise.all(jobs); chkE(epoch);
+  restack();
+  isl.spot.remove(); isl.pills.remove();
+  G.islands = G.islands.filter(o => o!==isl);
+  G.islands.forEach((o,i) => { o.i = i; });
+  await relayoutTable();
+}
+async function destroyDoomed(){
+  for(const isl of G.islands.slice()){
+    if(isl.doomed && isl.doomAt < G.turnNo) await destroyIsland(isl);
+  }
+  if(!G.islands.length){                                           // plus aucun îlot : on en rouvre un, comme au début
+    const ni = addIsland(); arrange(); positionDecor();
+    setMsg('Nouvel îlot au centre…'); await fillIsland(ni);
+  }
+}
+
+/* ====================== IA ====================== */
+function scoreMove(p,c,t){
+  let s = Math.random();
+  if(c.kind==='joker') return s + 1.5;                              // le joker fait toujours repiocher
+  if(c.kind==='magnet'){
+    const n = attractable({}, c.color).length, tot = attractable({}, c.color).reduce((a,x) => a+x.value, 0);
+    return s + 1 + (n ? 1 : -0.5) + (G.players[p.id].color===c.color ? 1 : 0) + (tot>=5 && tot<=9 ? 1.5 : 0);
+  }
+  const tot = totalWith(t.isl, t.slot, c), oth = othersMax(t.isl, t.slot, c);
+  const owner = G.players.find(q => q.color===c.color);
+  if(tot < oth){ s += 2; if(p.hand.length===1) s += 2; }          // pas de pioche : la main diminue
+  if(tot>=TARGET){
+    if(owner===p && owner.pts.length) s += 6;
+    else if(owner && owner.pts.length) s -= 3;
+  } else if(owner===p) s += tot/TARGET*0.5;
+  return s;
+}
+function aiPick(p,cands){
+  let best = null, bs = -1e9;
+  cands.forEach(x => x.targets.forEach(t => { const s = scoreMove(p,x.card,t); if(s>bs){ bs=s; best={card:x.card, target:t}; } }));
+  return best;
+}
+
+/* ====================== Interaction humaine ====================== */
+function clearTargets(){ UI.targets.forEach(d => d.remove()); UI.targets = []; }
+function drawTargets(list){
+  clearTargets();
+  list.forEach(t => {
+    const d = document.createElement('div'); d.className = 'target';
+    if(t.joker){
+      d.classList.add('zone'); d.textContent = '✚ Ouvrir un nouvel îlot';
+      Object.assign(d.style, {left:'8px', top:L.y0+'px', width:(L.vw-16)+'px', height:(L.y1-L.y0)+'px'});
+    } else {
+      const q = slotXY(t.isl,t.slot); t.cx = q.x; t.cy = q.y;
+      Object.assign(d.style, {left:(q.x-L.tw/2)+'px', top:(q.y-L.tw/2)+'px', width:L.tw+'px', height:L.tw+'px'});
+    }
+    d._t = t;
+    d.addEventListener('click', () => { if(UI.mode && UI.mode.sel) UI.mode.finish(UI.mode.sel, t); });
+    stage.appendChild(d); UI.targets.push(d);
+  });
+}
+function targetsOf(c){
+  if(UI.mode) return UI.mode.map.get(c) || [];
+  return nominalTargets(c);
+}
+const showTargets = c => drawTargets(targetsOf(c));
+function endChoose(){
+  const p = G.players[0];
+  p.hand.concat(p.pts).forEach(c => c.el.classList.remove('dim','sel'));
+  clearTargets(); UI.mode = null; UI.hover = null; passBtn.style.display = 'none';
+}
+function humanChoose(cands,opt){
+  return new Promise(res => {
+    const map = new Map(cands.map(x => [x.card, x.targets]));
+    UI.mode = {map, sel:null,
+      finish:(c,t) => { endChoose(); res({card:c, target:t}); },
+      pass:() => { endChoose(); res(null); }};
+    const p = G.players[0];
+    p.hand.concat(p.pts).forEach(c => c.el.classList.toggle('dim', !map.has(c)));
+    passBtn.style.display = opt.optional ? 'inline-block' : 'none';
+  });
+}
+function flash(t){ drawTargets([t]); setTimeout(clearTargets, 500*SPD+50); }
+
+stage.addEventListener('pointerover', ev => {
+  if(UI.pick){
+    const e2 = ev.target.closest && ev.target.closest('.card'), c2 = e2 && e2._c;
+    if(c2 && UI.pick.set.has(c2)) drawTargets([{isl:UI.pick.isl, slot:SLOT_FOR[c2.corner]}]);
+    return;
+  }
+  if(UI.drag || (UI.mode && UI.mode.sel)) return;
+  const el = ev.target.closest && ev.target.closest('.card'); if(!el) return;
+  const c = el._c;
+  if(!c || c.owner!==0 || !(c.zone==='hand' || c.zone==='pt')) return;
+  UI.hover = c; showTargets(c);
+});
+stage.addEventListener('pointerout', ev => {
+  if(UI.pick){ clearTargets(); return; }
+  if(UI.drag || (UI.mode && UI.mode.sel)) return;
+  const el = ev.target.closest && ev.target.closest('.card');
+  if(el && el._c === UI.hover){ clearTargets(); UI.hover = null; }
+});
+stage.addEventListener('pointerdown', ev => {
+  if(UI.pick){
+    const e2 = ev.target.closest && ev.target.closest('.card'), c2 = e2 && e2._c;
+    if(c2 && UI.pick.set.has(c2)){
+      ev.preventDefault();
+      const pk = UI.pick; UI.pick = null; clearTargets();
+      pk.set.forEach(x => x.el.classList.remove('pickable'));
+      pk.res(c2);
+    }
+    return;
+  }
+  if(!UI.mode) return;
+  const el = ev.target.closest && ev.target.closest('.card'); if(!el) return;
+  const c = el._c; if(!c || !UI.mode.map.has(c)) return;
+  ev.preventDefault();
+  UI.drag = {c, sx:ev.clientX, sy:ev.clientY, moved:false, hot:null};
+});
+document.addEventListener('pointermove', ev => {
+  const d = UI.drag; if(!d) return;
+  const c = d.c;
+  if(!d.moved){
+    if(Math.hypot(ev.clientX-d.sx, ev.clientY-d.sy) < 8) return;
+    d.moved = true; c.el.classList.add('dragging'); c.el.classList.remove('sel');
+    c.el.style.zIndex = 20000; showTargets(c);
+  }
+  const r = stage.getBoundingClientRect(), px = ev.clientX-r.left, py = ev.clientY-r.top;
+  c.x = px; c.y = py; c.rot = 0; c.s = sc(L.tw);
+  c.el.style.transform = tf(px,py,0,c.s);
+  let best = null, bd = 1e9;
+  UI.targets.forEach(el => {
+    const t = el._t;
+    const dist = t.joker ? ((py>=L.y0 && py<=L.y1) ? 0 : 1e9) : Math.hypot(px-t.cx, py-t.cy);
+    const lim = t.joker ? 1 : L.tw*0.65;
+    if(dist<lim && dist<bd){ bd = dist; best = el; }
+  });
+  UI.targets.forEach(el => el.classList.toggle('hot', el===best));
+  d.hot = best ? best._t : null;
+});
+function dragEnd(){
+  const d = UI.drag; if(!d) return; UI.drag = null;
+  const c = d.c; c.el.classList.remove('dragging');
+  if(!UI.mode) return;
+  if(d.moved){
+    if(d.hot) UI.mode.finish(c, d.hot);
+    else { clearTargets(); move(c, poseOf(c), 350).catch(() => {}); }
+  } else {
+    if(UI.mode.sel === c){ c.el.classList.remove('sel'); UI.mode.sel = null; clearTargets(); }
+    else {
+      if(UI.mode.sel) UI.mode.sel.el.classList.remove('sel');
+      UI.mode.sel = c; c.el.classList.add('sel'); showTargets(c);
+    }
+  }
+}
+document.addEventListener('pointerup', dragEnd);
+document.addEventListener('pointercancel', dragEnd);
+passBtn.addEventListener('click', () => { if(UI.mode) UI.mode.pass(); });
+
+/* ====================== Déroulement d'un tour ====================== */
+// mode : 'last' (dernière carte), 'owner' (propriétaire de la couleur à 7), 'turn' (joueur du tour, facultatif), 'second' (même joueur : 2e point)
+async function pointPhase(owner,isl,mode){
+  const forced = mode !== 'turn';
+  const who = owner.name+' ('+COLORS[owner.color].name+')';
+  const label = {last:'dernière carte jouée', owner:'bonus propriétaire de la couleur', second:'2e bonus (même joueur)', turn:'bonus du joueur du tour'}[mode];
+  if(!owner.pts.length){ hlog(label+' — '+who+' : plus aucune carte Point', 'bonus'); return false; }
+  const cands = owner.pts.map(c => ({card:c,
+    targets: isl ? (isLocked(isl,SLOT_FOR[c.corner]) ? [] : [{isl, slot:SLOT_FOR[c.corner]}]) : nominalTargets(c)}))
+    .filter(x => x.targets.length);
+  if(!cands.length){
+    hlog(label+' — '+who+' : aucun emplacement libre pour ses cartes Point'+(isl ? ' sur '+islName(isl) : ''), 'bonus');
+    setMsg(owner.name+' : aucun emplacement libre pour une carte Point'); await sleep(900);
+    return false;
+  }
+  let ch;
+  if(owner.human){
+    setMsg({last:'Dernière carte jouée : pose une carte Point',
+      owner:'Total 7+ en '+COLORS[owner.color].name+' (ta couleur) : pose une carte Point sur l’îlot de ton choix',
+      second:'Tu as aussi le tour : pose un 2e point sur l’îlot de ton choix',
+      turn:'Total 7+ ! Tu peux aussi poser une carte Point sur l’îlot de ton choix (ou passer)'}[mode]);
+    ch = await humanChoose(cands, {optional:!forced});
+  } else {
+    setMsg(owner.name+' pose une carte Point…');
+    await sleep(700);
+    const x = cands[Math.floor(Math.random()*cands.length)];
+    ch = {card:x.card, target:x.targets[Math.floor(Math.random()*x.targets.length)]};
+    flash(ch.target); await sleep(450);
+  }
+  if(!ch){ hlog(label+' — '+who+' : passe', 'bonus'); return false; }
+  const c = ch.card, t = ch.target;
+  hlog(label+' — '+who+' pose '+cardName(c)+' sur '+islName(t.isl)+', emplacement '+SLOT_NAME[t.slot], 'bonus');
+  owner.pts = owner.pts.filter(x => x !== c);
+  c.zone='slot'; c.isl=t.isl; c.slot=t.slot; c.sz=++G.sz; t.isl.slots[t.slot].push(c); refreshMine(c);
+  await move(c, poseOf(c), 650);
+  addLock(c);
+  updateTotals(); updateLabels();
+  // îlot à 3 points verrouillés : condamné, détruit au tour suivant
+  const li = t.isl;
+  if(!li.doomed && CORNERS.filter(s => isLocked(li,s)).length >= 3){
+    li.doomed = true; li.doomAt = G.turnNo; li.spot.classList.add('doomed');
+    setMsg('3 points sur cet îlot : il sera détruit au tour suivant');
+    hlog(islName(li)+' condamné (3 cartes Point) : détruit au tour suivant', 'bonus');
+    await sleep(600);
+  }
+  return true;                       // la victoire n'est constatée qu'à la fin du bonus (checkWin) : égalité possible
+}
+
+/* Bonus quand le total de la couleur jouée atteint 7 ou plus : propriétaire de la couleur + joueur du tour */
+async function bonusPhase(p,isl,color,tot){
+  const owner = G.players.find(q => q.color===color);
+  hlog('total '+COLORS[color].name+' = '+tot+' sur '+islName(isl)+' (7 ou plus) : BONUS', 'bonus');
+  setMsg('Total '+tot+' en '+COLORS[color].name+' : bonus !');
+  await sevenFx(isl,color);
+  // chaque point bonus se pose sur l'îlot de son choix (isl = null : tous les îlots sont proposés)
+  if(owner) await pointPhase(owner, null, 'owner');
+  else hlog('bonus propriétaire : aucun joueur n’a la couleur '+COLORS[color].name, 'bonus');
+  await pointPhase(p, null, p===owner ? 'second' : 'turn');   // le joueur du tour joue même si le propriétaire a fini
+  checkWin();
+}
+/* Victoire : tous les joueurs qui n'ont plus de carte Point (deux joueurs possibles lors d'un bonus) */
+function checkWin(){
+  if(G.over) return;
+  const w = G.players.filter(q => !q.pts.length);
+  if(w.length) endGame(w);
+}
+function endGame(winners){
+  G.over = true; updateLabels();
+  const names = winners.map(q => q.name+' ('+COLORS[q.color].name+')').join(' et ');
+  winners.forEach(q => hlog(q.name+' a posé toutes ses cartes Point : VICTOIRE', 'bonus'));
+  if(winners.length>1) hlog('égalité : '+names+' gagnent ensemble', 'bonus');
+  saveGame(winners.length>1 ? 'égalité '+names : 'victoire de '+winners[0].name);
+  const me = winners.some(q => q.human);
+  const txt = winners.length>1 ? (me ? 'Égalité : tu gagnes avec '+winners.filter(q => !q.human).map(q => q.name).join(' et ')+' !' : 'Égalité : '+names+' gagnent ensemble')
+                               : (me ? 'Bravo, tu as gagné ! 🏆' : names+' a gagné');
+  setMsg(txt+' — plateau et historique consultables');
+  document.getElementById('wintxt').textContent = txt;
+  const e = epoch;
+  setTimeout(() => { if(e === epoch) document.getElementById('win').style.display = 'block'; }, 900);
+}
+async function executePlay(p,ch){
+  const c = ch.card, t = ch.target;
+  p.hand = p.hand.filter(x => x !== c);
+  let tot = 0, oth = 0, color = null, isl = null;
+  const lh = layoutHand(p,420);
+  if(isWild(c)){
+    c.zone='trans'; refreshMine(c);
+    const ni = await openIsland(c,p);
+    if(c.kind==='magnet'){ isl = ni; color = c.color; tot = islandTotal(ni,color); oth = 0; }   // seule couleur sur l'îlot
+    else { color = 'joker'; tot = 0; oth = 0; }   // carte révélée seule : total ≥ aux autres → pioche obligatoire
+  } else {
+    isl = t.isl; color = c.color;
+    hlog('joue '+cardName(c)+' → '+islName(isl)+', emplacement '+SLOT_NAME[t.slot]);
+    c.zone='slot'; c.isl=isl; c.slot=t.slot; c.sz=++G.sz; isl.slots[t.slot].push(c); refreshMine(c);
+    await move(c, poseOf(c), 650);
+    updateTotals(); tot = islandTotal(isl,color);
+    oth = Math.max.apply(null, CK.filter(k => k!==color).map(k => islandTotal(isl,k)));
+  }
+  await lh; updateLabels();
+  if(color && color!=='joker') hlog('total '+COLORS[color].name+' sur '+islName(isl)+' : '+tot+(oth ? ' (autres couleurs : '+oth+' max)' : ''));
+  if(color && color!=='joker' && tot>=TARGET){
+    // 7 ou plus : le propriétaire de la couleur pose un point ET le joueur du tour peut en poser un (même joueur : 2 points)
+    await bonusPhase(p, isl, color, tot); if(G.over) return;
+  }
+  if(color && tot>=oth){             // total égal ou supérieur aux autres couleurs : pioche obligatoire
+    setMsg(p.name+' repioche'); hlog('repioche 1 carte (total ≥ autres couleurs)'); await drawN(p,1);
+  } else {
+    hlog('ne repioche pas (total inférieur à une autre couleur)');
+    if(p.hand.length===0){
+      hlog('dernière carte en main');
+      await pointPhase(p, null, 'last'); checkWin(); if(G.over) return;
+      setMsg(p.name+' reprend '+HAND+' cartes'); hlog('reprend '+HAND+' cartes'); await drawN(p,HAND);
+    }
+  }
+}
+async function doTurn(p){
+  let cands = getCands(p), tries = 0;
+  while(!cands.length && tries++<4){
+    hlog('aucune carte jouable : sa main retourne sous la pioche, il en reprend '+HAND);
+    // aucune carte jouable (emplacements verrouillés, îlots au maximum…) : la main retourne sous la pioche
+    for(const j of p.hand.slice()){ p.hand = p.hand.filter(x => x!==j); j.zone='trans'; await toBottom(j); }
+    await drawN(p, HAND);
+    cands = getCands(p);
+  }
+  if(!cands.length) return false;
+  let ch;
+  if(p.human){
+    setMsg('À toi ('+COLORS[p.color].name+') — glisse une carte, ou touche-la puis touche l’emplacement');
+    ch = await humanChoose(cands, {optional:false});
+  } else {
+    setMsg(p.name+' réfléchit…');
+    await sleep(800);
+    ch = aiPick(p,cands);
+    if(!isWild(ch.card)) flash(ch.target);
+    await sleep(450);
+  }
+  await executePlay(p,ch);
+  return true;
+}
+async function loop(){
+  let stuck = 0;
+  while(!G.over){
+    const p = G.players[G.turn];
+    await destroyDoomed();                    // îlots à 3 points posés au tour précédent
+    updateLabels();
+    const played = await doTurn(p);
+    G.turnNo++;
+    if(G.over) break;
+    if(played) stuck = 0;
+    else {
+      await sleep(300);
+      if(++stuck >= G.n){
+        G.over = true; setMsg('Partie bloquée : plus aucune carte jouable.');
+        hlog('partie bloquée : plus aucune carte jouable', 'bonus'); saveGame('partie bloquée');
+        document.getElementById('wintxt').textContent = 'Partie bloquée — plus de cartes jouables';
+        document.getElementById('win').style.display = 'block';
+        break;
+      }
+    }
+    G.turn = (G.turn+1) % G.n;
+  }
+}
+
+/* ====================== Nouvelle partie ====================== */
+function newGame(n){
+  if(G && !G.over && G.turnNo>0) saveGame('abandonnée');
+  epoch++;
+  UI.mode = null; UI.drag = null; UI.targets = []; UI.hover = null; passBtn.style.display = 'none';
+  document.getElementById('win').style.display = 'none';
+  stage.innerHTML = '';
+  msg = document.createElement('div'); msg.id = 'msg';
+  count = document.createElement('div'); count.id = 'count';
+  stage.append(msg, count);
+
+  UI.pick = null;
+  G = {n, players:[], islands:[], deck:[], turn:0, turnNo:0, over:false, sz:0, fz:0, all:[], log:[], setup:true, islSeq:0};
+  const keys = shuffle(CK.slice());
+  for(let i=0;i<n;i++){
+    const lab = document.createElement('div'); lab.className = 'plabel'; stage.appendChild(lab);
+    G.players.push({id:i, human:i===0, color:keys[i], name:i===0?'Toi':'Joueur '+(i+1), hand:[], pts:[], label:lab});
+  }
+  // paquet : 64 cartes + 2 jokers + 8 aimants (2 par couleur)
+  const deck = [];
+  CK.forEach(color => { for(let v=0; v<=3; v++) CORNERS.forEach(corner => deck.push(buildCard({kind:'num', value:v, color, corner}))); });
+  for(let j=0;j<N_JOKERS;j++) deck.push(buildCard({kind:'joker'}));
+  CK.forEach(color => { for(let j=0;j<N_MAGNETS;j++) deck.push(buildCard({kind:'magnet', color})); });
+  shuffle(deck); G.deck = deck; G.all = deck.slice();
+  // cartes Point
+  G.players.forEach(p => [3,2,1,0].forEach((v,pi) => {
+    const c = buildCard({kind:'point', value:v, color:p.color, corner:POINT_CORNER[v], owner:p.id, pi, zone:'pt'});
+    p.pts.push(c); G.all.push(c);
+  }));
+  G.all.forEach(c => stage.appendChild(c.el));
+
+  addIsland();                       // premier îlot
+  computeLayout();
+  G.deck.forEach((c,k) => setPose(c, deckPose(k)));
+  G.players.forEach(p => p.pts.forEach(c => {
+    setPose(c, ptPose(c));
+    c.el.animate([{opacity:0},{opacity:1}], {duration:600*SPD, delay:300*SPD, fill:'backwards'});
+  }));
+  positionDecor(); updateCount(); updateLabels(); updateTotals();
+
+  const e = epoch;
+  (async () => {
+    setMsg('Mélange…'); await sleep(300); await shuffleAnim();
+    setMsg('Distribution… Ta couleur : '+COLORS[G.players[0].color].name);
+    const flights = [];
+    for(let r=0;r<HAND;r++){
+      for(const p of G.players){
+        const c = G.deck.pop();
+        c.zone='hand'; c.owner=p.id; p.hand.push(c); updateCount();
+        flights.push(move(c, handPose(p.id, r, HAND), 620));
+        await sleep(170);
+      }
+    }
+    await Promise.all(flights);
+    setMsg('Mise en place du premier îlot…');
+    await sleep(300);
+    G.players.forEach(p => hlog(p.name+' = '+COLORS[p.color].name));
+    await fillIsland(G.islands[0]);
+    G.setup = false;
+    await loop();
+  })().catch(err => { if(err !== 'cancel' && e === epoch) console.error(err); });
+}
+
+/* ====================== Interface ====================== */
+const startFromUI = () => newGame(parseInt(document.getElementById('nplayers').value,10));
+document.getElementById('restart').addEventListener('click', startFromUI);
+document.getElementById('again').addEventListener('click', startFromUI);
+document.getElementById('histBtn').addEventListener('click', showHistory);
+document.getElementById('winHist').addEventListener('click', showHistory);
+document.getElementById('viewBoard').addEventListener('click', () => { document.getElementById('win').style.display = 'none'; });
+document.getElementById('histCopy').addEventListener('click', copyHistory);
+document.getElementById('rules').addEventListener('click', () => { document.getElementById('help').style.display = 'block'; });
+let rzT = null;
+window.addEventListener('resize', () => {
+  if(!G) return;
+  computeLayout(); reposition();
+  clearTimeout(rzT); rzT = setTimeout(() => { if(G){ computeLayout(); reposition(); } }, 700);
+});
+window.addEventListener('load', () => newGame(2));
+window.__dbg = () => G;   // aide au test
+</script>
+</body>
+</html>
