@@ -117,7 +117,8 @@ body{display:flex;flex-direction:column}
     <option value="2">2 joueurs</option>
     <option value="3">3 joueurs</option>
     <option value="4">4 joueurs</option>
-    <option value="6">6 joueurs (2 équipes)</option>
+    <option value="6:2">6 joueurs (2 équipes de 3)</option>
+    <option value="6:3">6 joueurs (3 équipes de 2)</option>
   </select>
   <button id="restart">Nouvelle partie</button>
   <button id="optBtn">Options</button>
@@ -139,7 +140,7 @@ body{display:flex;flex-direction:column}
   <p><b>Dernière carte :</b> si tu joues ta dernière carte sans repiocher, tu poses une carte Point (n'importe quel îlot), puis tu reprends 3 cartes.</p>
   <p><b>Aimant (2 par couleur) :</b> se joue comme un joker (nouvel îlot), mais attire sur lui toutes les cartes visibles de sa couleur présentes sur le plateau. Si une carte de la même couleur est révélée dessous, elle est attirée aussi, jusqu'à ce que la couleur ne soit plus que sur le nouvel îlot. Tu choisis l'ordre (la dernière carte posée sur un emplacement recouvre les autres) pour viser un total de 7 ou plus. Les cartes Point verrouillées ne bougent pas. Tu repioches toujours après un aimant.</p>
   <p><b>Joker (2 dans le jeu) :</b> ouvre un nouvel îlot. On révèle des cartes jusqu'à en trouver une seule qui a une valeur ; elle est posée à son emplacement, les autres emplacements restent vides. Cette carte étant seule, tu repioches toujours après un joker. 6 îlots au maximum.</p>
-  <p><b>6 joueurs (2 équipes) :</b> tu joues avec les joueurs 3 et 5 contre les joueurs 2, 4 et 6. Chaque équipe a une couleur ; les 2 autres couleurs sont neutres (elles restent dans le paquet, sans bonus). Les 4 cartes Point de l'équipe (3, 2, 1, 0) sont réparties entre ses 3 joueurs, et l'équipe gagne quand elles sont toutes posées. Sur un total de 7 ou plus dans la couleur d'une équipe, l'équipe désigne un seul de ses joueurs qui pose un point, et le joueur du tour peut aussi en poser un.</p>
+  <p><b>6 joueurs (2 équipes de 3, ou 3 équipes de 2) :</b> les équipes alternent autour de la table (2 équipes : tu es avec les joueurs 3 et 5 ; 3 équipes : tu es avec le joueur 4). Chaque équipe a une couleur ; les couleurs restantes (2 à deux équipes, 1 à trois équipes) sont neutres : elles restent dans le paquet, sans bonus. Les 4 cartes Point de l'équipe (3, 2, 1, 0) sont réparties entre ses joueurs (à 3 équipes : 2 cartes chacun), et l'équipe gagne quand elles sont toutes posées. Sur un total de 7 ou plus dans la couleur d'une équipe, l'équipe désigne un seul de ses joueurs qui pose un point, et le joueur du tour peut aussi en poser un.</p>
   <p><b>Options (bouton Options) :</b> couleur du joueur ; <i>double point</i> (Non : quand le joueur du tour appartient à l'équipe propriétaire de la couleur, l'équipe ne pose qu'1 seul point) ; <i>aimant en main</i> (chaque joueur a en plus un aimant de sa couleur, posé devant lui avec ses cartes Point. Il peut le jouer à la place d'une carte de sa main : pas de pioche après, et la carte quitte le jeu quand son îlot est détruit).</p>
   <button onclick="document.getElementById('help').style.display='none'">Fermer</button>
 </div>
@@ -1051,7 +1052,7 @@ async function loop(){
 }
 
 /* ====================== Nouvelle partie ====================== */
-function newGame(n){
+function newGame(n,nt){
   if(G && !G.over && G.turnNo>0) saveGame('abandonnée');
   epoch++;
   UI.mode = null; UI.drag = null; UI.targets = []; UI.hover = null; passBtn.style.display = 'none';
@@ -1063,16 +1064,16 @@ function newGame(n){
 
   UI.pick = null;
   G = {n, players:[], teams:[], islands:[], deck:[], turn:0, turnNo:0, over:false, sz:0, fz:0, all:[], log:[], setup:true, islSeq:0,
-       opt:Object.assign({}, OPT), teamMode:n===6};
+       opt:Object.assign({}, OPT), teamMode:n===6, nTeams:(n===6 ? (nt===3 ? 3 : 2) : n)};   // 6 joueurs : 2 équipes de 3 ou 3 équipes de 2
   const keys = shuffle(CK.slice());
   const hc = (OPT.color !== 'auto' && COLORS[OPT.color]) ? OPT.color : null;      // couleur choisie pour le joueur (ou son équipe)
   const order = hc ? [hc].concat(keys.filter(k => k !== hc)) : keys;
   for(let i=0;i<n;i++){
-    const t = G.teamMode ? i%2 : i;                                 // 6 joueurs : équipes alternées (0-2-4 contre 1-3-5)
+    const t = i % G.nTeams;                                         // équipes alternées autour de la table (à 6 : 0-2-4 / 1-3-5, ou 0-3 / 1-4 / 2-5)
     const lab = document.createElement('div'); lab.className = 'plabel'; stage.appendChild(lab);
     G.players.push({id:i, human:i===0, team:t, color:order[t], name:i===0?'Toi':'Joueur '+(i+1), hand:[], pts:[], mg:null, ptn:0, rowN:0, label:lab});
   }
-  for(let t=0; t<(G.teamMode ? 2 : n); t++)                          // à 6 joueurs : 2 couleurs d'équipe, les 2 autres restent neutres
+  for(let t=0; t<G.nTeams; t++)                                      // couleurs d'équipe ; les couleurs restantes sont neutres (2 à 2 équipes, 1 à 3 équipes)
     G.teams.push({id:t, color:order[t], members:G.players.filter(q => q.team===t).map(q => q.id)});
   // paquet : 64 cartes + 2 jokers + 8 aimants (2 par couleur)
   const deck = [];
@@ -1130,7 +1131,7 @@ function newGame(n){
 }
 
 /* ====================== Interface ====================== */
-const startFromUI = () => newGame(parseInt(document.getElementById('nplayers').value,10));
+const startFromUI = () => { const v = document.getElementById('nplayers').value.split(':').map(Number); newGame(v[0], v[1]); };
 document.getElementById('restart').addEventListener('click', startFromUI);
 document.getElementById('again').addEventListener('click', startFromUI);
 document.getElementById('histBtn').addEventListener('click', showHistory);
