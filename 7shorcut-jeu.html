@@ -82,11 +82,18 @@ body{display:flex;flex-direction:column}
 .card.pickable .face{box-shadow:0 0 0 3px #fff,0 0 16px 5px rgba(255,255,255,.8)}
 .card.pickable .lift{animation:bob .9s ease-in-out infinite alternate}
 @keyframes bob{to{transform:translateY(-6px)}}
-.overlay{position:fixed;inset:0;background:rgba(10,12,16,.93);z-index:9000;display:none;overflow:auto;
+.overlay{position:fixed;inset:0;background:rgba(10,12,16,.93);z-index:1000000;display:none;overflow:auto;
   padding:18px;font-size:14px;line-height:1.5;touch-action:pan-y}
 .overlay h2{margin:0 0 8px}
 .overlay button{font:inherit;color:#fff;background:#3b6fd8;border:0;border-radius:8px;padding:8px 16px;margin-top:10px;font-weight:600}
-#hist{z-index:9100}
+#hist{z-index:1000100}
+#opts{z-index:1000100}
+.orow{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid #2a2d34}
+.orow label{flex:1}.orow small{opacity:.65}
+.orow select{font:inherit;color:#eee;background:#262a32;border:1px solid #3a3f4a;border-radius:8px;padding:8px 10px}
+#choose{position:fixed;left:50%;top:42%;transform:translate(-50%,-50%);z-index:900000;display:none;background:rgba(10,12,16,.96);
+  border:1px solid #3a3f4a;border-radius:14px;padding:14px 18px;text-align:center;max-width:92vw;box-shadow:0 10px 40px rgba(0,0,0,.6)}
+#choose button{font:inherit;color:#fff;background:#3b6fd8;border:0;border-radius:8px;padding:8px 14px;margin:4px;font-weight:600}
 #win{text-align:center;padding-top:30vh;background:rgba(10,12,16,.82)}
 #win button{margin:10px 4px 0}
 #win h1{font-size:30px;margin:0 0 6px}
@@ -110,8 +117,10 @@ body{display:flex;flex-direction:column}
     <option value="2">2 joueurs</option>
     <option value="3">3 joueurs</option>
     <option value="4">4 joueurs</option>
+    <option value="6">6 joueurs (2 équipes)</option>
   </select>
   <button id="restart">Nouvelle partie</button>
+  <button id="optBtn">Options</button>
   <button id="rules">Règles</button>
   <button id="histBtn">Historique</button>
   <button id="pass">Passer</button>
@@ -130,6 +139,8 @@ body{display:flex;flex-direction:column}
   <p><b>Dernière carte :</b> si tu joues ta dernière carte sans repiocher, tu poses une carte Point (n'importe quel îlot), puis tu reprends 3 cartes.</p>
   <p><b>Aimant (2 par couleur) :</b> se joue comme un joker (nouvel îlot), mais attire sur lui toutes les cartes visibles de sa couleur présentes sur le plateau. Si une carte de la même couleur est révélée dessous, elle est attirée aussi, jusqu'à ce que la couleur ne soit plus que sur le nouvel îlot. Tu choisis l'ordre (la dernière carte posée sur un emplacement recouvre les autres) pour viser un total de 7 ou plus. Les cartes Point verrouillées ne bougent pas. Tu repioches toujours après un aimant.</p>
   <p><b>Joker (2 dans le jeu) :</b> ouvre un nouvel îlot. On révèle des cartes jusqu'à en trouver une seule qui a une valeur ; elle est posée à son emplacement, les autres emplacements restent vides. Cette carte étant seule, tu repioches toujours après un joker. 6 îlots au maximum.</p>
+  <p><b>6 joueurs (2 équipes) :</b> tu joues avec les joueurs 3 et 5 contre les joueurs 2, 4 et 6. Chaque équipe a une couleur ; les 2 autres couleurs sont neutres (elles restent dans le paquet, sans bonus). Les 4 cartes Point de l'équipe (3, 2, 1, 0) sont réparties entre ses 3 joueurs, et l'équipe gagne quand elles sont toutes posées. Sur un total de 7 ou plus dans la couleur d'une équipe, l'équipe désigne un seul de ses joueurs qui pose un point, et le joueur du tour peut aussi en poser un.</p>
+  <p><b>Options (bouton Options) :</b> couleur du joueur ; <i>double point</i> (Non : quand le joueur du tour appartient à l'équipe propriétaire de la couleur, l'équipe ne pose qu'1 seul point) ; <i>aimant en main</i> (chaque joueur a en plus un aimant de sa couleur, posé devant lui avec ses cartes Point. Il peut le jouer à la place d'une carte de sa main : pas de pioche après, et la carte quitte le jeu quand son îlot est détruit).</p>
   <button onclick="document.getElementById('help').style.display='none'">Fermer</button>
 </div>
 <div id="hist" class="overlay">
@@ -138,6 +149,19 @@ body{display:flex;flex-direction:column}
     <button id="histCopy">Copier</button><button onclick="document.getElementById('hist').style.display='none'">Fermer</button></div>
   <div id="histBody"></div>
 </div>
+<div id="opts" class="overlay">
+  <h2>Options</h2>
+  <p style="opacity:.8;margin-top:0">Enregistrées dans le navigateur. Elles s’appliquent à la prochaine partie.</p>
+  <div class="orow"><label for="optColor">Couleur du joueur<br><small>(à 6 joueurs : couleur de ton équipe)</small></label>
+    <select id="optColor"><option value="auto">Aléatoire</option><option value="rose">Rose</option><option value="orange">Orange</option><option value="vert">Vert</option><option value="bleu">Bleu</option></select></div>
+  <div class="orow"><label for="optDouble">Double point<br><small>un 7 de sa propre couleur donne 2 cartes Point (Non : 1 seule)</small></label>
+    <select id="optDouble"><option value="O">Oui</option><option value="N">Non</option></select></div>
+  <div class="orow"><label for="optMg">Aimant en main<br><small>1 aimant de sa couleur par joueur, posé devant lui avec ses cartes Point, jouable à la place d’une carte de la main</small></label>
+    <select id="optMg"><option value="O">Oui</option><option value="N">Non</option></select></div>
+  <button id="optNew">Nouvelle partie avec ces options</button>
+  <button onclick="document.getElementById('opts').style.display='none'">Fermer</button>
+</div>
+<div id="choose"><div style="margin-bottom:8px;font-weight:600">Quel joueur de ton équipe pose le point ?</div><div id="chooseBtns"></div></div>
 <div id="win" class="overlay"><h1 id="wintxt"></h1>
   <button id="viewBoard">Voir le plateau</button> <button id="winHist">Historique</button> <button id="again">Rejouer</button></div>
 
@@ -162,6 +186,13 @@ const HAND = 3, TARGET = 7, MAX_ISLANDS = 6, N_JOKERS = 2, N_MAGNETS = 2;   // 2
 const isWild = c => c.kind==='joker' || c.kind==='magnet';                 // cartes qui ouvrent un îlot
 const TPL = {1:[[1]], 2:[[2],[1,1]], 3:[[3],[2,1],[1,2],[1,1,1]], 4:[[2,2],[4],[3,1]], 5:[[3,2],[2,3],[2,1,2]], 6:[[3,3],[2,2,2],[2,2,2]]};
 
+/* Options (enregistrées dans le navigateur, appliquées à la prochaine partie) */
+const TEAM_POINTS = [3,2,1,0];     // cartes Point d'une équipe à 6 joueurs : réparties entre ses 3 joueurs
+const OKEY = 'losanges7_opt';
+const OPT = {color:'auto', double:true, mg:false};
+try{ const o = JSON.parse(localStorage.getItem(OKEY)); if(o) Object.assign(OPT, o); }catch(e){}
+function saveOpt(){ try{ localStorage.setItem(OKEY, JSON.stringify(OPT)); }catch(e){} }
+
 const stage = document.getElementById('stage');
 const passBtn = document.getElementById('pass');
 let G = null, epoch = 0, msg = null, count = null;
@@ -178,7 +209,7 @@ const setMsg = t => { if(msg) msg.textContent = t; };
 
 /* ====================== Historique ====================== */
 const SLOT_NAME = {tl:'haut-gauche', tr:'haut-droite', bl:'bas-gauche', br:'bas-droite'};
-const cardName = c => c.kind==='joker' ? 'Joker' : c.kind==='magnet' ? 'Aimant '+COLORS[c.color].name :
+const cardName = c => c.kind==='joker' ? 'Joker' : c.kind==='magnet' ? 'Aimant '+COLORS[c.color].name+(c.personal ? ' (personnel)' : '') :
   c.kind==='point' ? 'Point '+c.value+' '+COLORS[c.color].name : c.value+' '+COLORS[c.color].name;
 const islName = isl => 'îlot '+isl.n;
 function hlog(txt, kind){
@@ -368,7 +399,7 @@ function computeLayout(){
   L.ow = Math.max(30, Math.min(L.hw*0.6, L.vw/Math.max(nopp,1)/3.3, 64));
   L.qw = L.ow*0.5;
   L.dw = L.hw*0.7;
-  L.oc = nopp===1 ? [L.vw/2] : nopp===2 ? [L.vw*.27, L.vw*.73] : [L.vw/6, L.vw/2, L.vw*5/6];
+  L.oc = nopp===1 ? [L.vw/2] : nopp===2 ? [L.vw*.27, L.vw*.73] : nopp===5 ? [.1,.3,.5,.7,.9].map(f => L.vw*f) : [L.vw/6, L.vw/2, L.vw*5/6];
   L.topH = 24 + L.ow + 4 + L.qw + 6;
   L.handY = L.vh - L.hw/2 - 14;
   L.ptY = L.handY - L.hw/2 - L.pw/2 - 8;
@@ -385,24 +416,26 @@ function handPose(pid,i,n){
     const sp = Math.min(L.hw*0.8, (L.vw-L.hw-2*(L.dw+10))/Math.max(n-1,1));
     return {x:L.vw/2+d*sp, y:L.handY+Math.abs(d)*L.hw*0.04, rot:d*4, s:sc(L.hw), up:true, z:5000+i};
   }
-  return {x:L.oc[pid-1]+d*L.ow*0.5, y:24+L.ow/2+Math.abs(d)*2, rot:d*5, s:sc(L.ow), up:false, z:5000+i};
+  return {x:L.oc[pid-1]+d*L.ow*(G.n>=5?0.36:0.5), y:24+L.ow/2+Math.abs(d)*2, rot:d*5, s:sc(L.ow), up:false, z:5000+i};
 }
 function ptPose(c){
-  if(c.owner===0) return {x:L.vw/2+(c.pi-1.5)*L.pw*1.12, y:L.ptY, rot:0, s:sc(L.pw), up:true, z:4600};
-  return {x:L.oc[c.owner-1]+(c.pi-1.5)*L.qw*0.95, y:24+L.ow+4+L.qw/2, rot:0, s:sc(L.qw), up:true, z:4600};
+  const n = G.players[c.owner].rowN, d = c.pi-(n-1)/2;      // rangée : cartes Point (+ aimant personnel)
+  if(c.owner===0) return {x:L.vw/2+d*L.pw*1.12, y:L.ptY, rot:0, s:sc(L.pw), up:true, z:4600};
+  return {x:L.oc[c.owner-1]+d*L.qw*0.95, y:24+L.ow+4+L.qw/2, rot:0, s:sc(L.qw), up:true, z:4600};
 }
 function slotXY(isl,slot){ const o = SLOT_OFF[slot], ic = L.isl[isl.i]; return {x:ic.x+o[0]*L.tw, y:ic.y+o[1]*L.tw}; }
 function poseOf(c){
   switch(c.zone){
     case 'deck':   return deckPose(G.deck.indexOf(c));
     case 'hand':   { const p = G.players[c.owner]; return handPose(c.owner, p.hand.indexOf(c), p.hand.length); }
-    case 'pt':     return ptPose(c);
+    case 'pt':
+    case 'mg':     return ptPose(c);
     case 'slot':   { const q = slotXY(c.isl,c.slot); return {x:q.x, y:q.y, rot:0, s:sc(L.tw), up:true, z:200+c.sz}; }
     case 'center': { const ic = L.isl[c.isl.i]; return {x:ic.x, y:ic.y, rot:0, s:sc(L.tw), up:true, z:190}; }
     default:       return revealPose();
   }
 }
-function refreshMine(c){ c.el.classList.toggle('mine', c.owner===0 && (c.zone==='hand'||c.zone==='pt')); }
+function refreshMine(c){ c.el.classList.toggle('mine', c.owner===0 && (c.zone==='hand'||c.zone==='pt'||c.zone==='mg')); }
 function setPose(c,t){
   c.x=t.x; c.y=t.y; c.rot=t.rot; c.s=t.s; c.up=t.up;
   c.el.style.transform = tf(t.x,t.y,t.rot,t.s);
@@ -498,7 +531,11 @@ function updateTotals(){
 }
 function updateLabels(){
   G.players.forEach((p,i) => {
-    p.label.innerHTML = '<i style="background:'+COLORS[p.color].bg+'"></i>'+p.name+' · '+COLORS[p.color].name+' · ★ '+p.pts.length;
+    const short = G.n >= 5 && i > 0;                                   // étiquettes compactes à 6 joueurs
+    const left = G.teams[p.team].members.reduce((a,id) => a+G.players[id].pts.length, 0);
+    p.label.innerHTML = '<i style="background:'+COLORS[p.color].bg+'"></i>'+(short
+      ? 'J'+(i+1)+' ★'+p.pts.length+'/'+left
+      : p.name+' · '+COLORS[p.color].name+' · ★ '+p.pts.length+(G.teamMode ? ' (équipe : '+left+')' : ''));
     p.label.classList.toggle('active', i===G.turn && !G.over);
   });
 }
@@ -526,7 +563,7 @@ function addLock(c){
   const d = document.createElement('div'); d.className = 'lock'; d.innerHTML = LOCK;
   stage.appendChild(d); c.lock = d; positionDecor();
 }
-function getCands(p){ return p.hand.map(c => ({card:c, targets:nominalTargets(c)})).filter(x => x.targets.length); }
+function getCands(p){ return p.hand.concat(p.mg ? [p.mg] : []).map(c => ({card:c, targets:nominalTargets(c)})).filter(x => x.targets.length); }
 
 function addIsland(){
   const isl = {i:G.islands.length, n:++G.islSeq, slots:{tl:[],tr:[],bl:[],br:[]}, joker:null};
@@ -643,7 +680,7 @@ async function openIsland(card,p){
 async function destroyIsland(isl){
   const back = [], pts = [];
   CORNERS.forEach(s => { isl.slots[s].forEach(c => (c.kind==='point' ? pts : back).push(c)); isl.slots[s] = []; });
-  if(isl.joker) back.push(isl.joker);
+  if(isl.joker) (isl.joker.personal ? pts : back).push(isl.joker);     // l'aimant personnel quitte le jeu
   setMsg('Îlot détruit : il libère de la place');
   hlog(islName(isl)+' détruit (3 cartes Point) : '+back.length+' cartes sous la pioche, '+pts.length+' cartes Point retirées', 'bonus');
   shuffle(back);
@@ -684,12 +721,13 @@ function scoreMove(p,c,t){
     return s + 1 + (n ? 1 : -0.5) + (G.players[p.id].color===c.color ? 1 : 0) + (tot>=5 && tot<=9 ? 1.5 : 0);
   }
   const tot = totalWith(t.isl, t.slot, c), oth = othersMax(t.isl, t.slot, c);
-  const owner = G.players.find(q => q.color===c.color);
+  const team = G.teams.find(q => q.color===c.color);
+  const mine = !!team && team.members.includes(p.id), left = !!team && team.members.some(id => G.players[id].pts.length);
   if(tot < oth){ s += 2; if(p.hand.length===1) s += 2; }          // pas de pioche : la main diminue
   if(tot>=TARGET){
-    if(owner===p && owner.pts.length) s += 6;
-    else if(owner && owner.pts.length) s -= 3;
-  } else if(owner===p) s += tot/TARGET*0.5;
+    if(mine && left) s += 6;
+    else if(team && left) s -= 3;
+  } else if(mine) s += tot/TARGET*0.5;
   return s;
 }
 function aiPick(p,cands){
@@ -723,7 +761,7 @@ function targetsOf(c){
 const showTargets = c => drawTargets(targetsOf(c));
 function endChoose(){
   const p = G.players[0];
-  p.hand.concat(p.pts).forEach(c => c.el.classList.remove('dim','sel'));
+  p.hand.concat(p.pts, p.mg ? [p.mg] : []).forEach(c => c.el.classList.remove('dim','sel'));
   clearTargets(); UI.mode = null; UI.hover = null; passBtn.style.display = 'none';
 }
 function humanChoose(cands,opt){
@@ -733,7 +771,7 @@ function humanChoose(cands,opt){
       finish:(c,t) => { endChoose(); res({card:c, target:t}); },
       pass:() => { endChoose(); res(null); }};
     const p = G.players[0];
-    p.hand.concat(p.pts).forEach(c => c.el.classList.toggle('dim', !map.has(c)));
+    p.hand.concat(p.pts, p.mg ? [p.mg] : []).forEach(c => c.el.classList.toggle('dim', !map.has(c)));
     passBtn.style.display = opt.optional ? 'inline-block' : 'none';
   });
 }
@@ -748,7 +786,7 @@ stage.addEventListener('pointerover', ev => {
   if(UI.drag || (UI.mode && UI.mode.sel)) return;
   const el = ev.target.closest && ev.target.closest('.card'); if(!el) return;
   const c = el._c;
-  if(!c || c.owner!==0 || !(c.zone==='hand' || c.zone==='pt')) return;
+  if(!c || c.owner!==0 || !(c.zone==='hand' || c.zone==='pt' || c.zone==='mg')) return;
   UI.hover = c; showTargets(c);
 });
 stage.addEventListener('pointerout', ev => {
@@ -863,32 +901,64 @@ async function pointPhase(owner,isl,mode){
 }
 
 /* Bonus quand le total de la couleur jouée atteint 7 ou plus : propriétaire de la couleur + joueur du tour */
+/* Choix du joueur de l'équipe propriétaire qui pose le point (à 6 joueurs ; un seul candidat : automatique) */
+async function chooseMember(team,cands){
+  if(cands.length===1) return cands[0];
+  if(team.members.includes(0)){
+    setMsg('Total 7+ en '+COLORS[team.color].name+' : choisis le joueur de ton équipe qui pose le point');
+    return new Promise(res => {
+      const box = document.getElementById('choose'), b = document.getElementById('chooseBtns');
+      b.innerHTML = '';
+      cands.forEach(q => {
+        const x = document.createElement('button');
+        x.textContent = q.name+' ('+q.pts.length+' carte'+(q.pts.length>1?'s':'')+' Point)';
+        x.onclick = () => { box.style.display = 'none'; res(q); };
+        b.appendChild(x);
+      });
+      box.style.display = 'block';
+    });
+  }
+  await sleep(500);                                                   // équipe adverse (IA) : désigne le joueur qui a le plus de cartes Point
+  return cands.slice().sort((a,b) => b.pts.length-a.pts.length)[0];
+}
 async function bonusPhase(p,isl,color,tot){
-  const owner = G.players.find(q => q.color===color);
+  const team = G.teams.find(t => t.color===color);               // équipe (ou joueur) propriétaire de la couleur ; aucune si couleur neutre
   hlog('total '+COLORS[color].name+' = '+tot+' sur '+islName(isl)+' (7 ou plus) : BONUS', 'bonus');
   setMsg('Total '+tot+' en '+COLORS[color].name+' : bonus !');
   await sevenFx(isl,color);
   // chaque point bonus se pose sur l'îlot de son choix (isl = null : tous les îlots sont proposés)
-  if(owner) await pointPhase(owner, null, 'owner');
-  else hlog('bonus propriétaire : aucun joueur n’a la couleur '+COLORS[color].name, 'bonus');
-  await pointPhase(p, null, p===owner ? 'second' : 'turn');   // le joueur du tour joue même si le propriétaire a fini
+  let placed = false, chosen = null;
+  if(team){
+    const cands = team.members.map(id => G.players[id]).filter(q => q.pts.length);
+    if(!cands.length) hlog('bonus propriétaire : plus aucune carte Point dans '+(G.teamMode ? 'l’équipe ' : 'le jeu de la couleur ')+COLORS[color].name, 'bonus');
+    else {
+      chosen = await chooseMember(team,cands);
+      if(G.teamMode) hlog('l’équipe '+COLORS[color].name+' désigne '+chosen.name+' pour poser le point', 'bonus');
+      placed = await pointPhase(chosen, null, 'owner');
+    }
+  } else hlog('bonus propriétaire : aucun joueur n’a la couleur '+COLORS[color].name+' (couleur neutre)', 'bonus');
+  const sameSide = !!team && team.members.includes(p.id);       // le joueur du tour appartient à l'équipe propriétaire
+  if(sameSide && placed && !G.opt.double) hlog('double-point désactivé : '+p.name+' ne pose pas de 2e point', 'bonus');
+  else await pointPhase(p, null, chosen===p ? 'second' : 'turn');   // le joueur du tour joue même si le propriétaire a fini
   checkWin();
 }
 /* Victoire : tous les joueurs qui n'ont plus de carte Point (deux joueurs possibles lors d'un bonus) */
 function checkWin(){
   if(G.over) return;
-  const w = G.players.filter(q => !q.pts.length);
-  if(w.length) endGame(w);
+  const wt = G.teams.filter(t => t.members.every(id => !G.players[id].pts.length));   // équipe (ou joueur) sans aucune carte Point restante
+  if(wt.length) endGame(wt);
 }
-function endGame(winners){
+function endGame(wts){
   G.over = true; updateLabels();
-  const names = winners.map(q => q.name+' ('+COLORS[q.color].name+')').join(' et ');
-  winners.forEach(q => hlog(q.name+' a posé toutes ses cartes Point : VICTOIRE', 'bonus'));
-  if(winners.length>1) hlog('égalité : '+names+' gagnent ensemble', 'bonus');
-  saveGame(winners.length>1 ? 'égalité '+names : 'victoire de '+winners[0].name);
-  const me = winners.some(q => q.human);
-  const txt = winners.length>1 ? (me ? 'Égalité : tu gagnes avec '+winners.filter(q => !q.human).map(q => q.name).join(' et ')+' !' : 'Égalité : '+names+' gagnent ensemble')
-                               : (me ? 'Bravo, tu as gagné ! 🏆' : names+' a gagné');
+  const tname = t => G.teamMode ? 'l’équipe '+COLORS[t.color].name+' ('+t.members.map(id => G.players[id].name).join(', ')+')'
+                                : G.players[t.members[0]].name+' ('+COLORS[t.color].name+')';
+  const names = wts.map(tname).join(' et ');
+  wts.forEach(t => hlog((G.teamMode ? 'L’équipe '+COLORS[t.color].name : G.players[t.members[0]].name)+' a posé toutes ses cartes Point : VICTOIRE', 'bonus'));
+  if(wts.length>1) hlog('égalité : '+names+' gagnent ensemble', 'bonus');
+  saveGame(wts.length>1 ? 'égalité '+names : 'victoire de '+names);
+  const me = wts.some(t => t.members.includes(0));
+  const txt = wts.length>1 ? (me ? 'Égalité : '+(G.teamMode ? 'ton équipe gagne' : 'tu gagnes')+' avec '+wts.filter(t => !t.members.includes(0)).map(tname).join(' et ')+' !' : 'Égalité : '+names+' gagnent ensemble')
+                           : (me ? (G.teamMode ? 'Bravo, ton équipe a gagné ! 🏆' : 'Bravo, tu as gagné ! 🏆') : names+' a gagné');
   setMsg(txt+' — plateau et historique consultables');
   document.getElementById('wintxt').textContent = txt;
   const e = epoch;
@@ -897,6 +967,7 @@ function endGame(winners){
 async function executePlay(p,ch){
   const c = ch.card, t = ch.target;
   p.hand = p.hand.filter(x => x !== c);
+  if(p.mg === c) p.mg = null;                                      // aimant personnel utilisé
   let tot = 0, oth = 0, color = null, isl = null;
   const lh = layoutHand(p,420);
   if(isWild(c)){
@@ -918,7 +989,9 @@ async function executePlay(p,ch){
     // 7 ou plus : le propriétaire de la couleur pose un point ET le joueur du tour peut en poser un (même joueur : 2 points)
     await bonusPhase(p, isl, color, tot); if(G.over) return;
   }
-  if(color && tot>=oth){             // total égal ou supérieur aux autres couleurs : pioche obligatoire
+  if(c.personal){
+    hlog('aimant personnel : pas de pioche (il remplace une carte de la main)');
+  } else if(color && tot>=oth){      // total égal ou supérieur aux autres couleurs : pioche obligatoire
     setMsg(p.name+' repioche'); hlog('repioche 1 carte (total ≥ autres couleurs)'); await drawN(p,1);
   } else {
     hlog('ne repioche pas (total inférieur à une autre couleur)');
@@ -989,12 +1062,18 @@ function newGame(n){
   stage.append(msg, count);
 
   UI.pick = null;
-  G = {n, players:[], islands:[], deck:[], turn:0, turnNo:0, over:false, sz:0, fz:0, all:[], log:[], setup:true, islSeq:0};
+  G = {n, players:[], teams:[], islands:[], deck:[], turn:0, turnNo:0, over:false, sz:0, fz:0, all:[], log:[], setup:true, islSeq:0,
+       opt:Object.assign({}, OPT), teamMode:n===6};
   const keys = shuffle(CK.slice());
+  const hc = (OPT.color !== 'auto' && COLORS[OPT.color]) ? OPT.color : null;      // couleur choisie pour le joueur (ou son équipe)
+  const order = hc ? [hc].concat(keys.filter(k => k !== hc)) : keys;
   for(let i=0;i<n;i++){
+    const t = G.teamMode ? i%2 : i;                                 // 6 joueurs : équipes alternées (0-2-4 contre 1-3-5)
     const lab = document.createElement('div'); lab.className = 'plabel'; stage.appendChild(lab);
-    G.players.push({id:i, human:i===0, color:keys[i], name:i===0?'Toi':'Joueur '+(i+1), hand:[], pts:[], label:lab});
+    G.players.push({id:i, human:i===0, team:t, color:order[t], name:i===0?'Toi':'Joueur '+(i+1), hand:[], pts:[], mg:null, ptn:0, rowN:0, label:lab});
   }
+  for(let t=0; t<(G.teamMode ? 2 : n); t++)                          // à 6 joueurs : 2 couleurs d'équipe, les 2 autres restent neutres
+    G.teams.push({id:t, color:order[t], members:G.players.filter(q => q.team===t).map(q => q.id)});
   // paquet : 64 cartes + 2 jokers + 8 aimants (2 par couleur)
   const deck = [];
   CK.forEach(color => { for(let v=0; v<=3; v++) CORNERS.forEach(corner => deck.push(buildCard({kind:'num', value:v, color, corner}))); });
@@ -1002,16 +1081,25 @@ function newGame(n){
   CK.forEach(color => { for(let j=0;j<N_MAGNETS;j++) deck.push(buildCard({kind:'magnet', color})); });
   shuffle(deck); G.deck = deck; G.all = deck.slice();
   // cartes Point
-  G.players.forEach(p => [3,2,1,0].forEach((v,pi) => {
-    const c = buildCard({kind:'point', value:v, color:p.color, corner:POINT_CORNER[v], owner:p.id, pi, zone:'pt'});
+  G.teams.forEach(tm => TEAM_POINTS.forEach((v,idx) => {              // les cartes Point de l'équipe sont réparties entre ses joueurs
+    const p = G.players[tm.members[idx % tm.members.length]];
+    const c = buildCard({kind:'point', value:v, color:tm.color, corner:POINT_CORNER[v], owner:p.id, pi:p.pts.length, zone:'pt'});
     p.pts.push(c); G.all.push(c);
   }));
+  G.players.forEach(p => {
+    p.ptn = p.pts.length;
+    if(G.opt.mg){                                                    // option : un aimant de sa couleur devant chaque joueur
+      p.mg = buildCard({kind:'magnet', color:p.color, personal:true, owner:p.id, pi:p.ptn, zone:'mg'});
+      G.all.push(p.mg);
+    }
+    p.rowN = p.ptn + (p.mg ? 1 : 0);
+  });
   G.all.forEach(c => stage.appendChild(c.el));
 
   addIsland();                       // premier îlot
   computeLayout();
   G.deck.forEach((c,k) => setPose(c, deckPose(k)));
-  G.players.forEach(p => p.pts.forEach(c => {
+  G.players.forEach(p => p.pts.concat(p.mg ? [p.mg] : []).forEach(c => {
     setPose(c, ptPose(c));
     c.el.animate([{opacity:0},{opacity:1}], {duration:600*SPD, delay:300*SPD, fill:'backwards'});
   }));
@@ -1033,7 +1121,8 @@ function newGame(n){
     await Promise.all(flights);
     setMsg('Mise en place du premier îlot…');
     await sleep(300);
-    G.players.forEach(p => hlog(p.name+' = '+COLORS[p.color].name));
+    G.players.forEach(p => hlog(p.name+' = '+COLORS[p.color].name+(G.teamMode ? ' (équipe '+COLORS[G.teams[p.team].color].name+')' : '')));
+    hlog('options : double-point '+(G.opt.double ? 'oui' : 'non')+', aimant en main '+(G.opt.mg ? 'oui' : 'non')+', couleur '+(hc ? COLORS[hc].name : 'aléatoire'));
     await fillIsland(G.islands[0]);
     G.setup = false;
     await loop();
@@ -1049,6 +1138,16 @@ document.getElementById('winHist').addEventListener('click', showHistory);
 document.getElementById('viewBoard').addEventListener('click', () => { document.getElementById('win').style.display = 'none'; });
 document.getElementById('histCopy').addEventListener('click', copyHistory);
 document.getElementById('rules').addEventListener('click', () => { document.getElementById('help').style.display = 'block'; });
+/* menu Options */
+const selC = document.getElementById('optColor'), selD = document.getElementById('optDouble'), selM = document.getElementById('optMg');
+function readOpts(){ OPT.color = selC.value; OPT.double = selD.value === 'O'; OPT.mg = selM.value === 'O'; saveOpt(); }
+function showOpts(){
+  selC.value = OPT.color; selD.value = OPT.double ? 'O' : 'N'; selM.value = OPT.mg ? 'O' : 'N';
+  document.getElementById('opts').style.display = 'block';
+}
+[selC, selD, selM].forEach(x => x.addEventListener('change', readOpts));
+document.getElementById('optBtn').addEventListener('click', showOpts);
+document.getElementById('optNew').addEventListener('click', () => { readOpts(); document.getElementById('opts').style.display = 'none'; startFromUI(); });
 let rzT = null;
 window.addEventListener('resize', () => {
   if(!G) return;
