@@ -244,8 +244,8 @@ footer {
         <div class="track" id="track">
 
             <div class="card">
-                <img class="active" src="./ressources/ShortCut7/SC-titre00.png">
-                <img src="./ressources/ShortCut7/SC-issue01.gif">
+                <img class="active" src="./ressources/ShortCut7/SC-titre00.png" data-duration="800">
+                <img src="./ressources/ShortCut7/SC-issue01.gif" data-duration="800">
                   
                 <div class="card-info">
                     <span>ShortCut7</span>
@@ -255,12 +255,12 @@ footer {
             </div>
 
             <div class="card">
-                <img class="active" src="./ressources/Solange/LS-design01.jpeg">
-                <img src="./ressources/Solange/LS-design02.jpeg">
-                <img src="./ressources/Solange/LS-design03.jpeg">
-                   <img src="./ressources/Solange/LS-design03.jpeg">
-                <img src="./ressources/Solange/LS-design04.jpeg">
-                <img src="./ressources/Solange/LS-sample01.jpeg">
+                <img class="active" src="./ressources/Solange/LS-design01.jpeg" data-duration="800">
+                <img src="./ressources/Solange/LS-design02.jpeg" data-duration="800">
+                <img src="./ressources/Solange/LS-design03.jpeg" data-duration="800">
+                   <img src="./ressources/Solange/LS-design03.jpeg" data-duration="800">
+                <img src="./ressources/Solange/LS-design04.jpeg" data-duration="800">
+                <img src="./ressources/Solange/LS-sample01.jpeg" data-duration="800">
                 <div class="card-info">
                     <span>SOLANGE</span>
                     <h2>Strategie et Tactique 10 minutes</h2>
@@ -269,15 +269,15 @@ footer {
             </div>
 
             <div class="card">
-                <img class="active" src="ressources/Q12/logo.png">
-                <img src="./ressources/Q12/Q12-expl00.png">
-                <img src="./ressources/Q12/Q12-expl02.png">
-                <img src="./ressources/Q12/Q12-expl02.png">
-                <img src="./ressources/Q12/Q12-expl03.png">
-                <img src="./ressources/Q12/Q12-expl04.png">
-                <img src="./ressources/Q12/Q12-expl05.png">
-                <img src="./ressources/Q12/Q12-expl06.png">
-                <img src="./ressources/Q12/q12-vid01.gif">
+                <img class="active" src="ressources/Q12/logo.png" data-duration="800">
+                <img src="./ressources/Q12/Q12-expl00.png" data-duration="800">
+                <img src="./ressources/Q12/Q12-expl02.png" data-duration="800">
+                <img src="./ressources/Q12/Q12-expl02.png" data-duration="800">
+                <img src="./ressources/Q12/Q12-expl03.png" data-duration="800">
+                <img src="./ressources/Q12/Q12-expl04.png" data-duration="800">
+                <img src="./ressources/Q12/Q12-expl05.png" data-duration="800">
+                <img src="./ressources/Q12/Q12-expl06.png" data-duration="800">
+                <img src="./ressources/Q12/q12-vid01.gif" data-duration="2000">
                 <div class="card-info">
                     <span>Quarante-Douze</span>
                     <h2>Famille 10+ 45 minutes</h2>
@@ -285,11 +285,11 @@ footer {
             </div>
 
             <div class="card">
-                <img class="active" src="ressources/Cyberpolis/CAV.png">
-                <img src="./ressources/Cyberpolis/CC.png">
-                <img src="./ressources/Cyberpolis/CE.png">
-                <img src="./ressources/Cyberpolis/PC.png">
-                <img src="./ressources/Cyberpolis/PJ.png">
+                <img class="active" src="ressources/Cyberpolis/CAV.png" data-duration="800">
+                <img src="./ressources/Cyberpolis/CC.png" data-duration="800">
+                <img src="./ressources/Cyberpolis/CE.png" data-duration="800">
+                <img src="./ressources/Cyberpolis/PC.png" data-duration="800">
+                <img src="./ressources/Cyberpolis/PJ.png" data-duration="800">
             
                 <div class="card-info">
                     <span>Cyberpolis</span>
@@ -298,19 +298,19 @@ footer {
             </div>
 
             <div class="card">
-                <img class="active" src="./ressources/Shifu3/SF3-design00.jpeg">
-                <img src="./ressources/Shifu3/SF3-design01.jpeg">
-                <img src="./ressources/Shifu3/SF3-sample.jpeg">
+                <img class="active" src="./ressources/Shifu3/SF3-design00.jpeg" data-duration="800">
+                <img src="./ressources/Shifu3/SF3-design01.jpeg" data-duration="800">
+                <img src="./ressources/Shifu3/SF3-sample.jpeg" data-duration="800">
                 <div class=="card-info">
                     <span>Tirobu</span>
                     <h2>Duel et bluff - 2 joueurs - 10 minutes</h2>
                 </div>
             </div>
              <div class="card">
-                <img class="active" src="./ressources/TiroBu/GK-demo01.gif">
-                <img src="./ressources/TiroBu/GK-demoteams.jpeg">
-                <img src="./ressources/TiroBu/GK-design04.jpeg">
-                <img src="./ressources/TiroBu/GK-sample01.jpeg">
+                <img class="active" src="./ressources/TiroBu/GK-demo01.gif" data-duration="3000">
+                <img src="./ressources/TiroBu/GK-demoteams.jpeg" data-duration="800">
+                <img src="./ressources/TiroBu/GK-design04.jpeg" data-duration="800">
+                <img src="./ressources/TiroBu/GK-sample01.jpeg" data-duration="800">
                 <div class=="card-info">
                     <span>Shifu3</span>
                     <h2>Tactique et Stratégie 2-4 joueurs 30 minutes/h2>
@@ -357,23 +357,39 @@ function move(direction) {
         `translateX(-${position * (width + gap)}px)`;
 }
 
-// FONDU ENCHAINE DES IMAGES
+// FONDU ENCHAINE AVEC DUREE INDIVIDUELLE
 
 document.querySelectorAll(".card").forEach(card => {
 
     const images = card.querySelectorAll("img");
     let current = 0;
 
-    setInterval(() => {
+    function nextImage() {
+
         images[current].classList.remove("active");
 
         current = (current + 1) % images.length;
 
         images[current].classList.add("active");
 
-    }, 1600);
+        // Lecture de la durée de la prochaine image
+        const duration =
+            parseInt(images[current].dataset.duration) || 1600;
+
+        // Programmation du prochain changement
+        setTimeout(nextImage, duration);
+    }
+
+    // Durée de la première image
+    const firstDuration =
+        parseInt(images[current].dataset.duration) || 1600;
+
+    setTimeout(nextImage, firstDuration);
 
 });
+
+
+
 
 // CHANGEMENT DE LANGUE
 
