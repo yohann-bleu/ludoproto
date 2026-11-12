@@ -1,0 +1,1511 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>html{color-scheme:light}body{margin:0}</style></head><body><title>Cyberpolis</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Space+Grotesk:wght@500;700&display=swap">
+<style>
+/* Concept : plateau carré de 40 cases à gauche, tableau de bord du tour à droite. Thème sombre unique, couleurs des composants reprises du plateau papier. */
+:root {
+  color-scheme: dark;
+  --bg: #0A0F24;
+  --panel: #121A38;
+  --panel2: #0E1530;
+  --cell: #101838;
+  --line: #2A3766;
+  --fg: #EAF0FF;
+  --fg2: #C9D6F5;
+  --muted: #9FB0D8;
+  --accent: #3DDBC4;
+  --accent-ink: #06201C;
+  --danger: #FF4D6D;
+  --good: #8EE08B;
+  --gold: #E8B931;
+  --font: 'Space Grotesk', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font);
+  font-size: 14px;
+  line-height: 1.4;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 16px;
+}
+button { font: inherit; color: inherit; cursor: pointer; }
+button:disabled { cursor: not-allowed; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+h1, h2, h3, h4, p { margin: 0; }
+h2, h3, h4 { text-wrap: balance; }
+
+/* ---------- boutons ---------- */
+.btn {
+  min-height: 44px; padding: 8px 16px; border-radius: 10px;
+  background: var(--panel2); border: 1px solid var(--line); font-weight: 700;
+}
+.btn:hover:not(:disabled) { border-color: var(--muted); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.btn.primary:hover:not(:disabled) { filter: brightness(1.08); }
+.btn.big { min-height: 52px; font-size: 16px; width: 100%; }
+.btn.sm { min-height: 36px; padding: 4px 12px; font-size: 13px; }
+.btn:disabled { opacity: .45; }
+.link { background: none; border: 0; color: var(--accent); text-decoration: underline; padding: 8px; min-height: 44px; }
+
+/* ---------- écran de démarrage ---------- */
+.setup { min-height: 90vh; display: grid; place-items: center; }
+.setup-card {
+  width: 100%; max-width: 520px; background: var(--panel); border: 1px solid var(--line);
+  border-radius: 16px; padding: 28px; display: flex; flex-direction: column; gap: 18px;
+}
+.brand { display: flex; align-items: center; gap: 14px; }
+.brand svg { width: 48px; height: 48px; fill: none; stroke: var(--accent); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+.brand h1 { font-size: 34px; letter-spacing: 6px; }
+.tag { color: var(--fg2); font-size: 15px; line-height: 1.5; }
+.seg { border: 0; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
+.seg legend { padding: 0; font: 700 12px var(--mono); letter-spacing: 2px; color: var(--muted); margin-bottom: 8px; }
+.seg-row { display: flex; gap: 8px; }
+.seg-row button { flex: 1; min-height: 44px; border-radius: 10px; background: var(--panel2); border: 1px solid var(--line); font-weight: 700; font-size: 16px; }
+.seg-row button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.names { display: grid; gap: 8px; }
+.names label { display: flex; align-items: center; gap: 10px; }
+.names .pawn { position: static; flex: none; }
+.names input {
+  flex: 1; min-width: 0; min-height: 44px; padding: 8px 12px; border-radius: 10px;
+  background: var(--panel2); border: 1px solid var(--line); color: var(--fg); font: inherit;
+}
+.row { display: flex; flex-direction: column; gap: 8px; }
+
+/* ---------- mise en page du jeu ---------- */
+.stage { display: grid; grid-template-columns: minmax(0, 1fr) 400px; gap: 16px; align-items: start; max-width: 1440px; margin: 0 auto; }
+.boardscroll { overflow-x: auto; min-width: 0; }
+.boardwrap { container-type: inline-size; width: 100%; min-width: 640px; max-width: 940px; margin: 0 auto; }
+.board {
+  --u: calc(100cqw / 13);
+  width: 100%; aspect-ratio: 1;
+  display: grid; grid-template-columns: repeat(13, 1fr); grid-template-rows: repeat(13, 1fr);
+  background: var(--line); gap: 1px; border: 1px solid var(--line); border-radius: 6px; overflow: hidden;
+}
+.side { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+@media (max-width: 1100px) { .stage { grid-template-columns: minmax(0, 1fr); } }
+
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; min-width: 0; }
+.card h3 { font: 700 12px var(--mono); letter-spacing: 2px; color: var(--muted); margin-bottom: 10px; text-transform: uppercase; }
+.topbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+.brandsm { font-weight: 700; letter-spacing: 4px; font-size: 18px; }
+.round { font: 700 12px var(--mono); letter-spacing: 1px; color: var(--accent); }
+.tools { display: flex; flex-wrap: wrap; gap: 6px; width: 100%; }
+
+/* ---------- cases ---------- */
+.cell {
+  position: relative; background: var(--cell); display: flex; overflow: hidden; min-width: 0; min-height: 0;
+  font-size: max(8px, calc(var(--u) * .14));
+}
+.cell.top { flex-direction: column; }
+.cell.bottom { flex-direction: column-reverse; }
+.cell.left { flex-direction: row; }
+.cell.right { flex-direction: row-reverse; }
+.cell .ico { flex: 1; min-height: 0; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 3px; }
+.cell .ico svg { width: calc(var(--u) * .62); height: calc(var(--u) * .62); fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.cell .price { font: 500 max(7px, calc(var(--u) * .115)) var(--mono); color: var(--muted); letter-spacing: 0; }
+.cell .band {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+  font-weight: 700; line-height: 1.1; padding: 2px; overflow-wrap: anywhere;
+}
+.cell.top .band, .cell.bottom .band { flex: 0 0 34%; }
+.cell.left .band, .cell.right .band { flex: 0 0 48%; }
+.cell .band small { font: 500 max(7px, calc(var(--u) * .12)) var(--mono); opacity: .85; margin-top: 1px; }
+.cell.neutral { background: var(--panel2); }
+.cell .nlabel { margin: auto; text-align: center; color: var(--muted); font: 700 max(8px, calc(var(--u) * .13)) var(--mono); letter-spacing: 1px; padding: 4px; }
+.cell .nlabel svg { display: block; margin: 0 auto 3px; width: calc(var(--u) * .5); height: calc(var(--u) * .5); fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.cell .nlabel small { display: block; font-weight: 500; letter-spacing: 0; margin-top: 2px; font-family: var(--font); color: var(--muted); }
+.cell.corner .nlabel { font-size: max(9px, calc(var(--u) * .19)); }
+.cell.corner .nlabel svg { width: calc(var(--u) * .9); height: calc(var(--u) * .9); }
+.cell.corner.start { background: #0F2A3A; }
+.cell.corner.start .nlabel { color: var(--accent); }
+.cell.special.select .nlabel { color: var(--accent); }
+.cell.special.audit .nlabel { color: #FF8FA3; }
+.cell.active { box-shadow: inset 0 0 0 3px var(--accent); }
+.cell.threatcell { box-shadow: inset 0 0 0 3px var(--danger); }
+.cell.active.threatcell { box-shadow: inset 0 0 0 3px var(--accent), inset 0 0 0 6px var(--danger); }
+
+.toks { position: absolute; inset: 0; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; align-content: center; gap: 2px; padding: 4px; pointer-events: none; z-index: 2; }
+.pawn {
+  width: calc(var(--u) * .36); height: calc(var(--u) * .36); min-width: 20px; min-height: 20px;
+  border-radius: 50%; background: var(--pc); color: #0A0F24; border: 2px solid #0A0F24;
+  box-shadow: 0 0 0 1.5px #fff, 0 2px 5px rgba(0, 0, 0, .55);
+  display: grid; place-items: center; font: 700 max(10px, calc(var(--u) * .2)) var(--mono);
+}
+.pawn.threat { background: #000; border-color: var(--danger); box-shadow: 0 0 0 1.5px #000, 0 0 10px 2px var(--danger); animation: pulse 1.8s ease-in-out infinite; }
+.pawn.threat svg { width: 62%; height: 62%; fill: none; stroke: var(--danger); stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; }
+@keyframes pulse { 50% { box-shadow: 0 0 0 1.5px #000, 0 0 16px 6px var(--danger); } }
+
+/* ---------- centre du plateau ---------- */
+.center {
+  grid-area: 3 / 3 / 12 / 12; background: var(--bg); border-radius: calc(var(--u) * .9);
+  border: 2px solid var(--line); margin: calc(var(--u) * .12);
+  padding: calc(var(--u) * .3) calc(var(--u) * .34); display: flex; flex-direction: column; gap: calc(var(--u) * .22); min-width: 0; min-height: 0;
+}
+.c-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.c-head h2 { font: 700 max(10px, calc(var(--u) * .17)) var(--mono); letter-spacing: 2px; color: var(--fg); }
+.legend { display: flex; gap: calc(var(--u) * .14); align-items: center; font: 500 max(8px, calc(var(--u) * .13)) var(--mono); color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 4px; }
+.lv { display: grid; grid-template-columns: calc(var(--u) * 2.5) repeat(5, 1fr); gap: 2px; }
+.lv > div { min-width: 0; }
+.lv-h { font: 700 max(9px, calc(var(--u) * .15)) var(--mono); color: var(--muted); text-align: center; padding-bottom: 2px; }
+.lv-name { display: flex; align-items: center; gap: 6px; font-weight: 700; font-size: max(9px, calc(var(--u) * .155)); padding-right: 4px; white-space: nowrap; }
+.lv-name i { width: calc(var(--u) * .1); height: calc(var(--u) * .34); border-radius: 2px; background: var(--tc); flex: none; }
+.lv-cell { height: calc(var(--u) * .5); background: var(--panel2); border: 1px solid var(--line); border-radius: 4px; display: flex; align-items: center; justify-content: center; gap: 2px; flex-wrap: wrap; }
+.lv-row-flash > div:not(.lv-name) { animation: flash 1s ease-in-out 3; }
+.lv-name.flashn { color: var(--danger); }
+@keyframes flash { 50% { background: #3A1830; border-color: var(--danger); } }
+.cube { display: inline-block; width: calc(var(--u) * .22); height: calc(var(--u) * .22); min-width: 9px; min-height: 9px; border-radius: 3px; box-shadow: inset 0 -2px 0 rgba(0, 0, 0, .35), inset 0 1px 0 rgba(255, 255, 255, .35); }
+.c-noir { background: #050507; outline: 1px solid #7A819C; }
+.c-gris { background: #9AA1B5; }
+.c-or { background: var(--gold); }
+.decks { display: grid; grid-template-columns: 2fr 1fr; gap: calc(var(--u) * .22); flex: 1; min-height: 0; }
+.deck { display: flex; gap: calc(var(--u) * .16); min-width: 0; min-height: 0; }
+.pile {
+  flex: 0 0 30%; border-radius: calc(var(--u) * .12); display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; font: 700 max(8px, calc(var(--u) * .12)) var(--mono); letter-spacing: 1px; padding: 4px; gap: 2px;
+}
+.pile b { font-size: max(14px, calc(var(--u) * .4)); }
+.pile.ev { background: #26101E; border: 2px solid var(--danger); color: #FF8FA3; }
+.pile.vu { flex: 1; background: var(--panel2); border: 2px dashed var(--line); color: var(--muted); }
+.pile.vu small { font: 500 max(8px, calc(var(--u) * .12)) var(--font); letter-spacing: 0; }
+.evface { flex: 1; min-width: 0; border: 1px solid var(--line); background: var(--panel); border-radius: calc(var(--u) * .12); padding: calc(var(--u) * .14) calc(var(--u) * .18); display: flex; flex-direction: column; gap: 3px; overflow: hidden; }
+.evface.empty { border-style: dashed; align-items: center; justify-content: center; color: var(--muted); text-align: center; }
+.evface h4 { font-size: max(11px, calc(var(--u) * .19)); line-height: 1.15; }
+.evface p { font-size: max(9px, calc(var(--u) * .135)); color: var(--fg2); line-height: 1.3; }
+.evface .chips { display: flex; gap: 4px; flex-wrap: wrap; margin-top: auto; }
+
+/* ---------- éléments communs ---------- */
+.tech { display: inline-block; font: 700 11px var(--mono); letter-spacing: 1px; padding: 2px 7px; border-radius: 5px; border: 1px solid transparent; }
+.t-noir { background: #000; color: var(--fg); border-color: #7A819C; }
+.t-gris { background: #8C93A6; color: #0A0F24; }
+.t-or { background: var(--gold); color: #0A0F24; }
+.evface .tech { font-size: max(8px, calc(var(--u) * .12)); padding: 1px 5px; }
+
+/* ---------- colonne de droite ---------- */
+.dice { display: flex; gap: 10px; align-items: center; margin-bottom: 12px; }
+.die { width: 52px; height: 52px; border-radius: 10px; background: #F4F6FF; display: grid; grid-template: repeat(3, 1fr) / repeat(3, 1fr); padding: 8px; gap: 2px; box-shadow: 0 2px 0 #9AA1B5; }
+.pip { border-radius: 50%; }
+.pip.on { background: #0A0F24; }
+.dice .sum { font: 700 22px var(--mono); margin-left: 6px; }
+.whose { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.whose b { font-size: 17px; }
+.whose .pawn { position: static; flex: none; }
+.lead { color: var(--fg2); margin-bottom: 10px; line-height: 1.45; }
+.opts { display: grid; gap: 8px; margin-bottom: 10px; }
+.opt { display: grid; grid-template-columns: auto 1fr; gap: 2px 12px; align-items: center; text-align: left; padding: 10px 12px; border-radius: 10px; background: var(--panel2); border: 1px solid var(--line); }
+.opt:hover:not(:disabled) { border-color: var(--accent); }
+.opt:disabled { opacity: .5; }
+.opt-main { display: flex; align-items: baseline; gap: 10px; }
+.opt-main b { font: 700 16px var(--mono); }
+.opt-main small { color: var(--muted); }
+.opt-st { grid-column: 1 / -1; font-size: 12px; color: var(--muted); }
+.opt-st.ok { color: var(--good); }
+.opt-st.bad { color: #FF8FA3; }
+.picker { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 10px; }
+.pickbtn { display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 6px 10px; border-radius: 10px; background: var(--panel2); border: 1px solid var(--line); text-align: left; font-weight: 700; font-size: 13px; }
+.pickbtn i { width: 6px; align-self: stretch; border-radius: 3px; background: var(--tc); flex: none; }
+.pickbtn:hover { border-color: var(--accent); }
+.buildlist { display: grid; gap: 8px; margin: 8px 0 12px; }
+.buildbtn { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 44px; padding: 8px 12px; border-radius: 10px; background: #0F2A3A; border: 1px solid var(--accent); text-align: left; font-weight: 700; }
+.buildbtn span { font: 700 13px var(--mono); color: var(--accent); white-space: nowrap; }
+.sub { color: var(--muted); font-size: 13px; }
+.stack { display: flex; flex-direction: column; gap: 8px; }
+
+.pl { padding: 10px 0; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 6px; }
+.pl:first-of-type { border-top: 0; padding-top: 0; }
+.pl.active .pl-name { color: var(--accent); }
+.pl-h { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.pl-h .pawn { position: static; flex: none; }
+.pl-name { font-weight: 700; flex: 1; min-width: 80px; overflow-wrap: anywhere; }
+.pl-stat { font: 700 12px var(--mono); color: var(--fg2); }
+.chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.chip { display: inline-flex; align-items: center; gap: 4px; font: 700 10px var(--mono); padding: 2px 6px; border-radius: 5px; background: var(--panel2); border: 1px solid var(--tc); }
+.chip i { width: 8px; height: 8px; border-radius: 2px; flex: none; }
+.chip.bad { border-color: var(--danger); background: #2A1226; color: #FF8FA3; }
+.chip.app { border-color: var(--accent); color: var(--accent); }
+.chip.app.bad { border-color: var(--danger); color: #FF8FA3; }
+.hlist { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.hrow { display: grid; grid-template-columns: 6px 1fr auto auto; gap: 4px 10px; align-items: center; padding: 6px 8px; border-radius: 8px; background: var(--panel2); border: 1px solid var(--line); }
+.hrow.bad { border-color: var(--danger); }
+.swatch { align-self: stretch; border-radius: 3px; }
+.hname { font-weight: 700; font-size: 13px; }
+.hv { font: 700 13px var(--mono); }
+.hmeta { grid-column: 2 / -1; font-size: 12px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px 10px; }
+.hmeta .ok { color: var(--good); }
+.hmeta .bad { color: #FF8FA3; }
+.log { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; font-size: 13px; color: var(--fg2); }
+.log li { padding-left: 10px; border-left: 2px solid var(--line); }
+.log li:first-child { border-left-color: var(--accent); color: var(--fg); }
+
+/* ---------- fenêtres ---------- */
+.modal { position: fixed; inset: 0; background: rgba(5, 8, 20, .78); display: flex; align-items: flex-start; justify-content: center; overflow-y: auto; padding: 24px max(16px, env(safe-area-inset-left, 0px)); z-index: 50; }
+.modal-card { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 22px; width: 100%; max-width: 640px; display: flex; flex-direction: column; gap: 14px; margin: auto 0; }
+.modal-card h2 { font-size: 24px; }
+.modal-card h4 { font: 700 12px var(--mono); letter-spacing: 2px; color: var(--accent); text-transform: uppercase; }
+.modal-card ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; color: var(--fg2); }
+.modal-card p { color: var(--fg2); line-height: 1.5; }
+.ev-tag { font: 700 12px var(--mono); letter-spacing: 2px; color: #FF8FA3; }
+.ev-meta { display: flex; flex-direction: column; gap: 8px; padding: 12px; border-radius: 10px; background: var(--panel2); border: 1px solid var(--line); }
+.ev-line { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.profline { display: grid; gap: 2px; padding: 8px 10px; margin-bottom: 8px; border-radius: 8px; border-left: 4px solid var(--pc); background: var(--panel2); }
+.profline span { font-size: 12px; color: var(--muted); }
+.names select { flex: 1 0 calc(100% - 38px); box-sizing: border-box; margin-left: 38px; min-width: 0; min-height: 44px; border-radius: 10px; padding: 0 8px; background: var(--panel2); border: 1px solid var(--line); color: var(--fg); font: inherit; }
+.names label { flex-wrap: wrap; row-gap: 6px; }
+.names input { flex: 1 1 120px; }
+.setup-err { color: #FF8FA3; font-size: 13px; min-height: 18px; }
+.dashlist { display: grid; gap: 8px; }
+.dashapp { display: grid; gap: 6px; padding: 10px 12px; border-radius: 10px; background: var(--panel2); border: 1px solid var(--line); }
+.dashapp.bad { border-color: var(--danger); }
+.dashapp small.bad { color: #FF8FA3; }
+.dicp { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 14px; }
+.dg { display: grid; grid-template-columns: 14px 1fr 28px; gap: 6px; align-items: center; font: 700 11px var(--mono); color: var(--fg2); }
+.dbar { height: 8px; border-radius: 4px; background: var(--panel); border: 1px solid var(--line); overflow: hidden; }
+.dbar i { display: block; height: 100%; background: var(--accent); transition: width .4s; }
+.dg.mid .dbar i { background: #FFBB3D; }
+.dg.lo .dbar i { background: #FF4D6D; }
+.dv { text-align: right; }
+.dk { display: inline-block; font: 700 10px var(--mono); padding: 1px 5px; border-radius: 4px; background: #3a1626; color: #FF8FA3; border: 1px solid #FF4D6D; }
+.applist { display: grid; gap: 8px; }
+.appcard { display: grid; gap: 6px; padding: 10px 12px; border-radius: 10px; background: var(--panel2); border: 1px solid var(--line); }
+.appcard.done { opacity: .55; }
+.appcard.ok { border-color: var(--accent); }
+.apptop { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; }
+.apptop b { font-size: 15px; }
+.apptop span { font: 700 13px var(--mono); color: var(--fg2); white-space: nowrap; }
+.reqs { display: flex; flex-wrap: wrap; gap: 4px 6px; }
+.req { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; padding: 2px 7px; border-radius: 5px; background: var(--panel); border: 1px solid var(--tc); }
+.req.miss { border-color: var(--danger); color: #FF8FA3; }
+.score { display: grid; gap: 8px; }
+.score-row { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center; padding: 10px 12px; border-radius: 10px; background: var(--panel2); border: 1px solid var(--line); }
+.score-row.win { border-color: var(--gold); }
+.score-row b.pv { font: 700 22px var(--mono); }
+.score-row small { display: block; color: var(--muted); }
+.modal-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.modal-actions .btn { flex: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  .pawn.threat, .lv-row-flash > div:not(.lv-name) { animation: none; }
+}
+</style>
+
+<div id="setup" class="setup">
+  <div class="setup-card">
+    <div class="brand">
+      <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 6l15 5v12c0 10-6 16-15 19C15 39 9 33 9 23V11zM17 24l5 5 9-10"></path></svg>
+      <h1>CYBERPOLIS</h1>
+    </div>
+    <p class="tag">Avancez avec les dés, achetez les composants de votre environnement, montez des applications, et gardez tout à jour pendant que la menace monte.</p>
+    <fieldset class="seg">
+      <legend>Nombre de joueurs</legend>
+      <div class="seg-row" id="countSeg">
+        <button type="button" data-act="count" data-n="2" aria-pressed="true">2</button>
+        <button type="button" data-act="count" data-n="3" aria-pressed="false">3</button>
+        <button type="button" data-act="count" data-n="4" aria-pressed="false">4</button>
+      </div>
+    </fieldset>
+    <div class="names" id="names"></div>
+    <p class="setup-err" id="setupErr" role="alert"></p>
+    <div class="row">
+      <button type="button" class="btn primary big" data-act="start">Commencer la partie</button>
+      <button type="button" class="btn big" id="resumeBtn" data-act="resume" hidden>Reprendre la partie en cours</button>
+      <button type="button" class="link" data-act="rules">Lire les règles</button>
+    </div>
+  </div>
+</div>
+
+<div id="game" hidden>
+  <div class="stage">
+    <div class="boardscroll">
+      <div class="boardwrap"><div class="board" id="board"></div></div>
+    </div>
+    <aside class="side">
+      <div class="card">
+        <div class="topbar">
+          <div class="brandsm">CYBERPOLIS</div>
+          <div class="round" id="roundInfo"></div>
+        </div>
+        <div class="tools" style="margin-top:10px">
+          <button type="button" class="btn sm" data-act="rules">Règles</button>
+          <button type="button" class="btn sm" data-act="apps">Applications</button>
+          <button type="button" class="btn sm" data-act="restart">Nouvelle partie</button>
+        </div>
+      </div>
+      <div class="card" id="turn"></div>
+      <div class="card" id="dash"></div>
+      <div class="card" id="hand"></div>
+      <div class="card" id="players"></div>
+      <div class="card"><h3>Journal</h3><ol class="log" id="log"></ol></div>
+    </aside>
+  </div>
+</div>
+
+<div id="modal" class="modal" hidden role="dialog" aria-modal="true" aria-label="Fenêtre">
+  <div class="modal-card" id="modalBody"></div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* =====================================================================
+     RÉGLAGES : tout ce qui est à équilibrer se trouve ici.
+     ===================================================================== */
+  var CONFIG = {
+    START_CREDITS: 30,   // crédits de départ
+    START_RANDOM: 3,     // composants tirés au hasard au départ (en Noir)
+    START_CHOICE: 2,     // composants choisis au départ (en Noir)
+    DICP_RECOVER: 20,    // points de chaque critère regagnés au Départ si tous les composants de l'application sont conformes
+    APP_REVENUE: 10,     // crédits rapportés par application opérationnelle à chaque passage par le Départ
+    HOST_FEE: 2,         // hébergement d'une application : au lancement et à chaque passage par le Départ
+    DC_PRICE: 10,        // prix d'achat d'un datacentre
+    BASE_SALARY: 0,      // crédits fixes à chaque passage par le Départ
+    AUDIT_FEE: 2,        // crédits payés par composant non conforme sur la case Audit
+    MAX_LEVEL: 5,        // niveau maximal de protection requis (cubes)
+    MAX_VERSION: 5       // version maximale d'un composant (exemplaires empilés)
+  };
+  var DCS = ['AAA', 'BBB', 'CCC', 'DDD'];
+
+  var ORDER = ['bdd', 'front', 'back', 'net', 'save', 'fw', 'api', 'iam'];   // ordre des lignes de la grille centrale
+  var TECHS = ['noir', 'gris', 'or'];
+  var TECH = {
+    noir: { label: 'Noir', mult: 1 },
+    gris: { label: 'Gris', mult: 2 },
+    or:   { label: 'Or',   mult: 3 }
+  };
+  var PCOL = ['#FF7A59', '#4DE3D0', '#B79CFF', '#F5F069'];
+
+  /* Couleurs reprises du plateau papier. c = bandeau, ic = pictogramme, ink = texte sur le bandeau. */
+  var TYPES = {
+    net:   { name: 'Réseau',                short: 'Réseau',      code: 'RÉS',   base: 3, c: '#E3190B', ic: '#FF6A5A', ink: '#FFFFFF', icon: 'M24 8a4 4 0 1 0 0 8a4 4 0 0 0 0-8zM10 32a4 4 0 1 0 0 8a4 4 0 0 0 0-8zM38 32a4 4 0 1 0 0 8a4 4 0 0 0 0-8zM22 15L12 33M26 15l10 18M14 36h20' },
+    fw:    { name: 'Pare-feu',              short: 'Pare-feu',    code: 'FW',    base: 2, c: '#D9B400', ic: '#F2CF3A', ink: '#0A0F24', icon: 'M6 10h36v28H6zM6 19h36M6 28h36M18 10v9M30 19v9M18 28v10' },
+    bdd:   { name: 'Base de données',       short: 'Base de données', code: 'BDD', base: 3, c: '#0E8A1E', ic: '#43CC5A', ink: '#FFFFFF', icon: 'M10 12c0-3 6-5 14-5s14 2 14 5-6 5-14 5-14-2-14-5zM10 12v24c0 3 6 5 14 5s14-2 14-5V12M10 24c0 3 6 5 14 5s14-2 14-5' },
+    back:  { name: 'Serveur back-end',      short: 'Back-end',    code: 'BACK',  base: 3, c: '#F2A100', ic: '#FFBB3D', ink: '#0A0F24', icon: 'M8 8h32v10H8zM8 20h32v10H8zM8 32h32v10H8zM14 13h4M14 25h4M14 37h4M32 13h2M32 25h2M32 37h2' },
+    front: { name: 'Serveur front',         short: 'Front-end',   code: 'FRONT', base: 2, c: '#77508F', ic: '#B890D2', ink: '#FFFFFF', icon: 'M6 10h36v28H6zM6 18h36M12 14h2M18 14h2M14 26h20M14 32h12' },
+    save:  { name: 'Sauvegarde',            short: 'Sauvegarde',  code: 'SAUV',  base: 2, c: '#0A55E8', ic: '#6199FF', ink: '#FFFFFF', icon: 'M24 8v20M16 21l8 8 8-8M8 34v6h32v-6' },
+    api:   { name: 'API',                   short: 'API',         code: 'API',   base: 2, c: '#1DA1E6', ic: '#55C4F6', ink: '#06233A', icon: 'M16 12L6 24l10 12M32 12l10 12-10 12M27 10l-6 28' },
+    iam:   { name: 'Gestion des identités', short: 'Identités',   code: 'IAM',   base: 3, c: '#9B4F2A', ic: '#DF9166', ink: '#FFFFFF', icon: 'M17 15a7 7 0 1 0 14 0a7 7 0 0 0-14 0zM8 41c0-8 7-12 16-12s16 4 16 12' },
+    dc:    { name: 'Datacentre',            short: 'Datacentre',  code: 'DC',    base: 0, c: '#5B6275', ic: '#AEB6CB', ink: '#FFFFFF', icon: 'M6 42V18l18-10 18 10v24zM6 42h36M16 42V28h16v14M20 22h8' }
+  };
+
+  /* =====================================================================
+     PLATEAU : 40 cases, lues dans le sens horaire à partir de la case Départ
+     (coin en bas à droite, flèche vers la gauche).
+     comp = composant à acheter, select = au choix, audit, dc = datacentre,
+     free = case vide du plan (neutre pour l'instant), corner = coin neutre.
+     ===================================================================== */
+  var B = [
+    { k: 'start' },                         // 0  coin bas droit
+    { k: 'comp', t: 'iam' },                // 1
+    { k: 'select' },                        // 2
+    { k: 'comp', t: 'iam' },                // 3
+    { k: 'audit' },                         // 4
+    { k: 'dc', n: 'AAA' },                  // 5
+    { k: 'comp', t: 'api' },                // 6
+    { k: 'free' },                          // 7
+    { k: 'comp', t: 'api' },                // 8
+    { k: 'comp', t: 'api' },                // 9
+    { k: 'corner', n: 'quarantaine' },      // 10 coin bas gauche (hacker en cage)
+    { k: 'comp', t: 'front' },              // 11
+    { k: 'select' },                        // 12
+    { k: 'comp', t: 'front' },              // 13
+    { k: 'comp', t: 'front' },              // 14
+    { k: 'dc', n: 'BBB' },                  // 15
+    { k: 'comp', t: 'back' },               // 16
+    { k: 'select' },                        // 17
+    { k: 'comp', t: 'back' },               // 18
+    { k: 'comp', t: 'back' },               // 19
+    { k: 'corner', n: 'repos' },            // 20 coin haut gauche
+    { k: 'comp', t: 'net' },                // 21
+    { k: 'free' },                          // 22
+    { k: 'comp', t: 'net' },                // 23
+    { k: 'comp', t: 'net' },                // 24
+    { k: 'dc', n: 'CCC' },                  // 25
+    { k: 'comp', t: 'fw' },                 // 26
+    { k: 'free' },                          // 27
+    { k: 'comp', t: 'fw' },                 // 28
+    { k: 'comp', t: 'fw' },                 // 29
+    { k: 'corner', n: 'repos' },            // 30 coin haut droit
+    { k: 'comp', t: 'bdd' },                // 31
+    { k: 'comp', t: 'bdd' },                // 32
+    { k: 'free' },                          // 33
+    { k: 'comp', t: 'bdd' },                // 34
+    { k: 'dc', n: 'DDD' },                  // 35
+    { k: 'free' },                          // 36
+    { k: 'comp', t: 'save' },               // 37
+    { k: 'free' },                          // 38
+    { k: 'comp', t: 'save' }                // 39
+  ];
+
+  /* Cartes événement : le pion menace va sur le prochain composant du type visé,
+     et les cubes des technologies listées montent d'un niveau sur la ligne de ce composant. */
+  var EVENTS = [
+    { n: 'Menace hacktiviste',          t: 'api',   techs: ['noir', 'gris'],       x: "Un collectif s'en prend aux interfaces publiques." },
+    { n: 'Injection SQL',               t: 'bdd',   techs: ['noir'],               x: 'Une requête piégée vide vos tables.' },
+    { n: 'Faille XSS',                  t: 'front', techs: ['noir'],               x: 'Un script malveillant détourne les sessions.' },
+    { n: 'Exécution de code à distance', t: 'back', techs: ['noir', 'gris', 'or'], x: 'Un attaquant prend la main sur le serveur.' },
+    { n: 'Règle contournée',            t: 'fw',    techs: ['noir', 'gris'],       x: 'Une règle mal écrite laisse tout passer.' },
+    { n: 'Rançongiciel',                t: 'save',  techs: ['noir', 'gris'],       x: 'Les copies sont chiffrées avant les données.' },
+    { n: "Clé d'API exposée",           t: 'api',   techs: ['gris', 'or'],         x: "Un jeton oublié dans le code ouvre tout." },
+    { n: "Vol d'identifiants",          t: 'iam',   techs: ['noir'],               x: 'Des mots de passe volés servent à se connecter.' },
+    { n: 'Fuite de données',            t: 'bdd',   techs: ['gris', 'or'],         x: 'Une base mal protégée se retrouve en ligne.' },
+    { n: 'Dépendance piégée',           t: 'back',  techs: ['noir'],               x: 'Une bibliothèque tierce contient une porte dérobée.' },
+    { n: 'DDoS volumétrique',           t: 'net',   techs: ['noir', 'gris'],       x: 'Un déluge de paquets sature la bande passante.' },
+    { n: 'Contournement du MFA',        t: 'iam',   techs: ['gris', 'or'],         x: "Une avalanche d'alertes pousse un admin à valider." },
+    { n: 'Faille du firmware routeur',  t: 'net',   techs: ['noir', 'gris', 'or'], x: 'Un routeur non mis à jour laisse entrer un intrus.' },
+    { n: 'Hameçonnage ciblé',           t: 'iam',   techs: ['noir', 'gris'],       x: 'Un employé clique sur le mauvais lien.' },
+    { n: "Chaîne d'approvisionnement",  t: 'back',  techs: ['gris', 'or'],         x: 'Une mise à jour légitime est piégée.' },
+    { n: 'Scan de ports',               t: 'fw',    techs: ['noir'],               x: 'Des sondes cherchent la moindre ouverture.' },
+    { n: 'Cryptominage',                t: 'front', techs: ['noir', 'gris'],       x: 'Des scripts parasites épuisent vos serveurs.' },
+    { n: 'Espionnage étatique',         t: 'bdd',   techs: ['noir', 'gris', 'or'], x: 'Un groupe patient siphonne vos données.' }
+  ];
+
+  /* Critères DICP : Disponibilité, Intégrité, Confidentialité, Preuve. Chaque application démarre à 100 %.
+     Un événement retire ces points aux applications dont un composant visé est non conforme. */
+  var DICP = [
+    { k: 'd', l: 'D', n: 'Disponibilité' },
+    { k: 'i', l: 'I', n: 'Intégrité' },
+    { k: 'c', l: 'C', n: 'Confidentialité' },
+    { k: 'p', l: 'P', n: 'Preuve' }
+  ];
+  var EVENT_DICP = [
+    { d: 20, i: 10 },            // Menace hacktiviste
+    { i: 30, c: 20 },            // Injection SQL
+    { i: 20, c: 20, p: 10 },     // Faille XSS
+    { d: 10, i: 30, c: 30, p: 10 }, // Exécution de code à distance
+    { i: 10, c: 20, p: 10 },     // Règle contournée
+    { d: 30, i: 20 },            // Rançongiciel
+    { c: 30, p: 20 },            // Clé d'API exposée
+    { c: 30, p: 30 },            // Vol d'identifiants
+    { c: 40 },                   // Fuite de données
+    { i: 30, c: 20 },            // Dépendance piégée
+    { d: 40 },                   // DDoS volumétrique
+    { c: 20, p: 30 },            // Contournement du MFA
+    { d: 20, i: 10, c: 10 },     // Faille du firmware routeur
+    { c: 20, p: 20 },            // Hameçonnage ciblé
+    { i: 30, p: 20 },            // Chaîne d'approvisionnement
+    { c: 10, p: 10 },            // Scan de ports
+    { d: 30 },                   // Cryptominage
+    { c: 30, p: 20 }             // Espionnage étatique
+  ];
+  function newDicp() { return { d: 100, i: 100, c: 100, p: 100 }; }
+  function dicpAvg(a) { var d = a.dicp || newDicp(); return Math.round((d.d + d.i + d.c + d.p) / 4); }
+  function dicpChips(m) {
+    return DICP.filter(function (c) { return m[c.k]; }).map(function (c) { return '<span class="dk" title="' + c.n + '">' + c.l + ' −' + m[c.k] + '</span>'; }).join('');
+  }
+  function dicpBars(a) {
+    var d = a.dicp || newDicp();
+    return '<div class="dicp">' + DICP.map(function (c) {
+      var v = d[c.k], lv = v >= 70 ? 'hi' : v >= 40 ? 'mid' : 'lo';
+      return '<div class="dg ' + lv + '" title="' + c.n + ' : ' + v + ' %"><span class="dl">' + c.l + '</span><span class="dbar"><i style="width:' + v + '%"></i></span><span class="dv">' + v + '</span></div>';
+    }).join('') + '</div>';
+  }
+
+  /* Applications : [type, nombre d'exemplaires, technologie minimale]. Chaque application ne peut être montée qu'une fois. */
+  var APPS = [
+    { n: 'Blog associatif',         pv: 2,  reqs: [['front', 1], ['bdd', 1]] },
+    { n: 'Registre civil',          pv: 3,  reqs: [['front', 1], ['bdd', 2], ['iam', 1]] },
+    { n: 'Billetterie',             pv: 4,  reqs: [['front', 1], ['back', 1], ['api', 1]] },
+    { n: 'Plateforme éducative',    pv: 5,  reqs: [['front', 1], ['back', 1], ['bdd', 1], ['iam', 1]] },
+    { n: 'Boutique en ligne',       pv: 6,  reqs: [['front', 1], ['back', 1], ['bdd', 1], ['api', 1], ['fw', 1]] },
+    { n: 'Streaming vidéo',         pv: 6,  reqs: [['front', 2], ['api', 1], ['net', 1], ['bdd', 1]] },
+    { n: 'Portail citoyen',         pv: 6,  reqs: [['front', 2], ['back', 1], ['bdd', 1], ['iam', 1, 'gris']] },
+    { n: 'Messagerie sécurisée',    pv: 7,  reqs: [['net', 1], ['back', 1], ['api', 1], ['iam', 1, 'gris'], ['save', 1]] },
+    { n: 'Paiement mobile',         pv: 7,  reqs: [['api', 2], ['back', 1], ['bdd', 1], ['iam', 1, 'gris']] },
+    { n: 'Transports intelligents', pv: 7,  reqs: [['net', 2], ['back', 1], ['bdd', 1], ['api', 1]] },
+    { n: 'Cloud public',            pv: 7,  reqs: [['net', 1], ['back', 2], ['bdd', 1], ['api', 1, 'gris']] },
+    { n: 'Banque numérique',        pv: 8,  reqs: [['back', 1], ['bdd', 2], ['iam', 1, 'or'], ['fw', 1]] },
+    { n: 'Réseau social',           pv: 8,  reqs: [['front', 2], ['back', 2], ['bdd', 1], ['api', 1]] },
+    { n: 'Télémédecine',            pv: 7,  reqs: [['front', 1], ['back', 1], ['bdd', 1], ['net', 1], ['iam', 1, 'gris']] },
+    { n: 'Logistique connectée',    pv: 6,  reqs: [['back', 1], ['api', 2], ['bdd', 1], ['net', 1]] },
+    { n: 'Supervision industrielle', pv: 8, reqs: [['net', 2], ['back', 1], ['fw', 1, 'gris'], ['save', 1], ['api', 1]] },
+    { n: 'Hôpital connecté',        pv: 9,  reqs: [['bdd', 2], ['back', 1], ['save', 1, 'gris'], ['fw', 1], ['iam', 1]] },
+    { n: 'Réseau électrique',       pv: 9,  reqs: [['net', 2], ['back', 1], ['fw', 1, 'gris'], ['save', 1], ['iam', 1]] },
+    { n: 'Défense nationale',       pv: 12, reqs: [['net', 2], ['bdd', 1], ['fw', 1, 'or'], ['iam', 1, 'or'], ['save', 1, 'gris']] }
+  ];
+
+  /* Profils de joueur : chacun n'a accès qu'à ses applications (exclusives ou communes à plusieurs profils). */
+  var PROFILES = [
+    { n: 'Collectivité numérique',   c: '#55C4F6', tag: 'Services publics en ligne',    keys: 'C · I', threat: "Vol d'identifiants", apps: ['Registre civil', 'Portail citoyen', 'Blog associatif', 'Plateforme éducative'] },
+    { n: 'Santé et soins',           c: '#43CC5A', tag: 'Hôpital et télémédecine',      keys: 'D · C', threat: 'Rançongiciel',       apps: ['Hôpital connecté', 'Télémédecine', 'Messagerie sécurisée'] },
+    { n: 'Banque et fintech',        c: '#F2CF3A', tag: 'Paiement et épargne',          keys: 'I · P', threat: "Clé d'API exposée",  apps: ['Banque numérique', 'Paiement mobile'] },
+    { n: 'Énergie et industrie',     c: '#FFBB3D', tag: 'Réseaux électriques et usines', keys: 'D · I', threat: 'DDoS volumétrique',  apps: ['Réseau électrique', 'Supervision industrielle', 'Transports intelligents'] },
+    { n: 'Médias et divertissement', c: '#B890D2', tag: 'Streaming, social, billets',   keys: 'D · C', threat: 'Faille XSS',          apps: ['Streaming vidéo', 'Réseau social', 'Billetterie', 'Blog associatif'] },
+    { n: 'Commerce et logistique',   c: '#DF9166', tag: 'De la boutique à la livraison', keys: 'D · P', threat: "Chaîne d'approvisionnement", apps: ['Boutique en ligne', 'Logistique connectée', 'Paiement mobile'] },
+    { n: 'Fournisseur cloud',        c: '#6199FF', tag: 'Hébergement pour les autres',  keys: 'C · I', threat: 'Exécution de code à distance', apps: ['Cloud public', 'Plateforme éducative', 'Messagerie sécurisée'] },
+    { n: 'Défense et souveraineté',  c: '#FF6A5A', tag: "Systèmes d'État",              keys: 'C · P', threat: 'Espionnage étatique', apps: ['Défense nationale', 'Transports intelligents'] }
+  ];
+  function profOf(p) { return PROFILES[p.profile || 0]; }
+  function allowed(p, i) { return profOf(p).apps.indexOf(APPS[i].n) >= 0; }
+
+  /* =====================================================================
+     OUTILS
+     ===================================================================== */
+  var SAVE_KEY = 'cyberpolis-partie-v4';
+  var S = null;          // état de la partie
+  var busy = false;      // animation en cours
+  var setupCount = 2;
+  var flashTimer = null;
+
+  function $(s, r) { return (r || document).querySelector(s); }
+  function $$(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
+  function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+  function rnd6() { return 1 + Math.floor(Math.random() * 6); }
+  function key(t, k) { return t + '|' + k; }
+  function plural(n, a, b) { return n > 1 ? b : a; }
+  function shuffle(a) {
+    a = a.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+  function svg(path, extra) {
+    return '<svg viewBox="0 0 48 48" aria-hidden="true"' + (extra || '') + '><path d="' + path + '"></path></svg>';
+  }
+  function techChip(k) { return '<span class="tech t-' + k + '">' + TECH[k].label.toUpperCase() + '</span>'; }
+  function cube(k, title) { return '<i class="cube c-' + k + '" title="' + esc(title || TECH[k].label) + '"></i>'; }
+
+  function save() {
+    try {
+      localStorage.setItem(SAVE_KEY, JSON.stringify(S, function (k, v) { return k === 'flash' ? undefined : v; }));
+    } catch (e) { /* stockage indisponible : la partie continue sans sauvegarde */ }
+  }
+  function loadSaved() {
+    try {
+      var raw = localStorage.getItem(SAVE_KEY);
+      if (!raw) return null;
+      var d = JSON.parse(raw);
+      if (d && d.players && d.levels && d.deck) {
+        d.players.forEach(function (p) { p.apps.forEach(function (a) { if (!a.dicp) a.dicp = newDicp(); }); });
+        return d;
+      }
+    } catch (e) { /* ignore */ }
+    return null;
+  }
+  function clearSave() { try { localStorage.removeItem(SAVE_KEY); } catch (e) { /* ignore */ } }
+
+  /* =====================================================================
+     RÈGLES : fonctions pures sur l'état
+     ===================================================================== */
+  function cur() { return S.players[S.cur]; }
+  function levelOf(t, k) { return S.levels[t][k]; }
+  function stackOf(p, t, k) { return p.stacks[key(t, k)] || 0; }
+  function conformKey(p, kk) {
+    var parts = kk.split('|');
+    return (p.stacks[kk] || 0) >= S.levels[parts[0]][parts[1]];
+  }
+  function nonConformKeys(p) {
+    return Object.keys(p.stacks).filter(function (kk) { return p.stacks[kk] > 0 && !conformKey(p, kk); });
+  }
+  function price(t, k) { return TYPES[t].base * TECH[k].mult; }
+
+  function nextCellOfType(t, from) {
+    for (var j = 1; j <= 40; j++) {
+      var i = (from + j) % 40;
+      if (B[i].k === 'comp' && B[i].t === t) return i;
+    }
+    return from;
+  }
+
+  /* Répartit les exemplaires libres du joueur sur les besoins d'une application. Renvoie null si impossible. */
+  function allocate(p, app) {
+    var used = {};
+    for (var r = 0; r < app.reqs.length; r++) {
+      var t = app.reqs[r][0], need = app.reqs[r][1], min = app.reqs[r][2];
+      var minM = min ? TECH[min].mult : 1;
+      for (var i = 0; i < TECHS.length && need > 0; i++) {
+        var tech = TECHS[i];
+        if (TECH[tech].mult < minM) continue;
+        var kk = key(t, tech);
+        var free = (p.stacks[kk] || 0) - (p.locked[kk] || 0);
+        var take = Math.min(free, need);
+        if (take > 0) { used[kk] = take; need -= take; }
+      }
+      if (need > 0) return null;
+    }
+    return used;
+  }
+  function haveFor(p, req) {
+    var minM = req[2] ? TECH[req[2]].mult : 1, n = 0;
+    TECHS.forEach(function (tech) {
+      if (TECH[tech].mult < minM) return;
+      var kk = key(req[0], tech);
+      n += (p.stacks[kk] || 0) - (p.locked[kk] || 0);
+    });
+    return n;
+  }
+  function buildable(p) {
+    var out = [];
+    APPS.forEach(function (a, i) {
+      if (S.appOwner[i] !== null || !allowed(p, i)) return;
+      if (allocate(p, a)) out.push(i);
+    });
+    return out;
+  }
+  function opOK(p, a) { return Object.keys(a.uses).every(function (kk) { return conformKey(p, kk); }); }
+  function scoreOf(p) {
+    var pv = 0, pot = 0;
+    p.apps.forEach(function (a) {
+      pot += APPS[a.idx].pv;
+      if (opOK(p, a)) pv += Math.round(APPS[a.idx].pv * dicpAvg(a) / 100);
+    });
+    return { pv: pv, pot: pot };
+  }
+
+  function log(msg) {
+    S.log.unshift(msg);
+    if (S.log.length > 40) S.log.length = 40;
+  }
+
+  /* =====================================================================
+     CRÉATION DE PARTIE
+     ===================================================================== */
+  function newGame(names, profs) {
+    var levels = {};
+    ORDER.forEach(function (t) { levels[t] = { noir: 1, gris: 1, or: 1 }; });
+    S = {
+      players: names.map(function (n, i) {
+        return { id: i, name: n, profile: profs[i], color: PCOL[i], pos: 0, credits: CONFIG.START_CREDITS, stacks: {}, locked: {}, apps: [] };
+      }),
+      cur: 0,
+      round: 1,
+      phase: 'roll',
+      dice: [1, 1],
+      threat: { pos: 10 },
+      levels: levels,
+      deck: shuffle(EVENTS.map(function (_, i) { return i; })),
+      total: EVENTS.length,
+      lastEvent: null,
+      appOwner: APPS.map(function () { return null; }),
+      dcOwner: { AAA: null, BBB: null, CCC: null, DDD: null },
+      log: [],
+      msg: '',
+      pick: null,
+      buildPick: null,
+      prep: null,
+      flash: null
+    };
+    beginPrepFor(0);
+  }
+
+  /* ---- préparation : chaque joueur reçoit des composants puis monte ses premières applications ---- */
+  function addCard(p, t, k) {
+    var kk = key(t, k);
+    p.stacks[kk] = (p.stacks[kk] || 0) + 1;
+  }
+  function beginPrepFor(i) {
+    S.cur = i;
+    var p = S.players[i], dealt = [];
+    S.phase = 'prep';
+    for (var n = 0; n < CONFIG.START_RANDOM; n++) {
+      var t = ORDER[Math.floor(Math.random() * ORDER.length)];
+      addCard(p, t, 'noir');
+      dealt.push(t);
+    }
+    S.prep = { step: 'choose', left: CONFIG.START_CHOICE, dealt: dealt };
+    log(esc(p.name) + ' reçoit au hasard : ' + dealt.map(function (t) { return TYPES[t].short; }).join(', ') + '.');
+  }
+  function prepPick(t) {
+    var p = cur();
+    if (S.phase !== 'prep' || S.prep.step !== 'choose') return;
+    addCard(p, t, 'noir');
+    S.prep.left--;
+    log(esc(p.name) + ' choisit : ' + TYPES[t].short + '.');
+    if (S.prep.left <= 0) S.prep.step = 'mount';
+    save();
+    render();
+  }
+  function prepDone() {
+    if (S.phase !== 'prep') return;
+    if (S.cur + 1 < S.players.length) {
+      beginPrepFor(S.cur + 1);
+    } else {
+      S.cur = 0;
+      S.phase = 'roll';
+      S.prep = null;
+      log('La partie commence. ' + esc(cur().name) + ' lance les dés.');
+    }
+    save();
+    render();
+  }
+
+  /* ---- hébergement et revenus ---- */
+  function dcFee(p, d) { return S.dcOwner[d] === p.id ? 0 : CONFIG.HOST_FEE; }
+  function payHost(p, d) {
+    var fee = dcFee(p, d), o = S.dcOwner[d];
+    p.credits -= fee;
+    if (fee && o !== null) S.players[o].credits += fee;
+    return fee;
+  }
+  function autoHost(p) {
+    var best = DCS[0];
+    DCS.forEach(function (d) { if (dcFee(p, d) < dcFee(p, best)) best = d; });
+    return best;
+  }
+  function appRevenue(a) { return Math.round(CONFIG.APP_REVENUE * (a.dicp || newDicp()).d / 100); }
+  function forecast(p) {
+    var gain = CONFIG.BASE_SALARY, cost = 0;
+    p.apps.forEach(function (a) {
+      if (opOK(p, a)) gain += appRevenue(a);
+      cost += dcFee(p, a.host);
+    });
+    return { gain: gain, cost: cost };
+  }
+  function passStart(p) {
+    var gain = CONFIG.BASE_SALARY, down = 0, cost = 0;
+    p.apps.forEach(function (a) {
+      if (opOK(p, a)) {
+        gain += appRevenue(a);
+        DICP.forEach(function (c) { a.dicp[c.k] = Math.min(100, a.dicp[c.k] + CONFIG.DICP_RECOVER); });
+      } else down++;
+      cost += payHost(p, a.host);
+    });
+    p.credits += gain;
+    log(esc(p.name) + ' passe par le Départ : +' + gain + ' cr' + (cost ? ', −' + cost + ' cr d\'hébergement' : '') +
+      (down ? ' (' + down + ' ' + plural(down, 'application non conforme ne rapporte', 'applications non conformes ne rapportent') + ' rien)' : '') + '.');
+  }
+  function prepHints(p) {
+    var out = [];
+    APPS.forEach(function (a, i) {
+      if (S.appOwner[i] !== null || !allowed(p, i)) return;
+      var miss = [], total = 0, impossible = false;
+      a.reqs.forEach(function (r) {
+        if (r[2]) { if (haveFor(p, r) < r[1]) impossible = true; return; }
+        var m = r[1] - haveFor(p, r);
+        if (m > 0) { total += m; miss.push(TYPES[r[0]].short + (m > 1 ? ' ×' + m : '')); }
+      });
+      if (!impossible && total > 0 && total <= S.prep.left) out.push({ t: total, pv: a.pv, txt: esc(a.n) + ' (il manque ' + miss.join(', ') + ')' });
+    });
+    out.sort(function (x, y) { return (x.t - y.t) || (y.pv - x.pv); });
+    return out.slice(0, 3).map(function (o) { return o.txt; });
+  }
+  function forecastHTML(p) {
+    var f = forecast(p);
+    return '<p class="sub" style="margin-bottom:10px">Au prochain Départ : +' + f.gain + ' cr de revenus, −' + f.cost + ' cr d\'hébergement.</p>';
+  }
+  function buildListHTML(p) {
+    var bl = buildable(p);
+    var minFee = Math.min.apply(null, DCS.map(function (d) { return dcFee(p, d); }));
+    if (!bl.length) return '<p class="sub" style="margin-bottom:12px">Aucune application possible avec vos composants libres.</p>';
+    return '<div class="buildlist">' + bl.map(function (i) {
+      return '<button type="button" class="buildbtn" data-act="build" data-i="' + i + '"' + (p.credits < minFee ? ' disabled' : '') + '>' + esc(APPS[i].n) + '<span>' + APPS[i].pv + ' PV</span></button>';
+    }).join('') + '</div>';
+  }
+
+  /* =====================================================================
+     DESSIN DU PLATEAU
+     ===================================================================== */
+  function sideOf(i) {
+    if (i % 10 === 0) return 'corner';
+    if (i < 10) return 'bottom';
+    if (i < 20) return 'left';
+    if (i < 30) return 'top';
+    return 'right';
+  }
+  function gridArea(i) {
+    if (i === 0) return '12 / 12 / 14 / 14';
+    if (i < 10) { var c = 12 - i; return '12 / ' + c + ' / 14 / ' + (c + 1); }
+    if (i === 10) return '12 / 1 / 14 / 3';
+    if (i < 20) { var r = 12 - (i - 10); return r + ' / 1 / ' + (r + 1) + ' / 3'; }
+    if (i === 20) return '1 / 1 / 3 / 3';
+    if (i < 30) { var c2 = 3 + (i - 21); return '1 / ' + c2 + ' / 3 / ' + (c2 + 1); }
+    if (i === 30) return '1 / 12 / 3 / 14';
+    var r2 = 3 + (i - 31);
+    return r2 + ' / 12 / ' + (r2 + 1) + ' / 14';
+  }
+
+  var HACKER = 'M24 6a9 9 0 0 0-9 9v5l-4 6h26l-4-6v-5a9 9 0 0 0-9-9zM19 17h10M20 21h2M26 21h2M10 8v34M18 8v34M30 8v34M38 8v34M6 42h36M6 8h36';
+  var ARROW = 'M42 24H8M20 12L8 24l12 12';
+  var PICK = 'M8 8h12v12H8zM28 8h12v12H28zM8 28h12v12H8zM28 28h12v12H28z';
+  var AUDIT = 'M14 8h20v6H14zM10 12h28v30H10zM17 27l5 5 9-11';
+  var PAUSE = 'M16 10v28M32 10v28';
+  var WARN = 'M24 6L4 42h40zM24 20v10M24 35v2';
+
+  function cellHTML(i) {
+    var c = B[i], side = sideOf(i), cls = 'cell ' + side, inner = '';
+    if (c.k === 'comp' || c.k === 'dc') {
+      var T = TYPES[c.k === 'dc' ? 'dc' : c.t];
+      var priceTxt = c.k === 'comp' ? (T.base + ' · ' + T.base * 2 + ' · ' + T.base * 3 + ' cr') : 'libre';
+      var label = c.k === 'dc' ? ('Datacentre<small>' + c.n + '</small>') : T.short;
+      inner = '<div class="ico">' + svg(T.icon, ' style="stroke:' + T.ic + '"') + '<span class="price">' + priceTxt + '</span></div>' +
+              '<div class="band" style="background:' + T.c + ';color:' + T.ink + '">' + label + '</div>';
+    } else if (c.k === 'start') {
+      cls += ' start';
+      inner = '<div class="nlabel">' + svg(ARROW) + 'DÉPART<small>+' + CONFIG.APP_REVENUE + ' cr par application, −' + CONFIG.HOST_FEE + ' cr d\'hébergement</small></div>';
+    } else if (c.k === 'corner') {
+      cls += ' neutral';
+      inner = c.n === 'quarantaine'
+        ? '<div class="nlabel">' + svg(HACKER) + 'QUARANTAINE<small>case neutre</small></div>'
+        : '<div class="nlabel">' + svg(PAUSE) + 'REPOS<small>case neutre</small></div>';
+    } else if (c.k === 'select') {
+      cls += ' special select';
+      inner = '<div class="nlabel">' + svg(PICK) + 'SÉLECTION<small>un composant au choix</small></div>';
+    } else if (c.k === 'audit') {
+      cls += ' special audit';
+      inner = '<div class="nlabel">' + svg(AUDIT) + 'AUDIT<small>' + CONFIG.AUDIT_FEE + ' cr par non-conformité</small></div>';
+    } else {
+      cls += ' neutral';
+      inner = '<div class="nlabel">LIBRE</div>';
+    }
+    return '<div class="' + cls + '" data-i="' + i + '"' + (c.k === 'dc' ? ' data-dc="' + c.n + '"' : '') + ' style="grid-area:' + gridArea(i) + '">' + inner + '<div class="toks"></div></div>';
+  }
+
+  function buildBoard() {
+    var html = '';
+    for (var i = 0; i < 40; i++) html += cellHTML(i);
+    html += '<div class="center" id="center"></div>';
+    $('#board').innerHTML = html;
+  }
+
+  function renderTokens() {
+    $$('.toks').forEach(function (el) { el.innerHTML = ''; });
+    $$('.cell').forEach(function (el) { el.classList.remove('active', 'threatcell'); });
+    S.players.forEach(function (p) {
+      var cell = $('.cell[data-i="' + p.pos + '"]');
+      $('.toks', cell).insertAdjacentHTML('beforeend', '<span class="pawn" style="--pc:' + p.color + '" title="' + esc(p.name) + '">' + (p.id + 1) + '</span>');
+    });
+    var tc = $('.cell[data-i="' + S.threat.pos + '"]');
+    $('.toks', tc).insertAdjacentHTML('afterbegin', '<span class="pawn threat" title="Menace" role="img" aria-label="Pion menace">' + svg(WARN) + '</span>');
+    tc.classList.add('threatcell');
+    if (S.phase !== 'over') $('.cell[data-i="' + cur().pos + '"]').classList.add('active');
+    $$('.cell[data-dc]').forEach(function (el) {
+      var d = el.dataset.dc, o = S.dcOwner[d], band = $('.band', el);
+      band.style.outline = o === null ? 'none' : '3px solid ' + S.players[o].color;
+      band.style.outlineOffset = '-3px';
+      $('.price', el).textContent = o === null ? 'libre · ' + CONFIG.DC_PRICE + ' cr' : 'propriétaire J' + (o + 1);
+    });
+  }
+
+  function renderCenter() {
+    var fl = S.flash;
+    var head = '<div class="lv-h"></div>';
+    for (var l = 1; l <= CONFIG.MAX_LEVEL; l++) head += '<div class="lv-h">' + l + '</div>';
+    var rows = ORDER.map(function (t) {
+      var T = TYPES[t];
+      var isF = fl && fl.t === t;
+      var cells = '';
+      for (var l2 = 1; l2 <= CONFIG.MAX_LEVEL; l2++) {
+        var cubes = TECHS.filter(function (k) { return S.levels[t][k] === l2; })
+          .map(function (k) { return cube(k, T.short + ' · ' + TECH[k].label + ' · niveau ' + l2); }).join('');
+        cells += '<div class="lv-cell">' + cubes + '</div>';
+      }
+      return '<div class="lv-name' + (isF ? ' flashn' : '') + '" style="--tc:' + T.c + '"><i></i>' + T.short + '</div>' + cells;
+    });
+    // les lignes sont des enfants directs de la grille ; on enveloppe la ligne clignotante avec display: contents
+    var body = ORDER.map(function (t, idx) {
+      var isF = fl && fl.t === t;
+      return '<div style="display:contents" class="' + (isF ? 'lv-row-flash' : '') + '">' + rows[idx] + '</div>';
+    }).join('');
+
+    var ev = S.lastEvent !== null ? EVENTS[S.lastEvent] : null;
+    var evFace = ev
+      ? '<div class="evface"><h4>' + esc(ev.n) + '</h4><p>' + esc(ev.x) + '</p><div class="chips">' + dicpChips(EVENT_DICP[S.lastEvent] || {}) + ev.techs.map(techChip).join('') + '<span class="tech t-gris" style="background:' + TYPES[ev.t].c + ';color:' + TYPES[ev.t].ink + '">' + TYPES[ev.t].short + '</span></div></div>'
+      : '<div class="evface empty">Aucun événement pour l\'instant</div>';
+
+    $('#center').innerHTML =
+      '<div class="c-head"><h2>NIVEAU DE PROTECTION REQUIS</h2>' +
+        '<div class="legend"><span>' + cube('noir') + 'Noir</span><span>' + cube('gris') + 'Gris</span><span>' + cube('or') + 'Or</span></div></div>' +
+      '<div class="lv">' + head + body + '</div>' +
+      '<div class="decks">' +
+        '<div class="deck"><div class="pile ev">ÉVÉNEMENTS<b>' + S.deck.length + '</b>restantes</div>' + evFace + '</div>' +
+        '<div class="deck"><div class="pile vu">CARTE<br>VULNÉRABILITÉ<small>règle à définir</small></div></div>' +
+      '</div>';
+  }
+
+  /* =====================================================================
+     COLONNE DE DROITE
+     ===================================================================== */
+  function dieHTML(v) {
+    var on = { 1: [4], 2: [0, 8], 3: [0, 4, 8], 4: [0, 2, 6, 8], 5: [0, 2, 4, 6, 8], 6: [0, 2, 3, 5, 6, 8] }[v];
+    var h = '';
+    for (var i = 0; i < 9; i++) h += '<span class="pip' + (on.indexOf(i) >= 0 ? ' on' : '') + '"></span>';
+    return '<div class="die" role="img" aria-label="Dé : ' + v + '">' + h + '</div>';
+  }
+  function diceHTML() {
+    return '<div class="dice">' + dieHTML(S.dice[0]) + dieHTML(S.dice[1]) + '<span class="sum">' + (S.dice[0] + S.dice[1]) + '</span></div>';
+  }
+
+  function techOptions(p, t) {
+    return '<div class="opts">' + TECHS.map(function (k) {
+      var pr = price(t, k), have = stackOf(p, t, k), nv = have + 1, req = levelOf(t, k);
+      var maxed = have >= CONFIG.MAX_VERSION, poor = p.credits < pr, ok = nv >= req;
+      var st = maxed ? 'Version maximale atteinte' : poor ? 'Crédits insuffisants' : 'Niveau requis ' + req + ' : ' + (ok ? 'conforme' : 'non conforme');
+      return '<button type="button" class="opt" data-act="buy" data-t="' + t + '" data-k="' + k + '"' + ((maxed || poor) ? ' disabled' : '') + '>' +
+        techChip(k) +
+        '<span class="opt-main"><b>' + pr + ' cr</b><small>' + (have ? 'Version ' + have + ' → ' + nv : 'Nouveau composant, version 1') + '</small></span>' +
+        '<span class="opt-st ' + (maxed || poor ? '' : (ok ? 'ok' : 'bad')) + '">' + st + '</span></button>';
+    }).join('') + '</div>';
+  }
+
+  function turnHTML() {
+    var p = cur();
+    var who = '<div class="whose"><span class="pawn" style="--pc:' + p.color + '">' + (p.id + 1) + '</span><b>' + esc(p.name) + '</b><span class="pl-stat">' + p.credits + ' cr</span></div>';
+    var h = who;
+    if (S.phase === 'roll') {
+      h += diceHTML() + forecastHTML(p) + '<button type="button" class="btn primary big" data-act="roll">Lancer les dés</button>';
+    } else if (S.phase === 'moving') {
+      h += diceHTML() + '<p class="lead">Déplacement…</p>';
+    } else if (S.phase === 'buy') {
+      var t = B[p.pos].t;
+      h += diceHTML() + '<p class="lead">Case ' + TYPES[t].name + '. Choisissez la technologie à acheter, ou passez.</p>' + techOptions(p, t) +
+        '<button type="button" class="btn big" data-act="skip">Ne rien acheter</button>';
+    } else if (S.phase === 'select') {
+      h += diceHTML() + '<p class="lead">Case Sélection : choisissez n\'importe quel composant.</p>';
+      if (!S.pick) {
+        h += '<div class="picker">' + ORDER.map(function (t2) {
+          return '<button type="button" class="pickbtn" style="--tc:' + TYPES[t2].c + '" data-act="pick" data-t="' + t2 + '"><i></i>' + TYPES[t2].short + '</button>';
+        }).join('') + '</div><button type="button" class="btn big" data-act="skip">Ne rien acheter</button>';
+      } else {
+        h += '<p class="sub" style="margin-bottom:8px">' + TYPES[S.pick].name + '</p>' + techOptions(p, S.pick) +
+          '<div class="modal-actions"><button type="button" class="btn" data-act="unpick">Changer de composant</button><button type="button" class="btn" data-act="skip">Ne rien acheter</button></div>';
+      }
+    } else if (S.phase === 'end') {
+      h += diceHTML();
+      if (S.msg) h += '<p class="lead">' + S.msg + '</p>';
+      if (S.buildPick !== null && S.buildPick !== undefined) {
+        h += '<h3 style="margin-top:4px">Hébergement de « ' + esc(APPS[S.buildPick].n) + ' »</h3><div class="opts">' + DCS.map(function (d) {
+          var o = S.dcOwner[d], fee = dcFee(p, d);
+          var info = o === null ? 'Libre : ' + fee + ' cr à la banque' : (o === p.id ? 'Le vôtre : gratuit' : 'Propriétaire ' + esc(S.players[o].name) + ' : ' + fee + ' cr');
+          return '<button type="button" class="opt" data-act="host" data-d="' + d + '"' + (p.credits < fee ? ' disabled' : '') + '><span class="tech t-gris">' + d + '</span>' +
+            '<span class="opt-main"><b>Datacentre ' + d + '</b></span><span class="opt-st">' + info + '</span></button>';
+        }).join('') + '</div><button type="button" class="btn big" data-act="unbuild">Annuler</button>';
+      } else {
+        h += '<h3 style="margin-top:4px">Monter une application</h3>' + buildListHTML(p) +
+          '<button type="button" class="btn primary big" data-act="end">Terminer le tour</button>';
+      }
+    } else if (S.phase === 'prep') {
+      if (S.prep.step === 'choose') {
+        var can = buildable(p).map(function (i) { return esc(APPS[i].n); });
+        h += '<p class="lead"><b>Préparation.</b> ' + esc(p.name) + ' reçoit ' + CONFIG.START_RANDOM + ' composants au hasard (Noir) et en choisit ' + CONFIG.START_CHOICE + ' autres. Encore ' + S.prep.left + ' à choisir.</p>' +
+          '<div class="picker">' + ORDER.map(function (t2) {
+            return '<button type="button" class="pickbtn" style="--tc:' + TYPES[t2].c + '" data-act="preppick" data-t="' + t2 + '"><i></i>' + TYPES[t2].short + '</button>';
+          }).join('') + '</div>' +
+          '<p class="sub">' + (can.length ? 'Déjà possible : ' + can.join(', ') + '. ' : '') +
+          (function () { var hs = prepHints(p); return hs.length ? 'Avec vos choix : ' + hs.join(' ; ') + '.' : (can.length ? '' : 'Aucune application possible pour l\'instant.'); })() + '</p>';
+      } else {
+        h += '<p class="lead"><b>Préparation.</b> Montez vos premières applications. Chacune coûte ' + CONFIG.HOST_FEE + ' cr d\'hébergement au lancement.</p>' + buildListHTML(p) +
+          '<button type="button" class="btn primary big" data-act="prepdone">' + (S.cur + 1 < S.players.length ? 'Joueur suivant' : 'Commencer la partie') + '</button>';
+      }
+    } else if (S.phase === 'dc') {
+      var d = B[p.pos].n, o2 = S.dcOwner[d];
+      h += diceHTML() + '<p class="lead"><b>Datacentre ' + d + '.</b> ' + (o2 === null
+        ? 'Libre. Achetez-le pour ' + CONFIG.DC_PRICE + ' cr : vos applications y sont hébergées gratuitement et les autres joueurs vous versent ' + CONFIG.HOST_FEE + ' cr par application à chaque passage par le Départ.'
+        : (o2 === p.id ? 'Vous en êtes propriétaire.' : 'Propriétaire : ' + esc(S.players[o2].name) + '. Vous pouvez y louer le service.')) + '</p>';
+      if (o2 === null) h += '<button type="button" class="btn primary big" style="margin-bottom:10px" data-act="dcbuy"' + (p.credits < CONFIG.DC_PRICE ? ' disabled' : '') + '>Acheter pour ' + CONFIG.DC_PRICE + ' cr</button>';
+      var movable = [];
+      p.apps.forEach(function (a, j) { if (a.host !== d) movable.push({ a: a, j: j }); });
+      h += '<h3>Louer le service ici</h3>';
+      if (movable.length) {
+        h += '<div class="buildlist">' + movable.map(function (x) {
+          var fee = dcFee(p, d);
+          return '<button type="button" class="buildbtn" data-act="dcmove" data-j="' + x.j + '"' + (p.credits < fee ? ' disabled' : '') + '>Héberger « ' + esc(APPS[x.a.idx].n) + ' » ici<span>' + (fee ? fee + ' cr' : 'gratuit') + '</span></button>';
+        }).join('') + '</div>';
+      } else {
+        h += '<p class="sub" style="margin-bottom:12px">Aucune application à héberger ici.</p>';
+      }
+      h += '<button type="button" class="btn big" data-act="dcdone">Continuer</button>';
+    } else if (S.phase === 'event') {
+      h += '<p class="lead">Un événement vient d\'être révélé.</p>';
+    } else if (S.phase === 'over') {
+      h = '<p class="lead">La partie est terminée.</p><button type="button" class="btn primary big" data-act="restartYes">Nouvelle partie</button>';
+    }
+    return h;
+  }
+
+  function stackChips(p) {
+    var keys = Object.keys(p.stacks).filter(function (kk) { return p.stacks[kk] > 0; });
+    keys.sort(function (a, b) {
+      var A = a.split('|'), Bb = b.split('|');
+      return (ORDER.indexOf(A[0]) - ORDER.indexOf(Bb[0])) || (TECHS.indexOf(A[1]) - TECHS.indexOf(Bb[1]));
+    });
+    return keys.map(function (kk) {
+      var parts = kk.split('|'), T = TYPES[parts[0]], bad = !conformKey(p, kk);
+      var bg = { noir: '#050507', gris: '#8C93A6', or: '#E8B931' }[parts[1]];
+      return '<span class="chip' + (bad ? ' bad' : '') + '" style="--tc:' + T.c + '" title="' + esc(T.name + ' ' + TECH[parts[1]].label + ' version ' + p.stacks[kk] + (bad ? ' (non conforme)' : '')) + '">' +
+        '<i style="background:' + bg + ';outline:1px solid #7A819C"></i>' + T.code + ' V' + p.stacks[kk] + (bad ? ' !' : '') + '</span>';
+    }).join('');
+  }
+
+  function playersHTML() {
+    return '<h3>Joueurs</h3>' + S.players.map(function (p, i) {
+      var sc = scoreOf(p);
+      var chips = stackChips(p) || '<span class="sub">Aucun composant</span>';
+      var apps = p.apps.map(function (a) {
+        var ok = opOK(p, a);
+        return '<span class="chip app' + (ok ? '' : ' bad') + '" title="' + (ok ? 'Opérationnelle' : 'Un composant est non conforme : aucun revenu') + '">' + esc(APPS[a.idx].n) + ' · ' + APPS[a.idx].pv + ' PV · ' + a.host + (ok ? '' : ' !') + ' · ' + dicpAvg(a) + ' %</span>';
+      }).join('');
+      DCS.forEach(function (d) {
+        if (S.dcOwner[d] === p.id) apps += '<span class="chip" style="--tc:#AEB6CB">Datacentre ' + d + '</span>';
+      });
+      return '<div class="pl' + (i === S.cur ? ' active' : '') + '">' +
+        '<div class="pl-h"><span class="pawn" style="--pc:' + p.color + '">' + (p.id + 1) + '</span><span class="pl-name">' + esc(p.name) + '</span>' +
+        '<span class="pl-stat">' + p.credits + ' cr</span><span class="pl-stat">' + sc.pv + ' PV</span></div>' +
+        '<div class="sub" style="margin-bottom:6px;color:' + profOf(p).c + '">' + esc(profOf(p).n) + '</div>' +
+        '<div class="chips">' + chips + '</div>' + (apps ? '<div class="chips">' + apps + '</div>' : '') + '</div>';
+    }).join('');
+  }
+
+  function dashHTML() {
+    var p = cur();
+    var pr = profOf(p);
+    var h = '<h3>Tableau de bord de ' + esc(p.name) + '</h3><div class="profline" style="--pc:' + pr.c + '"><b>' + esc(pr.n) + '</b><span>Critères clés ' + pr.keys + ' · menace type : ' + esc(pr.threat) + '</span></div>';
+    if (!p.apps.length) return h + '<p class="sub">Aucune application montée.</p>';
+    return h + '<div class="dashlist">' + p.apps.map(function (a) {
+      var ok = opOK(p, a);
+      return '<div class="dashapp' + (ok ? '' : ' bad') + '"><div class="apptop"><b>' + esc(APPS[a.idx].n) + '</b><span>' + dicpAvg(a) + ' % · ' + a.host + '</span></div>' + dicpBars(a) +
+        (ok ? '' : '<small class="bad">Composant non conforme : aucun revenu</small>') + '</div>';
+    }).join('') + '</div>';
+  }
+
+  function handHTML() {
+    var p = cur();
+    var keys = Object.keys(p.stacks).filter(function (kk) { return p.stacks[kk] > 0; });
+    keys.sort(function (a, b) {
+      var A = a.split('|'), Bb = b.split('|');
+      return (ORDER.indexOf(A[0]) - ORDER.indexOf(Bb[0])) || (TECHS.indexOf(A[1]) - TECHS.indexOf(Bb[1]));
+    });
+    var h = '<h3>Composants de ' + esc(p.name) + '</h3>';
+    if (!keys.length) return h + '<p class="sub">Aucun composant. Achetez-en en tombant sur une case de composant.</p>';
+    return h + '<ul class="hlist">' + keys.map(function (kk) {
+      var parts = kk.split('|'), T = TYPES[parts[0]], n = p.stacks[kk], req = S.levels[parts[0]][parts[1]], ok = n >= req, lk = p.locked[kk] || 0;
+      return '<li class="hrow' + (ok ? '' : ' bad') + '"><span class="swatch" style="background:' + T.c + '"></span>' +
+        '<span class="hname">' + T.name + '</span>' + techChip(parts[1]) + '<span class="hv">V' + n + '</span>' +
+        '<span class="hmeta"><span>Niveau requis ' + req + '</span><span class="' + (ok ? 'ok' : 'bad') + '">' + (ok ? 'conforme' : 'non conforme') + '</span>' +
+        (lk ? '<span>' + lk + ' ' + plural(lk, 'engagé', 'engagés') + ' dans une application</span>' : '') + '</span></li>';
+    }).join('') + '</ul>';
+  }
+
+  function renderSide() {
+    $('#roundInfo').textContent = S.phase === 'prep'
+      ? 'PRÉPARATION · JOUEUR ' + (S.cur + 1) + ' / ' + S.players.length
+      : 'MANCHE ' + Math.min(S.round, S.total) + ' / ' + S.total + ' · ' + S.deck.length + ' ÉVÉNEMENTS RESTANTS';
+    $('#turn').innerHTML = turnHTML();
+    $('#dash').innerHTML = dashHTML();
+    $('#hand').innerHTML = handHTML();
+    $('#players').innerHTML = playersHTML();
+    $('#log').innerHTML = S.log.slice(0, 8).map(function (l) { return '<li>' + l + '</li>'; }).join('');
+  }
+
+  function render() {
+    renderTokens();
+    renderCenter();
+    renderSide();
+  }
+
+  /* =====================================================================
+     DÉROULEMENT DU TOUR
+     ===================================================================== */
+  async function doRoll() {
+    if (S.phase !== 'roll' || busy) return;
+    busy = true;
+    S.phase = 'moving';
+    var p = cur();
+    renderSide();
+    for (var i = 0; i < 8; i++) {
+      S.dice = [rnd6(), rnd6()];
+      $('#turn').innerHTML = turnHTML();
+      await sleep(70);
+    }
+    S.dice = [rnd6(), rnd6()];
+    var total = S.dice[0] + S.dice[1];
+    renderSide();
+    log(esc(p.name) + ' obtient ' + S.dice[0] + ' + ' + S.dice[1] + ' = ' + total + '.');
+    for (var s = 0; s < total; s++) {
+      p.pos = (p.pos + 1) % 40;
+      if (p.pos === 0) {
+        passStart(p);
+        renderSide();
+      }
+      renderTokens();
+      await sleep(130);
+    }
+    busy = false;
+    resolveCell();
+  }
+
+  function resolveCell() {
+    var p = cur(), c = B[p.pos];
+    S.pick = null;
+    if (c.k === 'comp') {
+      S.phase = 'buy';
+    } else if (c.k === 'select') {
+      S.phase = 'select';
+    } else if (c.k === 'audit') {
+      var n = nonConformKeys(p).length;
+      var fee = Math.min(p.credits, n * CONFIG.AUDIT_FEE);
+      p.credits -= fee;
+      S.msg = n
+        ? 'Audit de conformité : ' + n + ' ' + plural(n, 'non-conformité', 'non-conformités') + ', vous payez ' + fee + ' cr.'
+        : 'Audit de conformité : tout est conforme, vous ne payez rien.';
+      log(esc(p.name) + ' passe l\'audit : ' + (n ? '−' + fee + ' cr.' : 'conforme.'));
+      S.phase = 'end';
+    } else if (c.k === 'dc') {
+      S.phase = 'dc';
+    } else if (c.k === 'start') {
+      S.msg = 'Case Départ.';
+      S.phase = 'end';
+    } else if (c.k === 'corner') {
+      S.msg = 'Case neutre.';
+      S.phase = 'end';
+    } else {
+      S.msg = 'Case libre : rien ne se passe.';
+      S.phase = 'end';
+    }
+    save();
+    render();
+  }
+
+  function doBuy(t, k) {
+    var p = cur(), pr = price(t, k), kk = key(t, k);
+    if (p.credits < pr || (p.stacks[kk] || 0) >= CONFIG.MAX_VERSION) return;
+    p.credits -= pr;
+    p.stacks[kk] = (p.stacks[kk] || 0) + 1;
+    var v = p.stacks[kk];
+    log(esc(p.name) + ' achète ' + TYPES[t].name + ' ' + TECH[k].label + ' (' + pr + ' cr), version ' + v + '.');
+    S.msg = 'Vous avez acheté ' + TYPES[t].name + ' ' + TECH[k].label + ', désormais en version ' + v + '.';
+    S.pick = null;
+    S.phase = 'end';
+    save();
+    render();
+  }
+
+  function doSkip() {
+    S.msg = 'Vous n\'achetez rien.';
+    S.pick = null;
+    S.phase = 'end';
+    save();
+    render();
+  }
+
+  function doBuild(i, d) {
+    var p = cur(), app = APPS[i];
+    if (S.appOwner[i] !== null) return;
+    d = d || autoHost(p);
+    var fee = dcFee(p, d);
+    if (p.credits < fee) return;
+    var used = allocate(p, app);
+    if (!used) return;
+    Object.keys(used).forEach(function (kk) { p.locked[kk] = (p.locked[kk] || 0) + used[kk]; });
+    payHost(p, d);
+    p.apps.push({ idx: i, uses: used, host: d, dicp: newDicp() });
+    S.appOwner[i] = p.id;
+    log(esc(p.name) + ' monte l\'application ' + esc(app.n) + ' (' + app.pv + ' PV), hébergée au datacentre ' + d + (fee ? ' (−' + fee + ' cr)' : '') + '.');
+    S.msg = 'Application « ' + esc(app.n) + ' » montée au datacentre ' + d + '.';
+    S.buildPick = null;
+    save();
+    render();
+  }
+
+  function dcBuy() {
+    var p = cur(), d = B[p.pos].n;
+    if (S.phase !== 'dc' || S.dcOwner[d] !== null || p.credits < CONFIG.DC_PRICE) return;
+    p.credits -= CONFIG.DC_PRICE;
+    S.dcOwner[d] = p.id;
+    log(esc(p.name) + ' achète le datacentre ' + d + ' (' + CONFIG.DC_PRICE + ' cr).');
+    save();
+    render();
+  }
+
+  function dcMove(j) {
+    var p = cur(), a = p.apps[j], d = B[p.pos].n;
+    if (S.phase !== 'dc' || !a || a.host === d) return;
+    var fee = dcFee(p, d);
+    if (p.credits < fee) return;
+    payHost(p, d);
+    a.host = d;
+    log(esc(p.name) + ' héberge ' + esc(APPS[a.idx].n) + ' au datacentre ' + d + (fee ? ' (−' + fee + ' cr)' : '') + '.');
+    save();
+    render();
+  }
+
+  function dcDone() {
+    if (S.phase !== 'dc') return;
+    S.msg = '';
+    S.phase = 'end';
+    save();
+    render();
+  }
+
+  function endTurn() {
+    if (S.phase !== 'end') return;
+    S.msg = '';
+    S.pick = null;
+    S.buildPick = null;
+    S.cur = (S.cur + 1) % S.players.length;
+    if (S.cur === 0) { drawEvent(); return; }
+    S.phase = 'roll';
+    log('Au tour de ' + esc(cur().name) + '.');
+    save();
+    render();
+  }
+
+  function nonConformSnapshot() {
+    return S.players.map(function (p) { return nonConformKeys(p); });
+  }
+
+  function drawEvent() {
+    var before = nonConformSnapshot();
+    var oldLv = {};
+    var idx = S.deck.shift();
+    var ev = EVENTS[idx];
+    TECHS.forEach(function (k) { oldLv[k] = S.levels[ev.t][k]; });
+    S.threat.pos = nextCellOfType(ev.t, S.threat.pos);
+    var changed = [];
+    ev.techs.forEach(function (k) {
+      if (S.levels[ev.t][k] < CONFIG.MAX_LEVEL) { S.levels[ev.t][k]++; changed.push(k); }
+    });
+    S.lastEvent = idx;
+    S.flash = { t: ev.t };
+    clearTimeout(flashTimer);
+    flashTimer = setTimeout(function () { if (S) { S.flash = null; renderCenter(); } }, 3500);
+    log('Événement : ' + esc(ev.n) + '. La menace rejoint la case ' + TYPES[ev.t].short + '.');
+    var after = nonConformSnapshot();
+    var dm = EVENT_DICP[idx] || {};
+    var hits = [];
+    S.players.forEach(function (p) {
+      p.apps.forEach(function (a) {
+        var vuln = Object.keys(a.uses).some(function (kk) {
+          var pr = kk.split('|');
+          return pr[0] === ev.t && ev.techs.indexOf(pr[1]) >= 0 && !conformKey(p, kk);
+        });
+        if (!vuln) return;
+        if (!a.dicp) a.dicp = newDicp();
+        DICP.forEach(function (c) { if (dm[c.k]) a.dicp[c.k] = Math.max(0, a.dicp[c.k] - dm[c.k]); });
+        hits.push(esc(p.name) + ' : ' + esc(APPS[a.idx].n) + ' — ' + dicpChips(dm).replace(/<[^>]+>/g, function (m) { return m; }));
+      });
+    });
+    if (hits.length) log('Critères DICP touchés : ' + hits.length + ' ' + plural(hits.length, 'application', 'applications') + '.');
+    S.phase = 'event';
+    render();
+
+    var impact = [];
+    S.players.forEach(function (p, i) {
+      after[i].forEach(function (kk) {
+        if (before[i].indexOf(kk) < 0) {
+          var parts = kk.split('|');
+          impact.push(esc(p.name) + ' : ' + TYPES[parts[0]].short + ' ' + TECH[parts[1]].label + ' en version ' + p.stacks[kk] + ' passe sous le niveau requis ' + S.levels[parts[0]][parts[1]] + '.');
+        }
+      });
+    });
+    var lines = changed.length
+      ? changed.map(function (k) { return '<span class="ev-line">' + cube(k) + ' ' + TECH[k].label + ' : niveau ' + oldLv[k] + ' → ' + S.levels[ev.t][k] + '</span>'; }).join('')
+      : '<span class="ev-line">Les cubes concernés sont déjà au niveau maximal.</span>';
+    var last = S.deck.length === 0;
+    showModal(
+      '<div class="ev-tag">ÉVÉNEMENT · FIN DE LA MANCHE ' + S.round + ' / ' + S.total + '</div>' +
+      '<h2>' + esc(ev.n) + '</h2><p>' + esc(ev.x) + '</p>' +
+      '<div class="ev-meta">' +
+        '<span class="ev-line"><span class="pawn threat" style="position:static;width:22px;height:22px;min-width:22px;min-height:22px;animation:none">' + svg(WARN) + '</span><span>La menace rejoint le prochain composant <b>' + TYPES[ev.t].name + '</b>.</span></span>' +
+        '<span class="ev-line">Technologies visées : ' + ev.techs.map(techChip).join(' ') + '</span>' +
+        lines +
+      '</div>' +
+      '<h4>Critères DICP visés</h4><div class="ev-meta"><span class="ev-line">' + (dicpChips(dm) || 'Aucun') + '</span>' +
+        (hits.length ? '<ul>' + hits.map(function (m) { return '<li>' + m + '</li>'; }).join('') + '</ul>' : '<span class="sub">Aucune de vos applications n\'est exposée : leurs composants visés sont conformes ou absents.</span>') + '</div>' +
+      '<h4>Conséquences</h4>' +
+      (impact.length ? '<ul>' + impact.map(function (m) { return '<li>' + m + '</li>'; }).join('') + '</ul>' : '<p>Aucun composant ne devient non conforme.</p>') +
+      '<button type="button" class="btn primary big" data-act="eventOk">' + (last ? 'Voir le résultat' : 'Continuer') + '</button>'
+    );
+  }
+
+  function afterEvent() {
+    hideModal();
+    if (S.deck.length === 0) { finish(); return; }
+    S.round++;
+    S.phase = 'roll';
+    log('Manche ' + S.round + ' : ' + esc(cur().name) + ' lance les dés.');
+    save();
+    render();
+  }
+
+  function finish() {
+    S.phase = 'over';
+    clearSave();
+    render();
+    var rows = S.players.map(function (p) {
+      var sc = scoreOf(p);
+      return { p: p, pv: sc.pv, pot: sc.pot };
+    }).sort(function (a, b) { return (b.pv - a.pv) || (b.p.credits - a.p.credits); });
+    var top = rows[0];
+    var tie = rows.length > 1 && rows[1].pv === top.pv && rows[1].p.credits === top.p.credits;
+    showModal(
+      '<div class="ev-tag">FIN DE PARTIE</div>' +
+      '<h2>' + (tie ? 'Égalité en tête' : esc(top.p.name) + ' gagne') + '</h2>' +
+      '<p>Seules comptent les applications dont tous les composants respectent le niveau de protection requis. À égalité de points, les crédits départagent.</p>' +
+      '<div class="score">' + rows.map(function (r, i) {
+        return '<div class="score-row' + (i === 0 && !tie ? ' win' : '') + '"><span class="pawn" style="--pc:' + r.p.color + ';position:static">' + (r.p.id + 1) + '</span>' +
+          '<div><b>' + esc(r.p.name) + '</b><small>' + r.p.credits + ' cr · ' + r.p.apps.length + ' ' + plural(r.p.apps.length, 'application', 'applications') + (r.pot !== r.pv ? ' · ' + (r.pot - r.pv) + ' PV perdus (non conformité)' : '') + '</small></div>' +
+          '<b class="pv">' + r.pv + ' PV</b></div>';
+      }).join('') + '</div>' +
+      '<div class="modal-actions"><button type="button" class="btn primary" data-act="restartYes">Nouvelle partie</button><button type="button" class="btn" data-act="close">Revoir le plateau</button></div>'
+    );
+  }
+
+  /* =====================================================================
+     FENÊTRES
+     ===================================================================== */
+  function showModal(html) {
+    $('#modalBody').innerHTML = html;
+    $('#modal').hidden = false;
+    var b = $('#modalBody .btn.primary') || $('#modalBody .btn');
+    if (b) b.focus();
+  }
+  function hideModal() { $('#modal').hidden = true; }
+
+  function rulesHTML() {
+    return '<h2>Règles</h2>' +
+      '<h4>But</h4><p>Monter des applications et garder tous leurs composants conformes jusqu\'à la fin de la pile d\'événements (' + EVENTS.length + ' manches).</p>' +
+      '<h4>Profils</h4><p>Chaque joueur incarne un profil différent. Il ne peut monter que les applications de son profil : exclusives (un seul profil) ou communes (plusieurs profils, la première montée est prise). Sa sécurité se joue donc sur d\'autres composants que celle des autres joueurs.</p>' +
+      '<h4>Au départ</h4><p>Chaque joueur reçoit ' + CONFIG.START_RANDOM + ' composants au hasard et en choisit ' + CONFIG.START_CHOICE + ' autres (tous en Noir), puis monte ses premières applications.</p>' +
+      '<h4>Un tour</h4><ul>' +
+        '<li>Lancez deux dés et avancez dans le sens des aiguilles d\'une montre. Chaque passage par le Départ rapporte ' + CONFIG.APP_REVENUE + ' cr par application opérationnelle et coûte ' + CONFIG.HOST_FEE + ' cr d\'hébergement par application.</li>' +
+        '<li>Sur une case de composant, achetez-le en Noir (prix de base), Gris (×2) ou Or (×3). Un exemplaire de plus du même composant et de la même technologie le fait monter d\'une version (2 cartes = version 2, jusqu\'à ' + CONFIG.MAX_VERSION + ').</li>' +
+        '<li>Sur une case Sélection, choisissez n\'importe quel composant. Sur la case Audit, vous payez ' + CONFIG.AUDIT_FEE + ' cr par composant non conforme.</li>' +
+        '<li>En fin de tour, vous pouvez monter une application dont vous avez tous les composants libres, en choisissant son datacentre (' + CONFIG.HOST_FEE + ' cr au lancement). Chaque application n\'existe qu\'une fois.</li>' +
+        '<li>Sur un datacentre libre, vous pouvez l\'acheter (' + CONFIG.DC_PRICE + ' cr) : vos applications y sont hébergées gratuitement et les autres joueurs vous versent ' + CONFIG.HOST_FEE + ' cr par application à chaque passage par le Départ. Sur n\'importe quel datacentre, vous pouvez aussi y louer le service pour héberger une de vos applications (' + CONFIG.HOST_FEE + ' cr).</li></ul>' +
+      '<h4>La menace</h4><ul>' +
+        '<li>À la fin de chaque manche, une carte événement est révélée. Le pion noir va sur le prochain composant du type visé.</li>' +
+        '<li>Sur la grille centrale, les cubes des technologies visées montent d\'un niveau sur la ligne de ce composant (maximum ' + CONFIG.MAX_LEVEL + ').</li>' +
+        '<li>Un composant est conforme si sa version atteint le niveau de son cube. Sinon il est non conforme : achetez un exemplaire de plus pour le remettre à niveau. Une application qui en contient un ne rapporte rien au Départ.</li></ul>' +
+      '<h4>Tableau de bord DICP</h4><ul>' +
+        '<li>Chaque application a quatre critères à 100 % : <b>D</b>isponibilité, <b>I</b>ntégrité, <b>C</b>onfidentialité, <b>P</b>reuve.</li>' +
+        '<li>Quand un événement vise un composant d\'une application et que ce composant est non conforme, les critères indiqués sur la carte baissent.</li>' +
+        '<li>La Disponibilité fixe le revenu (' + CONFIG.APP_REVENUE + ' cr à 100 %). Les PV de fin de partie sont multipliés par la moyenne des quatre critères.</li>' +
+        '<li>À chaque passage par le Départ, une application entièrement conforme regagne ' + CONFIG.DICP_RECOVER + ' points sur chaque critère.</li></ul>' +
+      '<h4>Fin</h4><p>Après le dernier événement, chaque application dont tous les composants sont conformes rapporte ses points. Les crédits départagent les égalités.</p>' +
+      '<h4>Pas encore définis</h4><ul>' +
+        '<li>Cases vides du plan et coins : neutres.</li>' +
+        '<li>Pion menace : aucun autre effet que sa position.</li>' +
+        '<li>Pile « carte vulnérabilité » : inactive.</li></ul>' +
+      '<button type="button" class="btn primary big" data-act="close">Fermer</button>';
+  }
+
+  function appsModalHTML() {
+    var p = cur();
+    var pr = profOf(p);
+    return '<h2>Applications de ' + esc(pr.n) + '</h2><p>Votre profil n\'a accès qu\'à ces applications. Besoins comparés aux composants libres de ' + esc(p.name) + '.</p><div class="applist">' +
+      APPS.map(function (a, i) { return i; }).filter(function (i) { return allowed(p, i); }).map(function (i) {
+        var a = APPS[i];
+        var owner = S.appOwner[i];
+        var can = owner === null && !!allocate(p, a);
+        var reqs = a.reqs.map(function (r) {
+          var have = haveFor(p, r), miss = owner === null && have < r[1];
+          return '<span class="req' + (miss ? ' miss' : '') + '" style="--tc:' + TYPES[r[0]].c + '">' + TYPES[r[0]].short + ' ' + (owner === null ? have + '/' : '×') + r[1] +
+            (r[2] ? ' ' + techChip(r[2]) : '') + '</span>';
+        }).join('');
+        return '<div class="appcard' + (owner !== null ? ' done' : (can ? ' ok' : '')) + '"><div class="apptop"><b>' + esc(a.n) + '</b><span>' + a.pv + ' PV' +
+          (owner !== null ? ' · montée par ' + esc(S.players[owner].name) : (can ? ' · possible' : '')) + '</span></div><div class="reqs">' + reqs + '</div></div>';
+      }).join('') + '</div><button type="button" class="btn primary big" data-act="close">Fermer</button>';
+  }
+
+  function restartAskHTML() {
+    return '<h2>Abandonner la partie ?</h2><p>La partie en cours sera perdue.</p>' +
+      '<div class="modal-actions"><button type="button" class="btn primary" data-act="restartYes">Nouvelle partie</button><button type="button" class="btn" data-act="close">Continuer à jouer</button></div>';
+  }
+
+  /* =====================================================================
+     ÉCRAN DE DÉMARRAGE
+     ===================================================================== */
+  function renderSetup() {
+    var old = {};
+    var oldP = {};
+    $$('#names input').forEach(function (el, i) { old[i] = el.value; });
+    $$('#names select').forEach(function (el, i) { oldP[i] = el.value; });
+    $('#names').innerHTML = '';
+    for (var i = 0; i < setupCount; i++) {
+      $('#names').insertAdjacentHTML('beforeend',
+        '<label for="pn' + i + '"><span class="pawn" style="--pc:' + PCOL[i] + '">' + (i + 1) + '</span>' +
+        '<input id="pn' + i + '" type="text" maxlength="18" autocomplete="off" value="' + esc(old[i] !== undefined ? old[i] : 'Joueur ' + (i + 1)) + '" aria-label="Nom du joueur ' + (i + 1) + '">' +
+        '<select id="pf' + i + '" aria-label="Profil du joueur ' + (i + 1) + '">' + PROFILES.map(function (pr, k) {
+          return '<option value="' + k + '"' + ((oldP[i] !== undefined ? +oldP[i] : i) === k ? ' selected' : '') + '>' + esc(pr.n) + ' (' + pr.apps.length + ' apps)</option>';
+        }).join('') + '</select></label>');
+    }
+    $$('#countSeg button').forEach(function (b) { b.setAttribute('aria-pressed', String(+b.dataset.n === setupCount)); });
+    var sv = loadSaved();
+    $('#resumeBtn').hidden = !sv;
+    if (sv) $('#resumeBtn').textContent = 'Reprendre la partie en cours (manche ' + sv.round + ')';
+  }
+
+  function showGame() {
+    $('#setup').hidden = true;
+    $('#game').hidden = false;
+    buildBoard();
+    render();
+  }
+
+  function showSetup() {
+    S = null;
+    $('#game').hidden = true;
+    $('#setup').hidden = false;
+    hideModal();
+    renderSetup();
+  }
+
+  /* =====================================================================
+     ÉVÉNEMENTS DE L'INTERFACE
+     ===================================================================== */
+  document.addEventListener('click', function (e) {
+    var el = e.target.closest('[data-act]');
+    if (!el || el.disabled) return;
+    var act = el.dataset.act;
+    if (busy && act !== 'rules' && act !== 'apps' && act !== 'close') return;
+    switch (act) {
+      case 'count':
+        setupCount = +el.dataset.n; renderSetup(); break;
+      case 'start': {
+        var names = [];
+        for (var i = 0; i < setupCount; i++) {
+          var v = ($('#pn' + i).value || '').trim();
+          names.push(v || 'Joueur ' + (i + 1));
+        }
+        var profs = [];
+        for (var j = 0; j < setupCount; j++) profs.push(+$('#pf' + j).value);
+        if (profs.some(function (v, j) { return profs.indexOf(v) !== j; })) { $('#setupErr').textContent = 'Chaque joueur doit avoir un profil différent.'; break; }
+        $('#setupErr').textContent = '';
+        newGame(names, profs); save(); showGame(); break;
+      }
+      case 'resume': {
+        var sv = loadSaved();
+        if (sv) { S = sv; S.flash = null; showGame(); }
+        break;
+      }
+      case 'roll': doRoll(); break;
+      case 'buy': doBuy(el.dataset.t, el.dataset.k); break;
+      case 'skip': doSkip(); break;
+      case 'pick': S.pick = el.dataset.t; renderSide(); break;
+      case 'unpick': S.pick = null; renderSide(); break;
+      case 'build':
+        if (S.phase === 'prep') doBuild(+el.dataset.i);
+        else { S.buildPick = +el.dataset.i; renderSide(); }
+        break;
+      case 'host': doBuild(S.buildPick, el.dataset.d); break;
+      case 'unbuild': S.buildPick = null; renderSide(); break;
+      case 'preppick': prepPick(el.dataset.t); break;
+      case 'prepdone': prepDone(); break;
+      case 'dcbuy': dcBuy(); break;
+      case 'dcmove': dcMove(+el.dataset.j); break;
+      case 'dcdone': dcDone(); break;
+      case 'end': endTurn(); break;
+      case 'eventOk': afterEvent(); break;
+      case 'rules': showModal(rulesHTML()); break;
+      case 'apps': if (S) showModal(appsModalHTML()); break;
+      case 'restart': showModal(restartAskHTML()); break;
+      case 'restartYes': clearSave(); showSetup(); break;
+      case 'close': hideModal(); break;
+    }
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && !$('#modal').hidden && !(S && S.phase === 'event')) hideModal();
+  });
+
+  renderSetup();
+})();
+</script>
+</body></html>
