@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>7shorcut — Losanges</title>
+<title>7shortcut — @Yohann LECARPENTIER 2025</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;height:100%;background:#1a1c21;color:#eee;
@@ -125,7 +125,7 @@ body{display:flex;flex-direction:column}
   <button id="rules">Règles</button>
   <button id="histBtn">Historique</button>
   <button id="pass">Passer</button>
-  <div id="copy">© Yohann Lecarpentier — Losanges · 7shorcut</div>
+  <div id="copy">© Yohann Lecarpentier —  7shortcut</div>
 </div>
 
 <div id="help" class="overlay">
@@ -190,7 +190,7 @@ const CXY = {tl:[0,0], tr:[100,0], bl:[0,100], br:[100,100]};
 const POINT_CORNER = {3:'tl', 2:'tr', 1:'bl', 0:'br'};            // coin de chaque carte Point
 const HAND = 3, TARGET = 7, MAX_ISLANDS = 6, N_JOKERS = 2, N_MAGNETS = 2;   // 2 jokers + 2 aimants par couleur
 const isWild = c => c.kind==='joker' || c.kind==='magnet';                 // cartes qui ouvrent un îlot
-const CHAOS_HAND = 7;                                                      // mode chaos : 7 cartes + 1 aimant de chaque couleur
+const CHAOS_HAND = 5;                                                      // mode chaos : 5 cartes + 1 aimant de chaque couleur
 const maxIsl = () => (G && G.chaos) ? 4 : MAX_ISLANDS;                     // mode chaos : 4 îlots maximum
 const TPL = {1:[[1]], 2:[[2],[1,1]], 3:[[3],[2,1],[1,2],[1,1,1]], 4:[[2,2],[4],[3,1]], 5:[[3,2],[2,3],[2,1,2]], 6:[[3,3],[2,2,2],[2,2,2]]};
 
@@ -1050,11 +1050,11 @@ async function executePlay(p,ch){
   if(G.chaos){                                                     // mode chaos : pas de cartes Point, le bonus = chaque adversaire défausse 3 cartes
     let want = 0, got = 0;
     if(color && color!=='joker' && tot>=TARGET){
-      hlog('total '+tot+' ≥ 7 : bonus, chaque adversaire défausse 2 cartes', 'bonus');
-      setMsg(p.name+' : total '+tot+' → chaque adversaire défausse 2 cartes'); await sevenFx(isl, color, tot);
+      hlog('total '+tot+' ≥ 7 : bonus, chaque adversaire défausse 1 carte', 'bonus'); // 1 card discard à checker si c'est equibliré
+      setMsg(p.name+' : total '+tot+' → chaque adversaire défausse 1 carte'); await sevenFx(isl, color, tot);
       for(const v of G.players){
         if(v===p || v.out) continue;
-        await chaosDiscard(v,1); // defausse 1 carte et noon 2 YLE
+        await chaosDiscard(v,1); // discard 1 card
         if(!v.hand.length){ v.out = true; updateLabels(); hlog(v.name+' n’a plus de carte : éliminé', 'bonus'); }
       }
       if(G.players.filter(q => !q.out).length<=1){ endGame([G.teams[G.players.find(q => !q.out).team]]); return; }
