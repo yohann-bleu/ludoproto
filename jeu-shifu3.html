@@ -1,0 +1,937 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Trigone</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+/* Concept : une table de taverne en feutre vert sombre, un plateau hexagonal
+   pavé de triangles, des tuiles bleu saphir (vous) et safran (adversaire),
+   une main de 12 tuiles posée en bloc triangulaire sous le plateau. */
+:root{
+  --bg:#0e2220;
+  --bg-2:#17382f;
+  --felt:#1b423a;
+  --rim:#468a7a;
+  --ink:#e9f2ed;
+  --muted:#95b8ad;
+  --me:#3158ad;
+  --me-ink:#eef3ff;
+  --me-edge:#86a8f4;
+  --ai:#e2a62a;
+  --ai-ink:#2b1e05;
+  --ai-edge:#ffd478;
+  --blank:#cdd6d2;
+  --accent:#9df0cf;
+  --danger:#ff7d6e;
+  --back:#2a4d43;
+  --backline:#69a191;
+  --font-display:'Syne',system-ui,sans-serif;
+  --font-body:'DM Sans',system-ui,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{
+  margin:0;
+  background-color:var(--bg);
+  background-image:radial-gradient(120% 70% at 50% 30%,var(--bg-2) 0%,transparent 72%);
+  color:var(--ink);
+  font-family:var(--font-body);
+  font-size:15px;
+  line-height:1.45;
+  padding-block:10px 28px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));
+  -webkit-tap-highlight-color:transparent;
+}
+.app{max-width:780px;margin:0 auto;display:flex;flex-direction:column;gap:10px}
+
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px 20px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.brand h1{margin:0;font-family:var(--font-display);font-weight:800;font-size:26px;letter-spacing:.14em;text-transform:uppercase;line-height:1}
+.brand small{display:block;color:var(--muted);font-size:12.5px;margin-top:6px}
+.score{display:flex;gap:8px;flex-wrap:wrap}
+.side{display:flex;align-items:center;gap:10px;padding:7px 14px 7px 12px;border-radius:999px;border:1.5px solid color-mix(in srgb,var(--rim) 55%,transparent);background:color-mix(in srgb,#000 22%,transparent);transition:border-color .25s,background .25s}
+.side.active{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 10%,transparent)}
+.swatch{width:16px;height:14px;flex:none;clip-path:polygon(50% 0,0 100%,100% 100%)}
+.swatch.me{background:var(--me-edge)}
+.swatch.ai{background:var(--ai)}
+.num{font-family:var(--font-display);font-weight:800;font-size:26px;line-height:1;min-width:1.2ch;text-align:center;font-variant-numeric:tabular-nums}
+.num.bump{animation:bump .55s cubic-bezier(.2,.8,.2,1)}
+@keyframes bump{40%{transform:scale(1.55)}}
+.lab{display:flex;flex-direction:column;line-height:1.15;font-size:12.5px;color:var(--muted)}
+.lab b{color:var(--ink);font-size:13.5px;font-weight:700}
+
+.status{min-height:1.5em;text-align:center;font-weight:500;margin:0}
+.status::before{content:"";display:inline-block;width:9px;height:8px;margin-right:9px;background:var(--accent);clip-path:polygon(50% 0,0 100%,100% 100%)}
+
+#board{display:block;width:100%;height:auto;max-height:calc(100svh - 300px);min-height:340px;margin:0 auto;touch-action:manipulation;user-select:none;-webkit-user-select:none}
+
+.rim{fill:var(--felt);stroke:var(--rim);stroke-width:6;stroke-linejoin:round}
+.trayrect{fill:color-mix(in srgb,#000 24%,transparent);stroke:color-mix(in srgb,var(--rim) 40%,transparent);stroke-width:1.5}
+.cell{fill:color-mix(in srgb,#fff 3%,transparent);stroke:color-mix(in srgb,var(--muted) 22%,transparent);stroke-width:1.2;transition:fill .2s;outline:none}
+.cell.avail{fill:color-mix(in srgb,var(--accent) 6%,transparent);stroke:color-mix(in srgb,var(--accent) 32%,transparent)}
+.cell.legal{fill:color-mix(in srgb,var(--accent) 17%,transparent);stroke:var(--accent);stroke-width:2.2;stroke-dasharray:7 6;cursor:pointer;animation:march 1.2s linear infinite,breathe 1.6s ease-in-out infinite}
+.cell.legal:hover{fill:color-mix(in srgb,var(--accent) 32%,transparent)}
+.cell:focus-visible{stroke:#fff;stroke-width:3.5}
+@keyframes march{to{stroke-dashoffset:-26}}
+@keyframes breathe{0%,100%{opacity:.72}50%{opacity:1}}
+
+.tile .shadow{fill:#000;opacity:.4;pointer-events:none}
+.tile .body{stroke-width:2.2;stroke-linejoin:round}
+.tile .inner{fill:none;stroke:#fff;stroke-opacity:.22;stroke-width:1.4;stroke-linejoin:round;pointer-events:none}
+.tile .face{pointer-events:none}
+.tile.me .body{fill:var(--me);stroke:var(--me-edge)}
+.tile.me .face{color:var(--me-ink)}
+.tile.ai .body{fill:var(--ai);stroke:var(--ai-edge)}
+.tile.ai .face{color:var(--ai-ink)}
+.tile.ai .inner{stroke:#2b1e05;stroke-opacity:.22}
+.tile.blank .body{fill:var(--blank);stroke:#eef3f0}
+.tile.blank .face{color:#7b8c86}
+.tile.blank .inner{stroke:#2b3b36;stroke-opacity:.15}
+.tile.blank{animation:appear .6s ease-out backwards}
+.tile.down .body{fill:var(--back);stroke:var(--backline)}
+.tile.down .face{color:var(--backline)}
+.tile.down .inner{stroke:#fff;stroke-opacity:.08}
+.tile.target{cursor:pointer}
+.tile.target .body,.tile.cut .body{stroke:var(--accent);stroke-width:5;animation:warn .5s ease-in-out infinite alternate}
+.tile.will-flip .body{stroke:var(--danger);stroke-width:5;animation:warn .5s ease-in-out infinite alternate}
+.tile.will-die{opacity:.5}
+.tile.flying{pointer-events:none}
+.ghost{opacity:.6;pointer-events:none}
+@keyframes warn{from{stroke-opacity:.3}to{stroke-opacity:1}}
+@keyframes appear{from{opacity:0}}
+
+.htile{cursor:pointer;outline:none;transition:transform .2s cubic-bezier(.2,.8,.2,1);animation:deal .55s cubic-bezier(.2,.8,.2,1) backwards}
+.htile.selected{transform:translate(0,-16px)}
+.htile.selected .body{stroke:var(--accent);stroke-width:4.5}
+.htile:focus-visible .body{stroke:#fff;stroke-width:4.5}
+@media (hover:hover){.htile:not(.selected):hover{transform:translate(0,-6px)}}
+.aitile{animation:dealTop .5s cubic-bezier(.2,.8,.2,1) backwards}
+@keyframes deal{from{opacity:0;transform:translate(0,90px)}}
+@keyframes dealTop{from{opacity:0;transform:translate(0,-50px)}}
+
+.tray{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between;padding:12px 14px;border-radius:14px;background:color-mix(in srgb,#000 24%,transparent);border:1px solid color-mix(in srgb,var(--rim) 35%,transparent)}
+.info{display:flex;flex-wrap:wrap;gap:8px;align-items:center;min-width:0;flex:1 1 260px}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:5px 12px 5px 9px;border-radius:10px;background:color-mix(in srgb,var(--ink) 9%,transparent)}
+.chip small{color:var(--muted);font-size:12px}
+.chip.dim{opacity:.85}
+.chip svg{flex:none}
+.hint{color:var(--muted);margin:0;min-width:0}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+button{font:inherit;font-weight:700;border-radius:10px;border:1.5px solid var(--rim);background:transparent;color:var(--ink);padding:9px 14px;min-height:42px;cursor:pointer}
+button:hover:not(:disabled){border-color:var(--accent)}
+button.primary{background:var(--accent);border-color:var(--accent);color:#0b2a21}
+button:disabled{opacity:.38;cursor:not-allowed}
+button:focus-visible{outline:3px solid #fff;outline-offset:2px}
+
+.cycle{display:flex;flex-wrap:wrap;gap:6px 18px;justify-content:center;color:var(--muted);font-size:13px}
+.cycle span{display:inline-flex;align-items:center;gap:6px}
+.cycle b{color:var(--ink);font-weight:500}
+details.rules{border-radius:14px;border:1px solid color-mix(in srgb,var(--rim) 30%,transparent);padding:10px 14px}
+details.rules summary{cursor:pointer;font-weight:700}
+details.rules ul{margin:10px 0 2px;padding-left:20px;display:flex;flex-direction:column;gap:6px;color:var(--muted)}
+details.rules li b{color:var(--ink);font-weight:500}
+
+.overlay{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;padding:20px;background:color-mix(in srgb,#04100d 74%,transparent);animation:fade .4s ease-out}
+.card{width:min(360px,100%);padding:26px 24px 22px;border-radius:18px;background:var(--bg-2);border:1.5px solid var(--rim);text-align:center;display:flex;flex-direction:column;gap:12px;animation:rise .5s cubic-bezier(.2,.8,.2,1)}
+.card h2{margin:0;font-family:var(--font-display);font-weight:800;font-size:34px;letter-spacing:.06em;text-transform:uppercase}
+.card .big{font-family:var(--font-display);font-weight:800;font-size:46px;line-height:1;font-variant-numeric:tabular-nums}
+.card .big .m{color:var(--me-edge)}
+.card .big .a{color:var(--ai)}
+.card p{margin:0;color:var(--muted)}
+.card .actions{justify-content:center}
+@keyframes fade{from{opacity:0}}
+@keyframes rise{from{opacity:0;transform:translateY(24px) scale(.96)}}
+
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
+</style>
+
+<div class="app">
+  <header class="top">
+    <div class="brand">
+      <svg width="46" height="26" viewBox="0 0 100 44" aria-hidden="true">
+        <polygon points="25,1 1,43 49,43" fill="#3158ad"/>
+        <polygon points="26,1 74,1 50,43" fill="#e2a62a"/>
+        <polygon points="75,1 51,43 99,43" fill="#cdd6d2"/>
+      </svg>
+      <div>
+        <h1>Trigone</h1>
+        <small>Pierre, feuille, ciseaux sur plateau triangulaire</small>
+      </div>
+    </div>
+    <div class="score" aria-live="polite">
+      <div class="side" id="sideMe"><span class="swatch me"></span><span class="num" id="sMe">0</span><span class="lab"><b>Vous</b><span>points · <span id="tMe">0</span> tuiles · <span id="hMe">12</span> en main</span></span></div>
+      <div class="side" id="sideAi"><span class="swatch ai"></span><span class="num" id="sAi">0</span><span class="lab"><b>Adversaire</b><span>points · <span id="tAi">0</span> tuiles · <span id="hAi">12</span> en main</span></span></div>
+    </div>
+  </header>
+
+  <p class="status" id="status" role="status"></p>
+
+  <svg id="board" viewBox="0 0 680 860" role="group" aria-label="Plateau de jeu et main du joueur"></svg>
+
+  <section class="tray" aria-label="Tuile choisie">
+    <div class="info" id="info"></div>
+    <div class="actions">
+      <button class="primary" id="btnFlip" type="button">Retourner la tuile</button>
+      <button id="btnNew" type="button">Nouvelle partie</button>
+    </div>
+  </section>
+
+  <div class="cycle" id="cycle"></div>
+
+  <details class="rules">
+    <summary>Règles du jeu</summary>
+    <ul>
+      <li><b>Départ :</b> chaque joueur reçoit 12 tuiles. Une tuile vierge est posée au centre du plateau. Vous commencez.</li>
+      <li><b>Deux faces :</b> chaque tuile porte un symbole au recto et un autre, toujours différent, au verso. Retournez-la avant de la poser pour choisir la face visible.</li>
+      <li><b>Pose :</b> placez la tuile sur une case vide qui touche une tuile déjà posée. Deux exceptions : le papier peut se poser sur une pierre adverse (elle est recouverte et sort du jeu), la pierre peut se poser sur des ciseaux adverses (elle les détruit et prend leur place).</li>
+      <li><b>Combat :</b> la pierre bat les ciseaux, les ciseaux battent la feuille, la feuille bat la pierre. Chaque tuile voisine battue par la tuile posée se retourne, quelle que soit sa couleur. Une tuile adverse retournée passe de votre côté.</li>
+      <li><b>Ciseaux :</b> pour chaque feuille coupée, vous choisissez de la retourner ou de la déplacer, sans la retourner, sur une case libre au bord de l'ensemble des tuiles posées (une case vide voisine d'une autre tuile, pas le bord du plateau).</li>
+      <li><b>Points :</b> après chaque pose et ses effets, vous marquez 1 point par case du plus grand chemin possible qui part de la tuile posée et traverse des tuiles voisines de même symbole. La tuile posée compte, et les tuiles adverses aussi.</li>
+      <li><b>Fin :</b> quand les 24 tuiles sont jouées, celui qui a le plus de points gagne.</li>
+      <li><b>Clavier :</b> touche F pour retourner la tuile choisie, Échap pour l'abandonner.</li>
+    </ul>
+  </details>
+</div>
+
+<div class="overlay" id="overlay" hidden role="dialog" aria-modal="true" aria-labelledby="ovTitle">
+  <div class="card">
+    <h2 id="ovTitle">Victoire</h2>
+    <div class="big"><span class="m" id="ovMe">0</span> – <span class="a" id="ovAi">0</span></div>
+    <p id="ovText"></p>
+    <div class="actions">
+      <button class="primary" id="btnAgain" type="button">Rejouer</button>
+      <button id="btnClose" type="button">Voir le plateau</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+'use strict';
+
+/* ---------- utilitaires ---------- */
+const NS = 'http://www.w3.org/2000/svg';
+const $ = id => document.getElementById(id);
+const REDUCED = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+const el = (tag, attrs, parent) => {
+  const n = document.createElementNS(NS, tag);
+  if (attrs) for (const k in attrs) n.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(n);
+  return n;
+};
+const clear = n => { while (n.firstChild) n.removeChild(n.firstChild); };
+const sleep = ms => new Promise(r => setTimeout(r, REDUCED ? 0 : ms));
+const ease = {
+  inOut: t => t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2,
+  out: t => 1 - Math.pow(1 - t, 3),
+  acc: t => t * t
+};
+function tween(ms, fn, ez) {
+  ez = ez || ease.inOut;
+  return new Promise(res => {
+    if (REDUCED) { fn(1); res(); return; }
+    const t0 = performance.now();
+    const step = now => {
+      const t = Math.min(1, (now - t0) / ms);
+      fn(ez(t));
+      if (t < 1) requestAnimationFrame(step); else res();
+    };
+    requestAnimationFrame(step);
+  });
+}
+function shuffle(a) {
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+/* ---------- symboles ---------- */
+const SYM = { P: { name: 'Pierre' }, F: { name: 'Feuille' }, C: { name: 'Ciseaux' } };
+const BEATS = { P: 'C', C: 'F', F: 'P' };
+const POWER = {
+  F: 'Peut se poser sur une pierre adverse',
+  P: 'Peut détruire des ciseaux adverses',
+  C: 'Peut déplacer la feuille coupée'
+};
+const ICONS = {
+  P: ['M4.5 14.5 L7 8 L11.5 5 L17 6.5 L20 11.5 L18.5 17 L13 19.5 L7.5 18.5 Z', 'M7 8 L11.5 11.5 L17 6.5 M11.5 11.5 L13 19.5'],
+  F: ['M6 3.5 H14.5 L19 8 V20.5 H6 Z', 'M14.5 3.5 V8 H19', 'M9 12.5 H16 M9 15.5 H16 M9 18.5 H13'],
+  C: ['M9.3 16.2 L16.5 3.5', 'M14.7 16.2 L7.5 3.5', 'M4.8 18.5 a2.7 2.7 0 1 0 5.4 0 a2.7 2.7 0 1 0 -5.4 0', 'M13.8 18.5 a2.7 2.7 0 1 0 5.4 0 a2.7 2.7 0 1 0 -5.4 0']
+};
+function iconHTML(sym, px) {
+  return '<svg viewBox="0 0 24 24" width="' + px + '" height="' + px + '" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+    ICONS[sym].map(d => '<path d="' + d + '"/>').join('') + '</svg>';
+}
+function placeIcon(g, cx, cy, box) {
+  g.setAttribute('transform', 'translate(' + (cx - box / 2) + ' ' + (cy - box / 2) + ') scale(' + (box / 24) + ')');
+}
+function icon(parent, sym, cx, cy, box) {
+  const g = el('g', null, parent);
+  ICONS[sym].forEach(d => el('path', { d, fill: 'none', stroke: 'currentColor', 'stroke-width': 1.9, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, g));
+  placeIcon(g, cx, cy, box);
+  return g;
+}
+const symOf = t => t.faces[t.idx];
+
+/* ---------- géométrie ---------- */
+const R3 = Math.sqrt(3) / 2;
+function triPts(x0, y0, s, up) {
+  const h = s * R3;
+  return up ? [[x0 + s / 2, y0], [x0, y0 + h], [x0 + s, y0 + h]]
+            : [[x0 + s / 2, y0 + h], [x0, y0], [x0 + s, y0]];
+}
+const centroid = p => [(p[0][0] + p[1][0] + p[2][0]) / 3, (p[0][1] + p[1][1] + p[2][1]) / 3];
+const inset = (p, k) => { const c = centroid(p); return p.map(q => [c[0] + (q[0] - c[0]) * k, c[1] + (q[1] - c[1]) * k]); };
+const ptsStr = p => p.map(q => q[0].toFixed(1) + ',' + q[1].toFixed(1)).join(' ');
+const sideLen = p => Math.hypot(p[1][0] - p[2][0], p[1][1] - p[2][1]);
+
+const S = 100, H = S * R3, BX = 40, BY = 84;
+const ROWS = [[2, 8], [1, 9], [0, 10], [0, 10], [1, 9], [2, 8]];
+const SH = 112, HH = SH * R3, HX = (680 - 3.5 * SH) / 2, HY = 640;
+const AS = 44, AX = (680 - (11 * AS / 2 + AS)) / 2, AY = 20;
+const handSlotPts = k => { const row = Math.floor(k / 6), col = k % 6; return triPts(HX + col * SH / 2, HY + row * HH, SH, (row + col) % 2 === 0); };
+const aiSlotPts = k => triPts(AX + k * AS / 2, AY, AS, k % 2 === 0);
+
+/* ---------- état ---------- */
+const G = { cells: [], hands: { me: [], ai: [] }, pts: { me: 0, ai: 0 }, turn: 'me', busy: false, over: false, selected: null, inspect: null, preview: null, ghost: null, pending: null };
+let START = 0, lastPT = 'mouse';
+
+const svg = $('board');
+const mkLayer = () => el('g', null, svg);
+const layers = { rim: mkLayer(), cells: mkLayer(), tiles: mkLayer(), ghost: mkLayer(), tray: mkLayer(), ai: mkLayer(), hand: mkLayer(), fx: mkLayer() };
+
+/* ---------- plateau ---------- */
+(function buildBoard() {
+  const idx = {};
+  ROWS.forEach(([a, b], r) => {
+    for (let c = a; c <= b; c++) {
+      const up = (r + c) % 2 === 0;
+      const pts = triPts(BX + c * S / 2, BY + r * H, S, up);
+      const cell = { i: G.cells.length, r, c, up, pts, ctr: centroid(pts), tile: null, tileEl: null, nb: [] };
+      idx[r + ',' + c] = cell.i;
+      G.cells.push(cell);
+    }
+  });
+  G.cells.forEach(cell => {
+    [[cell.r, cell.c - 1], [cell.r, cell.c + 1], [cell.up ? cell.r + 1 : cell.r - 1, cell.c]].forEach(([rr, cc]) => {
+      const j = idx[rr + ',' + cc];
+      if (j !== undefined) cell.nb.push(j);
+    });
+  });
+  START = idx['3,5'];
+
+  el('polygon', {
+    class: 'rim',
+    points: ptsStr([[BX + 150, BY], [BX + 450, BY], [BX + 600, BY + 3 * H], [BX + 450, BY + 6 * H], [BX + 150, BY + 6 * H], [BX, BY + 3 * H]])
+  }, layers.rim);
+
+  G.cells.forEach(cell => {
+    const p = el('polygon', { class: 'cell', points: ptsStr(inset(cell.pts, .96)), tabindex: -1 }, layers.cells);
+    cell.el = p;
+    p.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') showPreview(cell.i); });
+    p.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') clearPreview(); });
+    p.addEventListener('click', () => onCellClick(cell.i));
+    p.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); lastPT = 'mouse'; onCellClick(cell.i); } });
+  });
+
+  el('rect', { class: 'trayrect', x: HX - 30, y: HY - 24, width: 3.5 * SH + 60, height: 2 * HH + 50, rx: 20 }, layers.tray);
+})();
+document.addEventListener('pointerdown', e => { lastPT = e.pointerType || 'mouse'; }, true);
+
+/* Destination d'une feuille coupée : case libre au bord de l'ensemble des tuiles posées,
+   c'est-à-dire voisine d'une autre tuile (hors la feuille qui se déplace). */
+const isDest = (c, j, used) => !c.tile && c.i !== j && !used.includes(c.i) && c.nb.some(n => n !== j && G.cells[n].tile);
+const occCount = c => c.nb.filter(j => G.cells[j].tile).length;
+
+/* ---------- tuiles ---------- */
+function makeTile(parent, pts, o) {
+  const s = sideLen(pts);
+  const g = el('g', { class: 'tile ' + (o.blank ? 'blank' : o.owner) + (o.down ? ' down' : '') }, parent);
+  const p = inset(pts, .94);
+  const dy = Math.max(2, s * .035);
+  el('polygon', { points: ptsStr(p.map(q => [q[0], q[1] + dy])), class: 'shadow' }, g);
+  el('polygon', { points: ptsStr(p), class: 'body' }, g);
+  el('polygon', { points: ptsStr(inset(pts, .76)), class: 'inner' }, g);
+  g._face = el('g', null, g);
+  g._face.setAttribute('class', 'face');
+  g._pts = pts;
+  paintFace(g, o.sym, o.down, o.blank);
+  return g;
+}
+function paintFace(g, sym, down, blank) {
+  clear(g._face);
+  const pts = g._pts, c = centroid(pts), s = sideLen(pts);
+  if (down) {
+    el('polygon', { points: ptsStr(inset(pts, .5)), fill: 'none', stroke: 'currentColor', 'stroke-width': Math.max(1.2, s * .03), 'stroke-linejoin': 'round' }, g._face);
+  } else if (blank) {
+    el('circle', { cx: c[0], cy: c[1], r: s * .07, fill: 'currentColor' }, g._face);
+  } else if (sym) {
+    icon(g._face, sym, c[0], c[1], s * .74);
+  }
+}
+function buildTileEl(cell) {
+  const t = cell.tile;
+  const g = makeTile(layers.tiles, cell.pts, { owner: t.owner, sym: t.blank ? null : symOf(t), blank: !!t.blank });
+  g.setAttribute('tabindex', '-1');
+  g.addEventListener('click', () => { if (isLegal(cell.i)) onCellClick(cell.i); else inspect(cell); });
+  g.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') showPreview(cell.i); });
+  g.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') clearPreview(); });
+  g.addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && isLegal(cell.i)) { e.preventDefault(); lastPT = 'mouse'; onCellClick(cell.i); } });
+  cell.tileEl = g;
+}
+function paintTile(cell) {
+  const t = cell.tile, g = cell.tileEl;
+  g.setAttribute('class', 'tile ' + (t.blank ? 'blank' : t.owner));
+  paintFace(g, t.blank ? null : symOf(t), false, !!t.blank);
+}
+
+/* ---------- main des joueurs ---------- */
+function makeHand(owner) {
+  const list = [];
+  [['P', 'F'], ['P', 'C'], ['F', 'C']].forEach(pr => {
+    for (let i = 0; i < 4; i++) list.push({ owner, faces: Math.random() < .5 ? [pr[0], pr[1]] : [pr[1], pr[0]], idx: 0 });
+  });
+  shuffle(list);
+  list.forEach((t, k) => { t.slot = k; });
+  return list;
+}
+function labelHand(t) {
+  t.el.setAttribute('aria-label', 'Tuile ' + (t.slot + 1) + ', face visible ' + SYM[symOf(t)].name + ', dos ' + SYM[t.faces[t.idx ^ 1]].name);
+}
+function buildHand(t) {
+  const g = el('g', { class: 'htile', tabindex: 0, role: 'button' }, layers.hand);
+  g.style.animationDelay = (t.slot * 45) + 'ms';
+  const flip = el('g', null, g);
+  t.tg = makeTile(flip, t.pts, { owner: 'me', sym: symOf(t) });
+  t.el = g; t.flipEl = flip;
+  labelHand(t);
+  g.addEventListener('click', () => onHandClick(t));
+  g.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onHandClick(t); } });
+}
+function buildAi(t) {
+  const g = el('g', { class: 'aitile' }, layers.ai);
+  g.style.animationDelay = (t.slot * 40) + 'ms';
+  makeTile(g, t.pts, { owner: 'ai', down: true });
+  t.el = g;
+}
+
+/* ---------- règles ---------- */
+/* Voisins battus par la tuile posée, quelle que soit leur couleur. */
+function flipsFor(i, sym) {
+  return G.cells[i].nb.filter(j => {
+    const t = G.cells[j].tile;
+    return t && !t.blank && BEATS[sym] === symOf(t);
+  });
+}
+const isAdj = c => !c.tile && c.nb.some(j => G.cells[j].tile);
+/* Une tuile de symbole sym peut viser cette case : case vide voisine d'une tuile,
+   ou tuile adverse que le papier recouvre (pierre) ou que la pierre détruit (ciseaux). */
+function canTarget(cell, sym, owner) {
+  const t = cell.tile;
+  if (!t) return isAdj(cell);
+  if (t.blank || t.owner === owner) return false;
+  return sym !== 'C' && BEATS[sym] === symOf(t);
+}
+const isLegal = i => G.turn === 'me' && !G.busy && !G.over && !!G.selected && canTarget(G.cells[i], symOf(G.selected), 'me');
+/* Plus grand chemin de tuiles voisines de même symbole, en partant de la tuile posée
+   (la tuile posée compte pour 1). Renvoie la liste des cases du chemin. */
+function longestPath(i) {
+  const start = G.cells[i].tile;
+  if (!start || start.blank) return [];
+  const sym = symOf(start);
+  let best = [i], steps = 0;
+  const seen = new Set([i]), path = [i];
+  (function dfs(u) {
+    if (path.length > best.length) best = path.slice();
+    if (steps++ > 40000) return;
+    for (const v of G.cells[u].nb) {
+      const t = G.cells[v].tile;
+      if (t && !t.blank && !seen.has(v) && symOf(t) === sym) {
+        seen.add(v); path.push(v);
+        dfs(v);
+        path.pop(); seen.delete(v);
+      }
+    }
+  })(i);
+  return best;
+}
+/* Simulation d'un coup (les tuiles battues sont supposées retournées, y compris les feuilles coupées). */
+function simulate(i, sym) {
+  const cell = G.cells[i];
+  const flips = flipsFor(i, sym);
+  const saved = cell.tile;
+  cell.tile = { faces: [sym, sym], idx: 0, owner: 'sim' };
+  flips.forEach(j => { G.cells[j].tile.idx ^= 1; });
+  const points = longestPath(i).length;
+  flips.forEach(j => { G.cells[j].tile.idx ^= 1; });
+  cell.tile = saved;
+  return { replaced: saved || null, flips, points };
+}
+
+/* ---------- interface ---------- */
+function setStatus(txt) { $('status').textContent = txt; }
+function defaultStatus() {
+  if (G.over) return 'Partie terminée.';
+  if (G.turn === 'ai') return 'L’adversaire joue…';
+  return G.selected ? 'Choisissez une case en surbrillance pour poser la tuile.' : 'À vous : choisissez une tuile dans votre main.';
+}
+const tileCount = o => G.cells.filter(c => c.tile && !c.tile.blank && c.tile.owner === o).length;
+function updateHUD() {
+  $('sMe').textContent = G.pts.me; $('sAi').textContent = G.pts.ai;
+  $('tMe').textContent = tileCount('me'); $('tAi').textContent = tileCount('ai');
+  $('hMe').textContent = G.hands.me.length; $('hAi').textContent = G.hands.ai.length;
+  $('sideMe').classList.toggle('active', G.turn === 'me' && !G.over);
+  $('sideAi').classList.toggle('active', G.turn === 'ai' && !G.over);
+}
+function bump(owner) {
+  const n = $(owner === 'me' ? 'sMe' : 'sAi');
+  n.classList.remove('bump'); void n.offsetWidth; n.classList.add('bump');
+}
+function updateLegal() {
+  const mine = G.turn === 'me' && !G.busy && !G.over;
+  const dest = !!G.pending && G.pending.stage === 'dest';
+  G.cells.forEach(c => {
+    c.el.classList.toggle('avail', isAdj(c) && !dest);
+    let legal = false;
+    if (dest) legal = isDest(c, G.pending.j, G.pending.used);
+    else if (mine && G.selected) legal = canTarget(c, symOf(G.selected), 'me');
+    c.el.classList.toggle('legal', legal && !c.tile);
+    c.el.setAttribute('tabindex', legal && !c.tile ? '0' : '-1');
+    if (c.tileEl) {
+      c.tileEl.classList.toggle('target', legal && !!c.tile);
+      c.tileEl.setAttribute('tabindex', legal && !!c.tile ? '0' : '-1');
+    }
+  });
+}
+function renderTray() {
+  const info = $('info');
+  if (G.pending) { renderChoice(info); return; }
+  const t = G.inspect || G.selected;
+  if (!t) {
+    info.innerHTML = '<p class="hint">Choisissez une tuile dans votre main, puis sélectionnez-la de nouveau pour la retourner avant de la poser.</p>';
+  } else {
+    const f = symOf(t), b = t.faces[t.idx ^ 1];
+    const who = G.inspect ? (t.owner === 'me' ? 'Tuile à vous' : 'Tuile adverse') : 'Votre tuile';
+    info.innerHTML =
+      '<span class="chip"><small>' + who + ', face visible</small>' + iconHTML(f, 22) + '<b>' + SYM[f].name + '</b></span>' +
+      '<span class="chip dim"><small>dos</small>' + iconHTML(b, 22) + '<b>' + SYM[b].name + '</b></span>' +
+      (G.inspect ? '' : '<span class="chip dim"><small>pouvoir</small><b>' + POWER[f] + '</b></span>');
+  }
+  $('btnFlip').disabled = !(G.selected && !G.busy && G.turn === 'me' && !G.over);
+  $('btnNew').disabled = G.busy;
+}
+function renderChoice(info) {
+  const p = G.pending;
+  if (p.stage === 'choice') {
+    const canMove = G.cells.some(c => isDest(c, p.j, p.used));
+    info.innerHTML =
+      '<span class="chip"><small>Feuille coupée</small>' + iconHTML('F', 22) + '<b>Que faire ?</b></span>' +
+      '<button type="button" class="primary" id="cutFlip">Retourner</button>' +
+      '<button type="button" id="cutMove"' + (canMove ? '' : ' disabled') + '>Déplacer</button>';
+    $('cutFlip').onclick = () => finishCut({ mode: 'flip' });
+    $('cutMove').onclick = () => {
+      p.stage = 'dest';
+      setStatus('Choisissez une case libre au bord des tuiles posées.');
+      updateLegal(); renderTray();
+    };
+  } else {
+    info.innerHTML =
+      '<span class="chip"><small>Déplacement</small>' + iconHTML('F', 22) + '<b>Choisissez une case libre au bord des tuiles</b></span>' +
+      '<button type="button" id="cutBack">Retour</button>';
+    $('cutBack').onclick = () => {
+      p.stage = 'choice';
+      setStatus('Ciseaux : retournez la feuille coupée ou déplacez-la au bord des tuiles posées.');
+      updateLegal(); renderTray();
+    };
+  }
+  $('btnFlip').disabled = true; $('btnNew').disabled = true;
+}
+function askCut(j, used) {
+  return new Promise(resolve => {
+    G.pending = { j, stage: 'choice', resolve, used };
+    G.cells[j].tileEl.classList.add('cut');
+    setStatus('Ciseaux : retournez la feuille coupée ou déplacez-la au bord des tuiles posées.');
+    updateLegal(); renderTray();
+  });
+}
+function finishCut(res) {
+  const p = G.pending; G.pending = null;
+  const te = G.cells[p.j].tileEl;
+  if (te) te.classList.remove('cut');
+  updateLegal(); renderTray();
+  p.resolve(res);
+}
+function inspect(cell) {
+  if (G.busy || !cell.tile || cell.tile.blank) return;
+  G.inspect = cell.tile;
+  renderTray();
+}
+
+/* ---------- sélection, retournement en main ---------- */
+function select(t) {
+  if (G.selected) G.selected.el.classList.remove('selected');
+  G.selected = t; G.inspect = null;
+  t.el.classList.add('selected');
+  clearPreview(); updateLegal(); renderTray(); setStatus(defaultStatus());
+}
+function deselect() {
+  if (!G.selected || G.busy) return;
+  G.selected.el.classList.remove('selected');
+  G.selected = null;
+  clearPreview(); updateLegal(); renderTray(); setStatus(defaultStatus());
+}
+async function flipHand(t) {
+  if (t.flipping || G.busy) return;
+  t.flipping = true;
+  const cx = centroid(t.pts)[0];
+  const set = k => t.flipEl.setAttribute('transform', 'translate(' + cx + ' 0) scale(' + Math.max(k, .001) + ' 1) translate(' + (-cx) + ' 0)');
+  await tween(150, p => set(1 - p), ease.acc);
+  t.idx ^= 1;
+  paintFace(t.tg, symOf(t), false, false);
+  await tween(170, p => set(p), ease.out);
+  t.flipEl.removeAttribute('transform');
+  t.flipping = false;
+  labelHand(t);
+  renderTray();
+  if (G.selected === t) {
+    const prev = G.preview;
+    clearPreview();
+    updateLegal();
+    if (prev !== null) showPreview(prev);
+  }
+}
+function onHandClick(t) {
+  if (G.busy || G.over || G.turn !== 'me') return;
+  if (G.selected === t) flipHand(t); else select(t);
+}
+
+/* ---------- aperçu de pose ---------- */
+function showPreview(i) {
+  if (!isLegal(i)) return;
+  clearPreview();
+  G.preview = i;
+  const t = G.selected, cell = G.cells[i], sym = symOf(t);
+  const gh = el('g', { class: 'ghost' }, layers.ghost);
+  makeTile(gh, cell.pts, { owner: 'me', sym });
+  G.ghost = gh;
+  const sim = simulate(i, sym);
+  sim.flips.forEach(j => G.cells[j].tileEl.classList.add('will-flip'));
+  if (sim.replaced && cell.tileEl) cell.tileEl.classList.add('will-die');
+  const parts = [];
+  if (sim.replaced) parts.push(sym === 'F' ? 'recouvre une pierre adverse' : 'détruit des ciseaux adverses');
+  if (sim.flips.length) parts.push('retourne ' + sim.flips.length + ' tuile' + (sim.flips.length > 1 ? 's' : ''));
+  if (sym === 'C' && sim.flips.some(j => symOf(G.cells[j].tile) === 'F')) parts.push('feuille coupée à déplacer ou retourner');
+  parts.push(sim.points ? sim.points + ' point' + (sim.points > 1 ? 's' : '') : 'aucun point');
+  const s = parts.join(' · ');
+  setStatus(s.charAt(0).toUpperCase() + s.slice(1) + '.');
+}
+function clearPreview() {
+  if (G.ghost) { G.ghost.remove(); G.ghost = null; }
+  G.cells.forEach(c => { if (c.tileEl) { c.tileEl.classList.remove('will-flip'); c.tileEl.classList.remove('will-die'); } });
+  if (G.preview !== null) { G.preview = null; if (!G.busy) setStatus(defaultStatus()); }
+}
+function onCellClick(i) {
+  if (G.pending) {
+    const c = G.cells[i];
+    if (G.pending.stage === 'dest' && isDest(c, G.pending.j, G.pending.used)) finishCut({ mode: 'move', dest: i });
+    return;
+  }
+  if (!isLegal(i)) return;
+  if (lastPT === 'touch' && G.preview !== i) { showPreview(i); return; }
+  playMove('me', G.selected, i);
+}
+
+/* ---------- effets ---------- */
+function edgeAngle(a, b) {
+  const shared = a.pts.filter(p => b.pts.some(q => Math.hypot(p[0] - q[0], p[1] - q[1]) < .5));
+  if (shared.length < 2) return 0;
+  return Math.atan2(shared[1][1] - shared[0][1], shared[1][0] - shared[0][0]) * 180 / Math.PI;
+}
+function shock(cell, owner) {
+  if (REDUCED) return Promise.resolve();
+  const c = cell.ctr;
+  const poly = el('polygon', { points: ptsStr(inset(cell.pts, .94)), fill: 'none' }, layers.fx);
+  poly.style.stroke = owner === 'me' ? 'var(--me-edge)' : 'var(--ai-edge)';
+  poly.style.pointerEvents = 'none';
+  return tween(520, p => {
+    poly.setAttribute('transform', 'translate(' + c[0] + ' ' + c[1] + ') scale(' + (1 + p * .9) + ') translate(' + (-c[0]) + ' ' + (-c[1]) + ')');
+    poly.setAttribute('stroke-opacity', (1 - p) * .9);
+    poly.setAttribute('stroke-width', 1 + 3.5 * (1 - p));
+  }, ease.out).then(() => poly.remove());
+}
+function burst(cell, owner, n) {
+  if (REDUCED) return;
+  n = n || 10;
+  const c = cell.ctr, parts = [];
+  for (let i = 0; i < n; i++) {
+    const a = (i / n) * Math.PI * 2 + Math.random() * .5;
+    const d = 36 + Math.random() * 34;
+    const dot = el('circle', { r: 3 + Math.random() * 2.5 }, layers.fx);
+    dot.style.fill = owner === 'me' ? 'var(--me-edge)' : 'var(--ai-edge)';
+    dot.style.pointerEvents = 'none';
+    parts.push({ dot, a, d });
+  }
+  tween(620, p => {
+    parts.forEach(o => {
+      o.dot.setAttribute('cx', c[0] + Math.cos(o.a) * o.d * p);
+      o.dot.setAttribute('cy', c[1] + Math.sin(o.a) * o.d * p);
+      o.dot.setAttribute('opacity', 1 - p);
+    });
+  }, ease.out).then(() => parts.forEach(o => o.dot.remove()));
+}
+function popPoints(cell, owner, n) {
+  const c = cell.ctr;
+  const tx = el('text', { x: c[0], y: c[1], 'text-anchor': 'middle', 'font-size': 42 }, layers.fx);
+  tx.textContent = '+' + n;
+  tx.style.fill = owner === 'me' ? 'var(--me-edge)' : 'var(--ai-edge)';
+  tx.style.fontFamily = 'var(--font-display)';
+  tx.style.fontWeight = '800';
+  tx.style.stroke = '#06120f';
+  tx.style.strokeWidth = '7px';
+  tx.style.paintOrder = 'stroke';
+  tx.style.pointerEvents = 'none';
+  tween(950, p => {
+    tx.setAttribute('y', c[1] - 10 - p * 56);
+    tx.setAttribute('opacity', p < .7 ? 1 : (1 - p) / .3);
+  }, ease.out).then(() => tx.remove());
+}
+async function flyGeneric(o) {
+  const g = el('g', { class: 'tile ' + o.owner + ' flying' + (o.down ? ' down' : '') }, layers.fx);
+  const body = el('polygon', { class: 'body' }, g);
+  const face = el('g', null, g);
+  face.setAttribute('class', 'face');
+  const ic = o.sym ? icon(face, o.sym, 0, 0, 24) : null;
+  await tween(o.ms, p => {
+    const arc = Math.sin(Math.PI * p) * (o.arc || 70);
+    const pts = o.from.map((a, k) => [a[0] + (o.to[k][0] - a[0]) * p, a[1] + (o.to[k][1] - a[1]) * p - arc]);
+    body.setAttribute('points', ptsStr(pts));
+    if (ic) { const c = centroid(pts); placeIcon(ic, c[0], c[1], (o.sFrom + (o.sTo - o.sFrom) * p) * .74); }
+  }, ease.inOut);
+  g.remove();
+}
+async function fly(owner, tile, cell) {
+  const lift = owner === 'me' && tile.el.classList.contains('selected') ? -16 : 0;
+  const from = inset(tile.pts, .94).map(q => [q[0], q[1] + lift]);
+  const to = inset(cell.pts, .94);
+  const sym = owner === 'me' ? symOf(tile) : null;
+  tile.el.remove();
+  await flyGeneric({ owner, sym, down: owner === 'ai', from, to, sFrom: sideLen(tile.pts), sTo: sideLen(cell.pts), ms: owner === 'me' ? 600 : 680 });
+}
+async function removeTile(cell, mode) {
+  const old = cell.tileEl, c = cell.ctr, ot = cell.tile;
+  cell.tileEl = null;
+  if (mode === 'destroy') burst(cell, ot.owner, 16);
+  await tween(mode === 'destroy' ? 200 : 260, p => {
+    const k = Math.max(1 - p, .001);
+    const sx = mode === 'cover' ? 1 + .1 * p : k, sy = k;
+    old.setAttribute('transform', 'translate(' + c[0] + ' ' + c[1] + ') scale(' + sx + ' ' + sy + ') translate(' + (-c[0]) + ' ' + (-c[1]) + ')');
+  }, ease.acc);
+  old.remove();
+}
+async function land(cell, owner) {
+  const g = cell.tileEl, c = cell.ctr;
+  const fx = shock(cell, owner);
+  if (owner === 'me') {
+    await tween(300, p => g.setAttribute('transform', 'translate(' + c[0] + ' ' + c[1] + ') scale(' + (1 + .3 * (1 - p)) + ') translate(' + (-c[0]) + ' ' + (-c[1]) + ')'), ease.out);
+  } else {
+    await tween(300, p => g.setAttribute('transform', 'translate(' + c[0] + ' 0) scale(' + Math.max(p, .001) + ' 1) translate(' + (-c[0]) + ' 0)'), ease.out);
+  }
+  g.removeAttribute('transform');
+  await fx;
+}
+async function flipTile(j, newOwner, fromCell) {
+  const cell = G.cells[j], t = cell.tile, g = cell.tileEl, c = cell.ctr;
+  const phi = edgeAngle(fromCell, cell);
+  layers.tiles.appendChild(g);
+  const set = (k, z) => g.setAttribute('transform',
+    'translate(' + c[0] + ' ' + c[1] + ') rotate(' + phi + ') scale(' + Math.max(k, .001) + ' 1) rotate(' + (-phi) + ') scale(' + z + ') translate(' + (-c[0]) + ' ' + (-c[1]) + ')');
+  await tween(230, p => set(1 - p, 1 + .16 * p), ease.acc);
+  t.idx ^= 1; t.owner = newOwner;
+  paintTile(cell);
+  burst(cell, newOwner);
+  await tween(260, p => set(p, 1 + .16 * (1 - p)), ease.out);
+  g.removeAttribute('transform');
+}
+async function moveTile(j, d) {
+  const from = G.cells[j], to = G.cells[d], t = from.tile;
+  from.tileEl.remove(); from.tileEl = null; from.tile = null;
+  await flyGeneric({ owner: t.owner, sym: symOf(t), down: false, from: inset(from.pts, .94), to: inset(to.pts, .94), sFrom: S, sTo: S, ms: 720, arc: 110 });
+  to.tile = t; t.cell = d;
+  buildTileEl(to);
+  await land(to, t.owner);
+}
+
+/* ---------- déroulé d'un coup ---------- */
+async function playMove(owner, tile, i) {
+  G.busy = true;
+  clearPreview();
+  const me = owner === 'me';
+  const who = me ? 'Vous' : 'L’adversaire';
+  const v = (a, b) => me ? a : b;
+  const cell = G.cells[i], sym = symOf(tile), replaced = cell.tile;
+  G.hands[owner] = G.hands[owner].filter(x => x !== tile);
+  if (me) G.selected = null;
+  G.inspect = null;
+  updateLegal(); renderTray(); updateHUD();
+  setStatus(replaced
+    ? (sym === 'F' ? who + ' ' + v('recouvrez', 'recouvre') + ' une pierre…' : who + ' ' + v('détruisez', 'détruit') + ' des ciseaux…')
+    : who + ' ' + v('posez', 'pose') + ' une tuile…');
+
+  await fly(owner, tile, cell);
+  if (replaced) await removeTile(cell, sym === 'F' ? 'cover' : 'destroy');
+  cell.tile = tile; tile.cell = i;
+  buildTileEl(cell);
+  updateLegal(); updateHUD();
+  await land(cell, owner);
+
+  /* combat : toutes les tuiles voisines battues, de toutes les couleurs */
+  const beaten = flipsFor(i, sym);
+  const cuts = sym === 'C' ? beaten.filter(j => symOf(G.cells[j].tile) === 'F') : [];
+  const used = [], choice = {};
+  for (const j of cuts) {
+    choice[j] = me ? await askCut(j, used) : aiDecideCut(j, used);
+    if (choice[j].mode === 'move') used.push(choice[j].dest);
+  }
+  const moving = cuts.filter(j => choice[j].mode === 'move');
+  const flipping = beaten.filter(j => !moving.includes(j));
+  if (flipping.length || moving.length) {
+    const parts = [];
+    if (flipping.length) parts.push(v('retournez ', 'retourne ') + flipping.length + ' tuile' + (flipping.length > 1 ? 's' : ''));
+    if (moving.length) parts.push(v('déplacez ', 'déplace ') + moving.length + ' feuille' + (moving.length > 1 ? 's' : ''));
+    setStatus(who + ' ' + parts.join(' et ') + '.');
+    const ops = [];
+    flipping.forEach((j, k) => ops.push(sleep(k * 170).then(() => flipTile(j, owner, cell))));
+    moving.forEach((j, k) => ops.push(sleep((flipping.length + k) * 190).then(() => moveTile(j, choice[j].dest))));
+    await Promise.all(ops);
+    updateLegal(); updateHUD();
+    await sleep(140);
+  }
+
+  /* points : 1 par case du plus grand chemin de même symbole depuis la tuile posée */
+  const path = longestPath(i), pts = path.length;
+  if (pts > 0) {
+    setStatus(who + ' ' + v('comptez', 'compte') + ' le plus grand chemin : ' + pts + ' tuile' + (pts > 1 ? 's' : '') + '.');
+    const marks = [];
+    for (const k of path) {
+      const c = G.cells[k];
+      const m = el('polygon', { points: ptsStr(inset(c.pts, .86)), fill: 'none', 'stroke-width': 4, 'stroke-linejoin': 'round', opacity: 0 }, layers.fx);
+      m.style.stroke = 'var(--accent)'; m.style.pointerEvents = 'none';
+      marks.push(m);
+      tween(180, t => m.setAttribute('opacity', t), ease.out);
+      await sleep(110);
+    }
+    G.pts[owner] += pts;
+    updateHUD(); bump(owner); popPoints(cell, owner, pts);
+    setStatus(who + ' ' + v('marquez', 'marque') + ' ' + pts + ' point' + (pts > 1 ? 's' : '') + '.');
+    await sleep(650);
+    marks.forEach(m => m.remove());
+  }
+
+  if (!G.hands.me.length && !G.hands.ai.length) { endGame(); return; }
+  G.turn = me ? 'ai' : 'me';
+  G.busy = false;
+  updateLegal(); updateHUD(); renderTray();
+  if (G.turn === 'ai') aiTurn(); else setStatus(defaultStatus());
+}
+
+/* ---------- adversaire ---------- */
+function aiChoose() {
+  const cands = [];
+  G.hands.ai.forEach(t => {
+    [0, 1].forEach(idx => {
+      const sym = t.faces[idx];
+      G.cells.forEach(c => {
+        if (!canTarget(c, sym, 'ai')) return;
+        const s = simulate(c.i, sym);
+        const open = c.nb.filter(j => !G.cells[j].tile).length;
+        const enemyFlips = s.flips.filter(j => G.cells[j].tile.owner !== 'ai').length;
+        const ownFlips = s.flips.length - enemyFlips;
+        cands.push({ t, idx, cell: c.i, score: s.points * 10 + (s.replaced ? 4 : 0) + enemyFlips * 1.2 - ownFlips * .8 - open * .8 + Math.random() * 2 });
+      });
+    });
+  });
+  cands.sort((a, b) => b.score - a.score);
+  return cands[0];
+}
+function aiDecideCut(j, used) {
+  const t = G.cells[j].tile;
+  const flipGives = t.faces[t.idx ^ 1] === 'C';
+  const edges = G.cells.filter(c => isDest(c, j, used));
+  if (!flipGives && t.owner !== 'ai' && edges.length && Math.random() < .5) {
+    edges.sort((a, b) => occCount(a) - occCount(b) || Math.random() - .5);
+    return { mode: 'move', dest: edges[0].i };
+  }
+  return { mode: 'flip' };
+}
+async function aiTurn() {
+  G.busy = true;
+  renderTray();
+  setStatus('L’adversaire réfléchit…');
+  await sleep(950);
+  const m = aiChoose();
+  m.t.idx = m.idx;
+  await playMove('ai', m.t, m.cell);
+}
+
+/* ---------- fin de partie ---------- */
+function endGame() {
+  G.over = true; G.busy = false;
+  updateHUD(); updateLegal(); renderTray();
+  const m = G.pts.me, a = G.pts.ai;
+  $('ovTitle').textContent = m > a ? 'Victoire' : m < a ? 'Défaite' : 'Égalité';
+  $('ovMe').textContent = m; $('ovAi').textContent = a;
+  $('ovText').textContent = m > a ? 'Vous gagnez avec ' + m + ' points contre ' + a + '.'
+    : m < a ? 'L’adversaire gagne avec ' + a + ' points contre ' + m + '.'
+    : m + ' points partout.';
+  $('ovText').textContent += ' Tuiles sur le plateau : ' + tileCount('me') + ' à vous, ' + tileCount('ai') + ' à l’adversaire.';
+  setStatus('Partie terminée.');
+  sleep(900).then(() => { $('overlay').hidden = false; $('btnAgain').focus(); });
+}
+
+/* ---------- nouvelle partie ---------- */
+function newGame() {
+  $('overlay').hidden = true;
+  [layers.tiles, layers.ghost, layers.ai, layers.hand, layers.fx].forEach(clear);
+  G.cells.forEach(c => { c.tile = null; c.tileEl = null; });
+  G.turn = 'me'; G.busy = false; G.over = false;
+  G.selected = null; G.inspect = null; G.preview = null; G.ghost = null; G.pending = null;
+  G.pts = { me: 0, ai: 0 };
+
+  const sc = G.cells[START];
+  sc.tile = { blank: true, owner: null, faces: [], idx: 0 };
+  buildTileEl(sc);
+
+  G.hands.me = makeHand('me');
+  G.hands.ai = makeHand('ai');
+  G.hands.me.forEach(t => { t.pts = handSlotPts(t.slot); buildHand(t); });
+  G.hands.ai.forEach(t => { t.pts = aiSlotPts(t.slot); buildAi(t); });
+
+  updateLegal(); updateHUD(); renderTray();
+  setStatus('Vous commencez : choisissez une tuile dans votre main.');
+}
+
+/* ---------- commandes ---------- */
+$('btnFlip').addEventListener('click', () => { if (G.selected) flipHand(G.selected); });
+$('btnNew').addEventListener('click', () => { if (!G.busy) newGame(); });
+$('btnAgain').addEventListener('click', newGame);
+$('btnClose').addEventListener('click', () => { $('overlay').hidden = true; });
+document.addEventListener('keydown', e => {
+  if (e.target && /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) return;
+  if (e.key === 'f' || e.key === 'F') { if (G.selected && !G.busy) flipHand(G.selected); }
+  else if (e.key === 'Escape') deselect();
+});
+$('cycle').innerHTML = [['P', 'C'], ['C', 'F'], ['F', 'P']].map(([a, b]) =>
+  '<span>' + iconHTML(a, 18) + '<b>' + SYM[a].name + '</b> bat <b>' + SYM[b].name + '</b>' + iconHTML(b, 18) + '</span>').join('');
+
+newGame();
+})();
+</script>
+
+</body></html>
