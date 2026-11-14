@@ -142,7 +142,7 @@ body{display:flex;flex-direction:column}
   <p><b>Joker (2 dans le jeu) :</b> ouvre un nouvel îlot. On révèle des cartes jusqu'à en trouver une seule qui a une valeur ; elle est posée à son emplacement, les autres emplacements restent vides. Cette carte étant seule, tu repioches toujours après un joker. 6 îlots au maximum.</p>
   <p><b>6 joueurs (2 équipes de 3, ou 3 équipes de 2) :</b> les équipes alternent autour de la table (2 équipes : tu es avec les joueurs 3 et 5 ; 3 équipes : tu es avec le joueur 4). Chaque équipe a une couleur ; les couleurs restantes (2 à deux équipes, 1 à trois équipes) sont neutres : elles restent dans le paquet, sans bonus. Les 4 cartes Point de l'équipe (3, 2, 1, 0) sont réparties entre ses joueurs (à 3 équipes : 2 cartes chacun), et l'équipe gagne quand elles sont toutes posées. Sur un total de 7 ou plus dans la couleur d'une équipe, l'équipe désigne un seul de ses joueurs qui pose un point, et le joueur du tour peut aussi en poser un.</p>
   <p><b>Options (bouton Options) :</b> couleur du joueur ; <i>double point</i> (Non : quand le joueur du tour appartient à l'équipe propriétaire de la couleur, l'équipe ne pose qu'1 seul point) ; <i>aimant en main</i> (chaque joueur a en plus un aimant de sa couleur, posé devant lui avec ses cartes Point. Il peut le jouer à la place d'une carte de sa main : pas de pioche après, et la carte quitte le jeu quand son îlot est détruit).</p>
-  <p><b>Mode chaos (option, 2 à 4 joueurs) :</b> il faut conserver ses cartes le plus longtemps possible. Pas de cartes Point, ni jokers ni aimants dans la pioche, et une 5e couleur neutre, le gris (0 à 3, comme les autres couleurs). Chacun reçoit 7 cartes et, en plus, un seul aimant, de sa couleur (8 cartes) ; un aimant joué quitte le jeu quand son îlot disparaît ou s'il est défaussé. Total de 7 ou plus dans la couleur posée : chaque adversaire défausse 2 cartes de son choix (sous la pioche), et le joueur qui a provoqué le 7 repioche 1 carte. Sinon, on repioche 1 carte si on fait le plus grand total (égalité comprise). Il y a 4 îlots au maximum : un joueur qui joue un aimant prend la dernière place d'îlot, et le plus ancien îlot disparaît (ses cartes retournent sous la pioche). L'îlot qui provoque un bonus disparaît ensuite (ses cartes retournent sous la pioche). Un joueur sans carte est éliminé ; le dernier joueur qui en a encore gagne.</p>
+  <p><b>Mode chaos (option, 2 à 4 joueurs) :</b> il faut conserver ses cartes le plus longtemps possible. Pas de cartes Point, ni jokers ni aimants dans la pioche, et une 5e couleur neutre, le gris (0 à 3, comme les autres couleurs). Chacun reçoit 7 cartes et, en plus, un seul aimant, de sa couleur (8 cartes) ; un aimant joué quitte le jeu quand son îlot disparaît ou s'il est défaussé. Total de 7 ou plus dans la couleur posée : chaque adversaire défausse 2 cartes de son choix (sous la pioche), et le joueur qui a provoqué le 7 repioche 1 carte. Sinon, on repioche 1 carte si on fait le plus grand total (égalité comprise). Il y a 4 îlots au maximum : un joueur qui joue un aimant prend la dernière place d'îlot, et le plus ancien îlot disparaît (ses cartes retournent sous la pioche). L'îlot qui provoque un bonus disparaît ensuite (ses cartes retournent sous la pioche). La main est limitée à 8 cartes (affichées sur 2 rangées de 4). Un joueur sans carte est éliminé ; le dernier joueur qui en a encore gagne.</p>
   <button onclick="document.getElementById('help').style.display='none'">Fermer</button>
 </div>
 <div id="hist" class="overlay">
@@ -190,6 +190,7 @@ const CXY = {tl:[0,0], tr:[100,0], bl:[0,100], br:[100,100]};
 const POINT_CORNER = {3:'tl', 2:'tr', 1:'bl', 0:'br'};            // coin de chaque carte Point
 const HAND = 3, TARGET = 7, MAX_ISLANDS = 6, N_JOKERS = 2, N_MAGNETS = 2;   // 2 jokers + 2 aimants par couleur
 const isWild = c => c.kind==='joker' || c.kind==='magnet';                 // cartes qui ouvrent un îlot
+const CHAOS_MAX = 8;                                                       // mode chaos : 8 cartes en main au maximum (2 rangées de 4)
 const CHAOS_HAND = 5;                                                      // mode chaos : 5 cartes + 1 aimant de chaque couleur
 const maxIsl = () => (G && G.chaos) ? 4 : MAX_ISLANDS;                     // mode chaos : 4 îlots maximum
 const TPL = {1:[[1]], 2:[[2],[1,1]], 3:[[3],[2,1],[1,2],[1,1,1]], 4:[[2,2],[4],[3,1]], 5:[[3,2],[2,3],[2,1,2]], 6:[[3,3],[2,2,2],[2,2,2]]};
@@ -412,7 +413,13 @@ function computeLayout(){
   L.handY = L.vh - L.hw/2 - 14;
   L.ptY = L.handY - L.hw/2 - L.pw/2 - 8;
   L.hLabelY = L.ptY - L.pw/2 - 22;
-  if(G.chaos) L.hLabelY = L.handY - L.hw*1.0 - 22;          // mode chaos : pas de cartes Point, main sur 2 rangées
+  if(G.chaos){                                                // mode chaos : main de 8 cartes max sur 2 rangées de 4, bien lisibles
+    const avail = L.vw - L.dw - 16;
+    L.hc = Math.min(L.hw*1.2, 120, avail/3.76);
+    L.hcx = L.dw + 10 + avail/2;
+    L.hr1 = L.vh - L.hc/2 - 10; L.hr0 = L.hr1 - L.hc*0.94;
+    L.hLabelY = L.hr0 - L.hc/2 - 20;
+  }
   L.deckX = L.dw/2 + 6; L.deckY = L.vh - L.dw/2 - 10;
   L.y0 = L.topH + 28; L.y1 = L.hLabelY - 4;
   arrange();
@@ -422,10 +429,10 @@ function revealPose(){ return {x:L.deckX+L.dw*0.3, y:L.deckY-L.dw*1.35, rot:0, s
 function handPose(pid,i,n){
   const d = i-(n-1)/2;
   if(pid===0){
-    if(G.chaos && n>6){                                   // mode chaos : grosse main sur 2 rangées
-      const top = Math.ceil(n/2), row = i<top ? 0 : 1, cnt = row===0 ? top : n-top, j = row===0 ? i : i-top;
-      const hs = L.hw*0.88, sp = Math.min(hs*0.8, (L.vw-hs-12)/Math.max(cnt-1,1)), dd = j-(cnt-1)/2;
-      return {x:L.vw/2+dd*sp, y:L.handY-(row===0 ? L.hw*0.55 : 0)+Math.abs(dd)*L.hw*0.03, rot:dd*3, s:sc(hs), up:true, z:5000+i};
+    if(G.chaos){                                          // mode chaos : 2 rangées de 4 cartes (8 max), sans éventail
+      const top = n<=4 ? 0 : Math.min(4,Math.ceil(n/2)), row = i<top ? 0 : 1, cnt = row===0 ? top : n-top, j = row===0 ? i : i-top;
+      const dd = j-(cnt-1)/2;
+      return {x:L.hcx+dd*L.hc*0.92, y:row===0 ? L.hr0 : L.hr1, rot:0, s:sc(L.hc), up:true, z:5000+i};
     }
     const sp = Math.min(L.hw*0.8, (L.vw-L.hw-2*(L.dw+10))/Math.max(n-1,1));
     return {x:L.vw/2+d*sp, y:L.handY+Math.abs(d)*L.hw*0.04, rot:d*4, s:sc(L.hw), up:true, z:5000+i};
@@ -616,6 +623,7 @@ async function toBottom(c){
 async function drawN(p,n){
   let got = 0;
   for(let i=0;i<n;i++){
+    if(G.chaos && p.hand.length>=CHAOS_MAX) break;               // chaos : 8 cartes en main au maximum
     if(!G.deck.length) await recycle();
     if(!G.deck.length) break;
     const c = G.deck.pop();
@@ -1068,7 +1076,7 @@ async function executePlay(p,ch){
       const alive = G.players.filter(q => !q.out);
       if(alive.length<=1) endGame(alive.length ? [G.teams[alive[0].team]] : [G.teams[p.team]]);
     }
-    if(!G.over && got < want){                                     // pioche définitivement épuisée : le joueur qui a gardé le plus de cartes gagne
+    if(!G.over && got < want && p.hand.length < CHAOS_MAX){                                     // pioche définitivement épuisée : le joueur qui a gardé le plus de cartes gagne
       const mx = Math.max.apply(null, G.players.map(q => q.hand.length));
       hlog('pioche épuisée : le joueur qui a conservé le plus de cartes ('+mx+') gagne', 'bonus');
       const ws = G.teams.filter(t => t.members.some(id => G.players[id].hand.length===mx));
