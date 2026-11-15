@@ -94,6 +94,33 @@ body{display:flex;flex-direction:column}
 #choose{position:fixed;left:50%;top:42%;transform:translate(-50%,-50%);z-index:900000;display:none;background:rgba(10,12,16,.96);
   border:1px solid #3a3f4a;border-radius:14px;padding:14px 18px;text-align:center;max-width:92vw;box-shadow:0 10px 40px rgba(0,0,0,.6)}
 #choose button{font:inherit;color:#fff;background:#3b6fd8;border:0;border-radius:8px;padding:8px 14px;margin:4px;font-weight:600}
+#menu{z-index:1000050;background:radial-gradient(ellipse at 50% 40%,#2c4a3a 0%,#1f3329 55%,#16221c 100%);display:none;align-items:center;justify-content:center}
+#menu .box{width:min(420px,100%);text-align:center}
+#menu h1{font-size:34px;margin:0 0 2px;letter-spacing:1px}
+#menu .sub{opacity:.7;margin-bottom:14px;font-size:13px}
+#menu .lbl{margin:14px 0 6px;font-weight:700;font-size:12px;letter-spacing:1px;text-transform:uppercase;opacity:.75}
+#menu .grp{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+#menu .grp button{flex:1 1 40%;margin:0;background:#262a32;border:2px solid #3a3f4a;padding:12px 10px}
+#menu .grp.p button{flex:1 1 26%}
+#menu .grp button small{display:block;font-weight:400;opacity:.7;font-size:11px;margin-top:2px}
+#menu .grp button.on{background:#3b6fd8;border-color:#8fb0ff}
+#menu .grp button.off{opacity:.3;pointer-events:none}
+#menu #menuPlay{width:100%;margin-top:18px;font-size:18px;padding:13px;background:#2fa84f}
+#menu .row2{display:flex;gap:8px;justify-content:center}
+#menu .row2 button{flex:1;background:#262a32;border:1px solid #3a3f4a}
+#tuto{z-index:1000100;display:none;align-items:center;justify-content:center;background:#0e1014}
+#tuto .box{width:min(460px,100%);text-align:center}
+#tuto h2{font-size:22px}
+#tuto .body{min-height:210px;text-align:left}
+#tuto .dots{display:flex;gap:6px;justify-content:center;margin:10px 0}
+#tuto .dots i{width:8px;height:8px;border-radius:50%;background:#3a3f4a}
+#tuto .dots i.on{background:#8fb0ff}
+#tuto .nav{display:flex;gap:8px;justify-content:center}
+#tuto .nav button{margin:0}
+#tuto .nav button.sec{background:#262a32;border:1px solid #3a3f4a}
+.demo{display:grid;grid-template-columns:repeat(2,64px);gap:3px;margin:8px auto;width:max-content;position:relative}
+.demo b{display:flex;align-items:center;justify-content:center;width:64px;height:64px;border-radius:8px;color:#fff;font-size:26px;text-shadow:0 1px 3px #0006}
+.demo:after{content:'';position:absolute;left:50%;top:50%;width:26px;height:26px;margin:-13px;border-radius:50%;background:rgba(255,255,255,.7)}
 #win{text-align:center;padding-top:30vh;background:rgba(10,12,16,.82)}
 #win button{margin:10px 4px 0}
 #win h1{font-size:30px;margin:0 0 6px}
@@ -121,6 +148,7 @@ body{display:flex;flex-direction:column}
     <option value="6:3">6 joueurs (3 équipes de 2)</option>
   </select>
   <button id="restart">Nouvelle partie</button>
+  <button id="menuBtn">Menu</button>
   <button id="optBtn">Options</button>
   <button id="rules">Règles</button>
   <button id="histBtn">Historique</button>
@@ -165,6 +193,26 @@ body{display:flex;flex-direction:column}
   <button id="optNew">Nouvelle partie avec ces options</button>
   <button onclick="document.getElementById('opts').style.display='none'">Fermer</button>
 </div>
+<div id="menu" class="overlay"><div class="box">
+  <h1>7shortcut</h1><div class="sub">© Yohann Lecarpentier — Losanges</div>
+  <div class="lbl">Mode de jeu</div>
+  <div class="grp" id="menuMode">
+    <button data-m="N">Normal<small>poser ses cartes Point</small></button>
+    <button data-m="C">Chaos<small>garder ses cartes le plus longtemps</small></button>
+  </div>
+  <div class="lbl">Joueurs</div>
+  <div class="grp p" id="menuPl">
+    <button data-v="2">2</button><button data-v="3">3</button><button data-v="4">4</button>
+    <button data-v="6:2">6<small>2 équipes</small></button><button data-v="6:3">6<small>3 équipes</small></button>
+  </div>
+  <button id="menuPlay">Jouer</button>
+  <div class="row2"><button id="menuTuto">Tutoriel</button><button id="menuRules">Règles</button><button id="menuOpt">Options</button></div>
+</div></div>
+<div id="tuto" class="overlay"><div class="box">
+  <h2 id="tutoTitle"></h2><div class="body" id="tutoBody"></div>
+  <div class="dots" id="tutoDots"></div>
+  <div class="nav"><button class="sec" id="tutoPrev">Précédent</button><button id="tutoNext">Suivant</button><button class="sec" id="tutoSkip">Passer</button></div>
+</div></div>
 <div id="choose"><div style="margin-bottom:8px;font-weight:600">Quel joueur de ton équipe pose le point ?</div><div id="chooseBtns"></div></div>
 <div id="win" class="overlay"><h1 id="wintxt"></h1>
   <button id="viewBoard">Voir le plateau</button> <button id="winHist">Historique</button> <button id="again">Rejouer</button></div>
@@ -1251,7 +1299,11 @@ function newGame(n,nt){
 }
 
 /* ====================== Interface ====================== */
-const startFromUI = () => { const v = document.getElementById('nplayers').value.split(':').map(Number); newGame(v[0], v[1]); };
+const startFromUI = () => {
+  $menu.style.display = 'none';
+  try{ localStorage.setItem(NPKEY, document.getElementById('nplayers').value); }catch(e){}
+  const v = document.getElementById('nplayers').value.split(':').map(Number); newGame(v[0], v[1]);
+};
 document.getElementById('restart').addEventListener('click', startFromUI);
 document.getElementById('again').addEventListener('click', startFromUI);
 document.getElementById('histBtn').addEventListener('click', showHistory);
@@ -1262,7 +1314,7 @@ document.getElementById('rules').addEventListener('click', () => { document.getE
 /* menu Options */
 const selC = document.getElementById('optColor'), selD = document.getElementById('optDouble'), selM = document.getElementById('optMg');
 const selK = document.getElementById('optChaos');
-function readOpts(){ OPT.color = selC.value; OPT.double = selD.value === 'O'; OPT.mg = selM.value === 'O'; OPT.chaos = selK.value === 'O'; saveOpt(); }
+function readOpts(){ OPT.color = selC.value; OPT.double = selD.value === 'O'; OPT.mg = selM.value === 'O'; OPT.chaos = selK.value === 'O'; saveOpt(); if(typeof syncMenu==='function') syncMenu(); }
 function showOpts(){
   selC.value = OPT.color; selD.value = OPT.double ? 'O' : 'N'; selM.value = OPT.mg ? 'O' : 'N'; selK.value = OPT.chaos ? 'O' : 'N';
   document.getElementById('opts').style.display = 'block';
@@ -1276,7 +1328,56 @@ window.addEventListener('resize', () => {
   computeLayout(); reposition();
   clearTimeout(rzT); rzT = setTimeout(() => { if(G){ computeLayout(); reposition(); } }, 700);
 });
-window.addEventListener('load', () => newGame(2));
+/* ====================== Menu de lancement + tutoriel ====================== */
+const NPKEY = 'losanges7_np', SEENKEY = 'losanges7_seen';
+const selN = document.getElementById('nplayers');
+try{ const v = localStorage.getItem(NPKEY); if(v && [...selN.options].some(o => o.value===v)) selN.value = v; }catch(e){}
+const $menu = document.getElementById('menu'), $tuto = document.getElementById('tuto');
+function syncMenu(){
+  document.querySelectorAll('#menuMode button').forEach(b => b.classList.toggle('on', (b.dataset.m==='C') === !!OPT.chaos));
+  if(OPT.chaos && selN.value.startsWith('6')) selN.value = '4';          // chaos : 2 à 4 joueurs
+  document.querySelectorAll('#menuPl button').forEach(b => {
+    b.classList.toggle('on', b.dataset.v === selN.value);
+    b.classList.toggle('off', !!OPT.chaos && b.dataset.v.startsWith('6'));
+  });
+}
+function showMenu(){ syncMenu(); $menu.style.display = 'flex'; }
+document.querySelectorAll('#menuMode button').forEach(b => b.addEventListener('click', () => { OPT.chaos = b.dataset.m==='C'; saveOpt(); syncMenu(); }));
+document.querySelectorAll('#menuPl button').forEach(b => b.addEventListener('click', () => { selN.value = b.dataset.v; syncMenu(); }));
+document.getElementById('menuPlay').addEventListener('click', () => { startFromUI(); });
+document.getElementById('menuBtn').addEventListener('click', showMenu);
+document.getElementById('menuRules').addEventListener('click', () => { document.getElementById('help').style.display = 'block'; });
+document.getElementById('menuOpt').addEventListener('click', showOpts);
+document.getElementById('menuTuto').addEventListener('click', () => showTuto(false));
+const demo = (a,b,c,d) => '<div class="demo">'+[a,b,c,d].map(x => '<b style="background:'+COLORS[x[0]].bg+'">'+x[1]+'</b>').join('')+'</div>';
+const TUTO = [
+ {t:'Bienvenue dans 7shortcut', h:'<p>Des cartes à <b>4 couleurs</b> (rose, orange, vert, bleu), de valeur <b>0 à 3</b>, se posent autour de points centraux : les <b>îlots</b>.</p><p><b>Mode normal :</b> sois le premier à poser tes 4 cartes <b>Point</b> (3, 2, 1, 0).</p><p><b>Mode chaos :</b> garde tes cartes le plus longtemps possible ; le dernier joueur qui en a encore gagne.</p>'},
+ {t:'Les îlots', h:demo(['rose',2],['orange',3],['vert',1],['bleu',0])+'<p>Quatre cartes entourent un point central. Chaque carte a un <b>coin coloré</b> qui doit toucher le centre : coin bas-droite → emplacement haut-gauche, bas-gauche → haut-droite, haut-droite → bas-gauche, haut-gauche → bas-droite.</p>'},
+ {t:'Jouer une carte', h:'<p>À ton tour, <b>survole</b> une carte de ta main : les emplacements possibles s’illuminent. <b>Glisse</b> la carte dessus, ou touche-la puis touche l’emplacement.</p><p>Elle se pose <b>par-dessus</b> la carte déjà présente : seule la carte du dessus compte.</p><p>Tu as une couleur, affichée sous ton nom.</p>'},
+ {t:'Totaux et pioche', h:'<p>Sous chaque îlot, des pastilles donnent le <b>total</b> de chaque couleur (cartes visibles).</p><p>Si le total de la couleur que tu viens de jouer est <b>égal ou supérieur</b> aux autres couleurs de l’îlot, tu <b>repioches obligatoirement</b> une carte. S’il est inférieur à celui d’une autre couleur, tu ne repioches pas.</p>'},
+ {t:'Le bonus du 7', h:'<p>Dès qu’un total atteint <b>7 ou plus</b>, une animation « 7 » se déclenche.</p><p><b>Normal :</b> le propriétaire de la couleur pose une carte Point, et le joueur du tour peut en poser une aussi. Une carte Point est <b>verrouillée</b> (cadenas doré). Un îlot avec 3 Points est détruit au tour suivant.</p><p><b>Chaos :</b> les adversaires défaussent des cartes, l’îlot disparaît et tu repioches.</p>'},
+ {t:'Jokers et aimants', h:'<p>Un <b>joker</b> ouvre un nouvel îlot (6 maximum, 4 en chaos). Un <b>aimant</b> fait de même et attire sur lui toutes les cartes visibles de sa couleur : tu choisis l’ordre pour viser un total de 7.</p><p><b>Chaos :</b> chacun a un aimant de sa couleur en main, et une 5e couleur neutre, le gris, entre dans la pioche. Quand un aimant ouvre un îlot au-delà de 4, le plus ancien disparaît.</p>'},
+ {t:'À toi de jouer !', h:'<p>Choisis ensuite ton <b>mode</b> et le <b>nombre de joueurs</b> dans le menu. Tu peux relire les règles à tout moment avec le bouton <b>Règles</b>, et revoir ce tutoriel depuis le menu.</p><p>Dans <b>Options</b> : ta couleur, le double point et l’aimant personnel.</p>'}
+];
+let tutoI = 0, tutoFirst = false;
+function renderTuto(){
+  const st = TUTO[tutoI];
+  document.getElementById('tutoTitle').textContent = st.t; document.getElementById('tutoBody').innerHTML = st.h;
+  document.getElementById('tutoDots').innerHTML = TUTO.map((_,i) => '<i class="'+(i===tutoI?'on':'')+'"></i>').join('');
+  document.getElementById('tutoPrev').style.visibility = tutoI ? 'visible' : 'hidden';
+  document.getElementById('tutoNext').textContent = tutoI===TUTO.length-1 ? 'Terminer' : 'Suivant';
+  document.getElementById('tutoSkip').style.display = tutoI===TUTO.length-1 ? 'none' : '';
+}
+function showTuto(first){ tutoI = 0; tutoFirst = first; renderTuto(); $tuto.style.display = 'flex'; }
+function closeTuto(){ $tuto.style.display = 'none'; try{ localStorage.setItem(SEENKEY,'1'); }catch(e){} showMenu(); }
+document.getElementById('tutoNext').addEventListener('click', () => { if(tutoI===TUTO.length-1) closeTuto(); else { tutoI++; renderTuto(); } });
+document.getElementById('tutoPrev').addEventListener('click', () => { if(tutoI>0){ tutoI--; renderTuto(); } });
+document.getElementById('tutoSkip').addEventListener('click', closeTuto);
+window.addEventListener('load', () => {
+  let seen = false; try{ seen = !!localStorage.getItem(SEENKEY); }catch(e){}
+  showMenu();
+  if(!seen) showTuto(true);                                         // 1er lancement : tutoriel, puis menu
+});
 window.__dbg = () => G;   // aide au test
 </script>
 </body>
