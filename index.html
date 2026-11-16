@@ -226,7 +226,9 @@ footer {
     <nav>
         <button onclick="toggleLanguage()" id="lang">FR / EN</button>
         <button onclick="showSection('bio')">BIO</button>
-        <button onclick="showSection('dashboard')">DASHBOARD</button>
+        <button onclick="showSectionDASH('dashboard')">DASHBOARD</button>
+
+
         <button onclick="showSection('links')">LIENS UTILES</button>
     </nav>
 </header>
@@ -244,13 +246,13 @@ footer {
         <div class="track" id="track">
 
             <div class="card">
-                <img class="active" src="./ressources/ShortCut7/SC-titre00.png" data-duration="1600">
+                <img class="active" src="./ressources/ShortCut7/shortcut-logo.png" data-duration="1600">
                 <img src="./ressources/ShortCut7/SC-issue01.gif" data-duration="4600">
                   
                 <div class="card-info">
                     <span>ShortCut7</span>
-                    <h2>Cartes</h2>
-                    <li><a href="./7shortcut-jeu.html" target="_blank">ShortCut7</a></li>
+                    <h2>Jeu de cartes, hasard et stratégie</h2>
+                    <li><a href="./7shortcut-jeu.html" target="_blank">ShortCut7 - version de test en ligne</a></li>
                 </div>
             </div>
 
@@ -263,8 +265,8 @@ footer {
                 <img src="./ressources/Solange/LS-sample01.jpeg" data-duration="1600">
                 <div class="card-info">
                     <span>SOLANGE</span>
-                    <h2>Strategie et Tactique 10 minutes</h2>
-                    <li><a href="./losanges-neon-v0.2.html" target="_blank">Losanges</a></li>
+                    <h2>Jeu de strategie et de tactique / 1 partie dure 10 minutes</h2>
+                    <li><a href="./losanges-neon-v0.2.html" target="_blank">Losanges - version de test en ligne</a></li>
                 </div>
             </div>
 
@@ -281,7 +283,7 @@ footer {
                 <img src="./ressources/Q12/q12-pres00.jpeg" data-duration="1600">
                 <div class="card-info">
                     <span>Quarante-Douze</span>
-                    <h2>Famille 10+ 45 minutes</h2>
+                    <h2>Jeu famille 10+ / durée : 45 minutes</h2>
                 </div>
             </div>
 
@@ -295,7 +297,7 @@ footer {
                 <div class="card-info">
                     <span>Cyberpolis</span>
                     <h2>Serious Game Cyber Security</h2>
-                    <li><a href="./ressources/Cyberpolis/cyberpolis-jeu.html" target="_blank">Cyberpolis</a></li>
+                    <li><a href="./ressources/Cyberpolis/cyberpolis-jeu.html" target="_blank">Cyberpolis - prototype en test</a></li>
                 </div>
             </div>
 
@@ -307,7 +309,7 @@ footer {
                 <div class="card-info">
                     <span>Shifu3</span>
                     <h2>Tactique et Stratégie 2-4 joueurs 30 minutes</h2>
-                    <li><a href="./jeu-shifu3.html" target="_blank">Shi Fu 3</a></li>
+                    <li><a href="./jeu-shifu3.html" target="_blank">Shi Fu 3 - version de test en ligne</a></li>
                 </div>
             </div>
              <div class="card">
@@ -416,6 +418,12 @@ function toggleLanguage() {
 
 function showSection(section) {
     alert("Section : " + section);
+    
+}
+
+function showSectionDASH(section) {
+    //alert("Section : " + section);
+    <img src="./ressources/media/etatNOV2026.JPG" alt></img>
 }
 
 </script>
