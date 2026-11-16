@@ -170,7 +170,7 @@ body{display:flex;flex-direction:column}
   <p><b>Joker (2 dans le jeu) :</b> ouvre un nouvel îlot. On révèle des cartes jusqu'à en trouver une seule qui a une valeur ; elle est posée à son emplacement, les autres emplacements restent vides. Cette carte étant seule, tu repioches toujours après un joker. 6 îlots au maximum.</p>
   <p><b>6 joueurs (2 équipes de 3, ou 3 équipes de 2) :</b> les équipes alternent autour de la table (2 équipes : tu es avec les joueurs 3 et 5 ; 3 équipes : tu es avec le joueur 4). Chaque équipe a une couleur ; les couleurs restantes (2 à deux équipes, 1 à trois équipes) sont neutres : elles restent dans le paquet, sans bonus. Les 4 cartes Point de l'équipe (3, 2, 1, 0) sont réparties entre ses joueurs (à 3 équipes : 2 cartes chacun), et l'équipe gagne quand elles sont toutes posées. Sur un total de 7 ou plus dans la couleur d'une équipe, l'équipe désigne un seul de ses joueurs qui pose un point, et le joueur du tour peut aussi en poser un.</p>
   <p><b>Options (bouton Options) :</b> couleur du joueur ; <i>double point</i> (Non : quand le joueur du tour appartient à l'équipe propriétaire de la couleur, l'équipe ne pose qu'1 seul point) ; <i>aimant en main</i> (chaque joueur a en plus un aimant de sa couleur, posé devant lui avec ses cartes Point. Il peut le jouer à la place d'une carte de sa main : pas de pioche après, et la carte quitte le jeu quand son îlot est détruit).</p>
-  <p><b>Mode chaos (option, 2 à 4 joueurs) :</b> il faut conserver ses cartes le plus longtemps possible. Pas de cartes Point, ni jokers ni aimants dans la pioche, et une 5e couleur neutre, le gris (0 à 3, comme les autres couleurs). Chacun reçoit 7 cartes et, en plus, un seul aimant, de sa couleur (8 cartes) ; un aimant joué quitte le jeu quand son îlot disparaît ou s'il est défaussé. Total de 7 ou plus dans la couleur posée : chaque adversaire défausse 2 cartes de son choix (sous la pioche), et le joueur qui a provoqué le 7 repioche 1 carte. Sinon, on repioche 1 carte si on fait le plus grand total (égalité comprise). Il y a 4 îlots au maximum : un joueur qui joue un aimant prend la dernière place d'îlot, et le plus ancien îlot disparaît (ses cartes retournent sous la pioche). L'îlot qui provoque un bonus disparaît ensuite (ses cartes retournent sous la pioche). La main est limitée à 8 cartes (affichées sur 2 rangées de 4). Un joueur sans carte est éliminé ; le dernier joueur qui en a encore gagne.</p>
+  <p><b>Mode chaos (option, 2 à 4 joueurs) :</b> il faut conserver ses cartes le plus longtemps possible. Pas de cartes Point, ni jokers ni aimants dans la pioche, et une 5e couleur neutre, le gris (0 à 3, comme les autres couleurs). Chacun reçoit 7 cartes et, en plus, un seul aimant, de sa couleur (8 cartes) ; un aimant joué quitte le jeu quand son îlot disparaît ou s'il est défaussé. Total de 7 ou plus dans la couleur posée : chaque adversaire défausse 2 cartes de son choix (sous la pioche), (option) le joueur dont la couleur fait le total récupère un aimant de sa couleur en main, et le joueur qui a provoqué le 7 repioche 1 carte. Sinon, on repioche 1 carte si on fait le plus grand total (égalité comprise). Il y a 4 îlots au maximum : un joueur qui joue un aimant prend la dernière place d'îlot, et le plus ancien îlot disparaît (ses cartes retournent sous la pioche). (Option) quand les 4 cartes visibles d'un îlot sont de la couleur d'un joueur, il récupère aussi un aimant de sa couleur. L'îlot qui provoque un bonus disparaît ensuite (ses cartes retournent sous la pioche). La main est limitée à 8 cartes (affichées sur 2 rangées de 4). Un joueur sans carte est éliminé ; le dernier joueur qui en a encore gagne.</p>
   <button onclick="document.getElementById('help').style.display='none'">Fermer</button>
 </div>
 <div id="hist" class="overlay">
@@ -190,6 +190,10 @@ body{display:flex;flex-direction:column}
     <select id="optMg"><option value="O">Oui</option><option value="N">Non</option></select></div>
   <div class="orow"><label for="optChaos">Mode chaos<br><small>2 à 4 joueurs · 5 cartes + 1 aimant de sa couleur, couleur grise neutre en plus · pas de cartes Point · on garde ses cartes le plus longtemps possible</small></label>
     <select id="optChaos"><option value="O">Oui</option><option value="N">Non</option></select></div>
+  <div class="orow"><label for="optMg7">Chaos : aimant sur un 7<br><small>le joueur dont la couleur fait le total de 7 ou plus récupère un aimant de sa couleur en main</small></label>
+    <select id="optMg7"><option value="O">Oui</option><option value="N">Non</option></select></div>
+  <div class="orow"><label for="optMg4">Chaos : aimant sur un îlot de 4 cartes<br><small>quand les 4 cartes d’un îlot sont de la couleur d’un joueur, il récupère un aimant (avec une animation)</small></label>
+    <select id="optMg4"><option value="O">Oui</option><option value="N">Non</option></select></div>
   <button id="optNew">Nouvelle partie avec ces options</button>
   <button onclick="document.getElementById('opts').style.display='none'">Fermer</button>
 </div>
@@ -246,7 +250,7 @@ const TPL = {1:[[1]], 2:[[2],[1,1]], 3:[[3],[2,1],[1,2],[1,1,1]], 4:[[2,2],[4],[
 /* Options (enregistrées dans le navigateur, appliquées à la prochaine partie) */
 const TEAM_POINTS = [3,2,1,0];     // cartes Point d'une équipe à 6 joueurs : réparties entre ses 3 joueurs
 const OKEY = 'losanges7_opt';
-const OPT = {color:'auto', double:true, mg:false, chaos:false};
+const OPT = {color:'auto', double:true, mg:false, chaos:false, mg7:true, mg4:true};   // mg7/mg4 : bonus aimant du mode chaos
 try{ const o = JSON.parse(localStorage.getItem(OKEY)); if(o) Object.assign(OPT, o); }catch(e){}
 function saveOpt(){ try{ localStorage.setItem(OKEY, JSON.stringify(OPT)); }catch(e){} }
 
@@ -727,6 +731,45 @@ async function pickCard(p,list,isl){
   const low = list.filter(c => c.value===m);
   return low[Math.floor(Math.random()*low.length)];
 }
+/* mode chaos : le joueur dont la couleur fait le 7 reçoit un nouvel aimant de sa couleur en main */
+async function giveMagnet(q, color, why){
+  if(!q || q.out) return;
+  if(q.hand.length >= CHAOS_MAX){ hlog(q.name+' a déjà '+CHAOS_MAX+' cartes : pas d’aimant '+COLORS[color].name+' supplémentaire', 'bonus'); return; }
+  const m = buildCard({kind:'magnet', color, zone:'trans', owner:-1}); m.chaosMg = true;
+  G.all.push(m); stage.appendChild(m.el); setPose(m, deckPose(0));
+  m.zone='hand'; m.owner=q.id; q.hand.push(m); updateLabels();
+  hlog(q.name+' récupère un aimant '+COLORS[color].name+' ('+(why || 'sa couleur a fait le total')+')', 'bonus');
+  setMsg(q.name+' récupère un aimant '+COLORS[color].name);
+  await layoutHand(q,550);
+}
+/* mode chaos : un îlot dont les 4 cartes visibles sont de la couleur d'un joueur lui donne un aimant */
+async function fx4(isl,color){
+  const ic = L.isl[isl.i], w = Math.max(L.tw*2.2, 120), C = COLORS[color];
+  const d = document.createElement('div');
+  d.style.cssText = 'position:absolute;z-index:9400;pointer-events:none;left:'+ic.x+'px;top:'+ic.y+'px;width:'+w+'px;height:'+w+'px;transform:translate(-50%,-50%);'+
+    'border-radius:50%;border:5px solid '+C.bg+';box-shadow:0 0 28px 8px '+C.bg+',inset 0 0 24px '+C.bg+';display:flex;align-items:center;justify-content:center;'+
+    'font-weight:900;font-size:'+Math.round(w*0.13)+'px;color:#fff;text-shadow:0 2px 8px #000;text-align:center;line-height:1.1';
+  d.innerHTML = '4 × '+C.name+'<br>AIMANT !';
+  stage.appendChild(d);
+  const T = 1000*SPD, e = epoch;
+  await d.animate([{opacity:0, transform:'translate(-50%,-50%) scale(.3)'},{opacity:1, transform:'translate(-50%,-50%) scale(1.1)', offset:.35},
+    {opacity:1, transform:'translate(-50%,-50%) scale(1)', offset:.7},{opacity:0, transform:'translate(-50%,-50%) scale(1.35)'}], {duration:T, easing:'ease-out', fill:'forwards'}).finished;
+  d.remove(); chkE(e);
+}
+async function checkFour(){
+  for(const isl of G.islands.slice()){
+    const tops = CORNERS.map(s => isl.slots[s][isl.slots[s].length-1]);
+    const col = tops.every(c => c && c.kind==='num' && c.color===tops[0].color) ? tops[0].color : null;
+    if(!col){ isl.mg4 = null; continue; }
+    if(isl.mg4===col) continue;                                    // déjà récompensé tant que l'îlot reste identique
+    isl.mg4 = col;
+    const q = G.players.find(x => x.color===col && !x.out);
+    if(!q) continue;
+    hlog(islName(isl)+' : 4 cartes '+COLORS[col].name+' → aimant pour '+q.name, 'bonus');
+    await fx4(isl, col);
+    await giveMagnet(q, col, 'îlot de 4 cartes de sa couleur');
+  }
+}
 /* mode chaos : le joueur victime défausse n cartes (elles retournent sous la pioche) */
 async function chaosDiscard(v,n){
   for(let k=0;k<n && v.hand.length;k++){
@@ -1103,11 +1146,13 @@ async function executePlay(p,ch){
   }
   await lh; updateLabels();
   if(color && color!=='joker') hlog('total '+COLORS[color].name+' sur '+islName(isl)+' : '+tot+(oth ? ' (autres couleurs : '+oth+' max)' : ''));
+  if(G.chaos && G.opt.mg4) await checkFour();                      // bonus aimant : îlot de 4 cartes de la couleur d'un joueur
   if(G.chaos){                                                     // mode chaos : pas de cartes Point, le bonus = chaque adversaire défausse 3 cartes
     let want = 0, got = 0;
     if(color && color!=='joker' && tot>=TARGET){
       hlog('total '+tot+' ≥ 7 : bonus, chaque adversaire défausse 1 carte', 'bonus'); // 1 card discard à checker si c'est equibliré
       setMsg(p.name+' : total '+tot+' → chaque adversaire défausse 1 carte'); await sevenFx(isl, color, tot);
+      if(G.opt.mg7) await giveMagnet(G.players.find(q => q.color===color), color);   // la couleur du total (si un joueur l'a) gagne un aimant
       for(const v of G.players){
         if(v===p || v.out) continue;
         await chaosDiscard(v,1); // discard 1 card
@@ -1313,13 +1358,13 @@ document.getElementById('histCopy').addEventListener('click', copyHistory);
 document.getElementById('rules').addEventListener('click', () => { document.getElementById('help').style.display = 'block'; });
 /* menu Options */
 const selC = document.getElementById('optColor'), selD = document.getElementById('optDouble'), selM = document.getElementById('optMg');
-const selK = document.getElementById('optChaos');
-function readOpts(){ OPT.color = selC.value; OPT.double = selD.value === 'O'; OPT.mg = selM.value === 'O'; OPT.chaos = selK.value === 'O'; saveOpt(); if(typeof syncMenu==='function') syncMenu(); }
+const selK = document.getElementById('optChaos'), sel7 = document.getElementById('optMg7'), sel4 = document.getElementById('optMg4');
+function readOpts(){ OPT.color = selC.value; OPT.double = selD.value === 'O'; OPT.mg = selM.value === 'O'; OPT.chaos = selK.value === 'O'; OPT.mg7 = sel7.value === 'O'; OPT.mg4 = sel4.value === 'O'; saveOpt(); if(typeof syncMenu==='function') syncMenu(); }
 function showOpts(){
-  selC.value = OPT.color; selD.value = OPT.double ? 'O' : 'N'; selM.value = OPT.mg ? 'O' : 'N'; selK.value = OPT.chaos ? 'O' : 'N';
+  selC.value = OPT.color; selD.value = OPT.double ? 'O' : 'N'; selM.value = OPT.mg ? 'O' : 'N'; selK.value = OPT.chaos ? 'O' : 'N'; sel7.value = OPT.mg7 ? 'O' : 'N'; sel4.value = OPT.mg4 ? 'O' : 'N';
   document.getElementById('opts').style.display = 'block';
 }
-[selC, selD, selM, selK].forEach(x => x.addEventListener('change', readOpts));
+[selC, selD, selM, selK, sel7, sel4].forEach(x => x.addEventListener('change', readOpts));
 document.getElementById('optBtn').addEventListener('click', showOpts);
 document.getElementById('optNew').addEventListener('click', () => { readOpts(); document.getElementById('opts').style.display = 'none'; startFromUI(); });
 let rzT = null;
