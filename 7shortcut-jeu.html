@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>7shortcut v7 — @Yohann LECARPENTIER 2025</title>
+<title>7shortcut v9 — @Yohann LECARPENTIER 2025</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;height:100%;background:#1a1c21;color:#eee;
@@ -127,6 +127,8 @@ body{display:flex;flex-direction:column}
 #win h1{font-size:30px;margin:0 0 6px}
 body[data-vals="bars"] .vn{display:none}
 body[data-vals="num"] .vb{display:none}
+.sy{display:none}
+body[data-sym="0"] .sy0, body[data-sym="1"] .sy1, body[data-sym="2"] .sy2, body[data-sym="3"] .sy3, body[data-sym="4"] .sy4{display:inline}
 </style>
 </head>
 <body>
@@ -149,6 +151,8 @@ body[data-vals="num"] .vb{display:none}
     <option value="4">4 joueurs</option>
     <option value="6:2">6 joueurs (2 équipes de 3)</option>
     <option value="6:3">6 joueurs (3 équipes de 2)</option>
+    <option value="8:2">8 joueurs (2 équipes de 4)</option>
+    <option value="8:4">8 joueurs (4 équipes de 2)</option>
   </select>
   <button id="restart">Nouvelle partie</button>
   <button id="viewL" title="Point de vue précédent (←)">◀</button><span id="viewTxt" style="min-width:86px;text-align:center;font-size:12px">Vue : Toi</span><button id="viewR" title="Point de vue suivant (→)">▶</button>
@@ -163,6 +167,7 @@ body[data-vals="num"] .vb{display:none}
 
 <div id="help" class="overlay">
   <h2>Règles — 7shorcut</h2>
+  <p><i>Deux modes : <b>Normal</b> (garder ses cartes, voir « Mode Normal » en bas) et <b>Compétitif</b> (cartes Point, règles ci-dessous ; 2 à 8 joueurs, 4 équipes maximum).</i></p>
   <p><b>But :</b> être le premier à avoir posé ses 4 cartes <b>Point</b> (3, 2, 1, 0).</p>
   <p><b>Mise en place :</b> chaque joueur a une couleur et 3 cartes en main. Quatre cartes sont posées autour d'un point central (un îlot) : chaque carte va à l'emplacement qui fait toucher son coin coloré au centre (coin bas-droite → emplacement haut-gauche, bas-gauche → haut-droite, haut-droite → bas-gauche, haut-gauche → bas-droite).</p>
   <p><b>Ton tour :</b> joue une carte de ta main sur un emplacement correspondant à son coin coloré, par-dessus la carte déjà présente. Survole une carte pour voir les emplacements possibles, puis glisse-la ou touche-la et touche l'emplacement.</p>
@@ -173,9 +178,9 @@ body[data-vals="num"] .vb{display:none}
   <p><b>Dernière carte :</b> si tu joues ta dernière carte sans repiocher, tu poses une carte Point (n'importe quel îlot), puis tu reprends 3 cartes.</p>
   <p><b>Aimant (2 par couleur) :</b> se joue comme un joker (nouvel îlot), mais attire sur lui toutes les cartes visibles de sa couleur présentes sur le plateau. Si une carte de la même couleur est révélée dessous, elle est attirée aussi, jusqu'à ce que la couleur ne soit plus que sur le nouvel îlot. Tu choisis l'ordre (la dernière carte posée sur un emplacement recouvre les autres) pour viser un total de 7 ou plus. Les cartes Point verrouillées ne bougent pas. Tu repioches toujours après un aimant.</p>
   <p><b>Joker (2 dans le jeu) :</b> ouvre un nouvel îlot. On révèle des cartes jusqu'à en trouver une seule qui a une valeur ; elle est posée à son emplacement, les autres emplacements restent vides. Cette carte étant seule, tu repioches toujours après un joker. 6 îlots au maximum.</p>
-  <p><b>6 joueurs (2 équipes de 3, ou 3 équipes de 2) :</b> les équipes alternent autour de la table (2 équipes : tu es avec les joueurs 3 et 5 ; 3 équipes : tu es avec le joueur 4). Chaque équipe a une couleur ; les couleurs restantes (2 à deux équipes, 1 à trois équipes) sont neutres : elles restent dans le paquet, sans bonus. Les 4 cartes Point de l'équipe (3, 2, 1, 0) sont réparties entre ses joueurs (à 3 équipes : 2 cartes chacun), et l'équipe gagne quand elles sont toutes posées. Sur un total de 7 ou plus dans la couleur d'une équipe, l'équipe désigne un seul de ses joueurs qui pose un point, et le joueur du tour peut aussi en poser un.</p>
+  <p><b>6 ou 8 joueurs (Compétitif ; 4 équipes maximum : 6 → 2×3 ou 3×2, 8 → 2×4 ou 4×2) :</b> les équipes alternent autour de la table (2 équipes : tu es avec les joueurs 3 et 5 ; 3 équipes : tu es avec le joueur 4). Chaque équipe a une couleur ; les couleurs restantes (2 à deux équipes, 1 à trois équipes) sont neutres : elles restent dans le paquet, sans bonus. Les 4 cartes Point de l'équipe (3, 2, 1, 0) sont réparties entre ses joueurs (à 3 équipes : 2 cartes chacun), et l'équipe gagne quand elles sont toutes posées. Sur un total de 7 ou plus dans la couleur d'une équipe, l'équipe désigne un seul de ses joueurs qui pose un point, et le joueur du tour peut aussi en poser un.</p>
   <p><b>Options (bouton Options) :</b> couleur du joueur ; <i>double point</i> (Non : quand le joueur du tour appartient à l'équipe propriétaire de la couleur, l'équipe ne pose qu'1 seul point) ; <i>aimant en main</i> (chaque joueur a en plus un aimant de sa couleur, posé devant lui avec ses cartes Point. Il peut le jouer à la place d'une carte de sa main : pas de pioche après, et la carte quitte le jeu quand son îlot est détruit).</p>
-  <p><b>Mode chaos (option, 2 à 4 joueurs) :</b> il faut conserver ses cartes le plus longtemps possible. Pas de cartes Point, ni jokers ni aimants dans la pioche, et une 5e couleur neutre, le gris (0 à 3, comme les autres couleurs). Chacun reçoit 7 cartes et, en plus, un seul aimant, de sa couleur (8 cartes) ; un aimant joué quitte le jeu quand son îlot disparaît ou s'il est défaussé. Total de 7 ou plus dans la couleur posée : chaque adversaire défausse 2 cartes de son choix (sous la pioche), (option) le joueur dont la couleur fait le total récupère un aimant de sa couleur en main, et le joueur qui a provoqué le 7 repioche 1 carte. Sinon, on repioche 1 carte si on fait le plus grand total (égalité comprise). Il y a 4 îlots au maximum : un joueur qui joue un aimant prend la dernière place d'îlot, et le plus ancien îlot disparaît (ses cartes retournent sous la pioche). (Option) quand les 4 cartes visibles d'un îlot sont de la couleur d'un joueur, il récupère aussi un aimant de sa couleur. L'îlot qui provoque un bonus disparaît ensuite (ses cartes retournent sous la pioche). La main est limitée à 8 cartes (affichées sur 2 rangées de 4). Un joueur sans carte est éliminé ; le dernier joueur qui en a encore gagne.</p>
+  <p><b>Mode Normal (2 à 4 joueurs) :</b> il faut conserver ses cartes le plus longtemps possible. Pas de cartes Point, ni jokers ni aimants dans la pioche, et une 5e couleur neutre, le gris (0 à 3, comme les autres couleurs). Chacun reçoit 7 cartes et, en plus, un seul aimant, de sa couleur (8 cartes) ; un aimant joué quitte le jeu quand son îlot disparaît ou s'il est défaussé. Total de 7 ou plus dans la couleur posée : chaque adversaire défausse 2 cartes de son choix (sous la pioche), (option) le joueur dont la couleur fait le total récupère un aimant de sa couleur en main, et le joueur qui a provoqué le 7 repioche 1 carte. Sinon, on repioche 1 carte si on fait le plus grand total (égalité comprise). Il y a 4 îlots au maximum : un joueur qui joue un aimant prend la dernière place d'îlot, et le plus ancien îlot disparaît (ses cartes retournent sous la pioche). (Option) quand les 4 cartes visibles d'un îlot sont de la couleur d'un joueur, il récupère aussi un aimant de sa couleur. L'îlot qui provoque un bonus disparaît ensuite (ses cartes retournent sous la pioche). La main est limitée à 8 cartes (affichées sur 2 rangées de 4). Un joueur sans carte est éliminé ; le dernier joueur qui en a encore gagne.</p>
   <button onclick="document.getElementById('help').style.display='none'">Fermer</button>
 </div>
 <div id="hist" class="overlay">
@@ -187,16 +192,18 @@ body[data-vals="num"] .vb{display:none}
 <div id="opts" class="overlay">
   <h2>Options</h2>
   <p style="opacity:.8;margin-top:0">Enregistrées dans le navigateur. Elles s’appliquent à la prochaine partie.</p>
-  <div class="orow"><label for="optColor">Couleur du joueur<br><small>(à 6 joueurs : couleur de ton équipe)</small></label>
+  <div class="orow"><label for="optColor">Couleur du joueur<br><small>(à 6 ou 8 joueurs : couleur de ton équipe)</small></label>
     <select id="optColor"><option value="auto">Aléatoire</option><option value="rose">Rose</option><option value="orange">Orange</option><option value="vert">Vert</option><option value="bleu">Bleu</option></select></div>
   <div class="orow"><label for="optDouble">Double point<br><small>un 7 de sa propre couleur donne 2 cartes Point (Non : 1 seule)</small></label>
     <select id="optDouble"><option value="O">Oui</option><option value="N">Non</option></select></div>
   <div class="orow"><label for="optMg">Aimant en main<br><small>1 aimant de sa couleur par joueur, posé devant lui avec ses cartes Point, jouable à la place d’une carte de la main</small></label>
     <select id="optMg"><option value="O">Oui</option><option value="N">Non</option></select></div>
-  <div class="orow"><label for="optChaos">Mode chaos<br><small>2 à 4 joueurs · 5 cartes + 1 aimant de sa couleur, couleur grise neutre en plus · pas de cartes Point · on garde ses cartes le plus longtemps possible</small></label>
+  <div class="orow"><label for="optChaos">Mode Normal (sans : Compétitif)<br><small>2 à 4 joueurs · 5 cartes + 1 aimant de sa couleur, couleur grise neutre en plus · pas de cartes Point · on garde ses cartes le plus longtemps possible</small></label>
     <select id="optChaos"><option value="O">Oui</option><option value="N">Non</option></select></div>
   <div class="orow"><label for="optVals">Valeur des cartes<br><small>chiffres 0, 1, 2, 3 ou bâtons I, II, III (rien pour 0) ; le disque de couleur reste (s’applique tout de suite)</small></label>
     <select id="optVals"><option value="num">Chiffres</option><option value="bars">Bâtons</option></select></div>
+  <div class="orow"><label for="optSym">Symboles des joueurs<br><small>imprimés au milieu des bords de chaque carte (s’applique tout de suite)</small></label>
+    <select id="optSym"><option value="0">Lettres Σ 7 X S</option><option value="1">Points ° °° °°° °°°°</option><option value="2">Chiffres 1 2 3 4</option><option value="3">Formes ■ ▲ ● ⬢</option><option value="4">Bouées N S E W</option></select></div>
   <div class="orow"><label for="optMg7">Chaos : aimant sur un 7<br><small>le joueur dont la couleur fait le total de 7 ou plus récupère un aimant de sa couleur en main</small></label>
     <select id="optMg7"><option value="O">Oui</option><option value="N">Non</option></select></div>
   <div class="orow"><label for="optMg4">Chaos : aimant sur un îlot de 4 cartes<br><small>quand les 4 cartes d’un îlot sont de la couleur d’un joueur, il récupère un aimant (avec une animation)</small></label>
@@ -208,13 +215,13 @@ body[data-vals="num"] .vb{display:none}
   <h1>7shortcut</h1><div class="sub">© Yohann Lecarpentier — Losanges</div>
   <div class="lbl">Mode de jeu</div>
   <div class="grp" id="menuMode">
-    <button data-m="N">Normal<small>poser ses cartes Point</small></button>
-    <button data-m="C">Chaos<small>garder ses cartes le plus longtemps</small></button>
+    <button data-m="C">Normal<small>garder ses cartes le plus longtemps</small></button>
+    <button data-m="N">Compétitif<small>poser ses cartes Point · jusqu’à 8 joueurs</small></button>
   </div>
   <div class="lbl">Joueurs</div>
   <div class="grp p" id="menuPl">
     <button data-v="2">2</button><button data-v="3">3</button><button data-v="4">4</button>
-    <button data-v="6:2">6<small>2 équipes</small></button><button data-v="6:3">6<small>3 équipes</small></button>
+    <button data-v="6:2">6<small>2 équipes</small></button><button data-v="6:3">6<small>3 équipes</small></button><button data-v="8:2">8<small>2 équipes</small></button><button data-v="8:4">8<small>4 équipes</small></button>
   </div>
   <button id="menuPlay">Jouer</button>
   <div class="row2"><button id="menuTuto">Tutoriel</button><button id="menuRules">Règles</button><button id="menuOpt">Options</button></div>
@@ -255,11 +262,11 @@ const maxIsl = () => (G && G.chaos) ? 4 : MAX_ISLANDS;                     // mo
 const TPL = {1:[[1]], 2:[[2],[1,1]], 3:[[3],[2,1],[1,2],[1,1,1]], 4:[[2,2],[4],[3,1]], 5:[[3,2],[2,3],[2,1,2]], 6:[[3,3],[2,2,2],[2,2,2]]};
 
 /* Options (enregistrées dans le navigateur, appliquées à la prochaine partie) */
-const TEAM_POINTS = [3,2,1,0];     // cartes Point d'une équipe à 6 joueurs : réparties entre ses 3 joueurs
+const TEAM_POINTS = [3,2,1,0];     // cartes Point d'une équipe à 6 ou 8 joueurs : réparties entre ses 3 joueurs
 const OKEY = 'losanges7_opt';
-const OPT = {color:'auto', double:true, mg:false, chaos:false, mg7:true, mg4:true, vals:'num'};   // vals : 'num' (0,1,2,3) ou 'bars' (I, II, III, rien pour 0)   // mg7/mg4 : bonus aimant du mode chaos
+const OPT = {color:'auto', double:true, mg:false, chaos:true, mg7:true, mg4:true, vals:'num', sym:'1'};   // sym : style des symboles de joueurs (0 lettres, 1 points, 2 chiffres, 3 formes, 4 bouées)   // vals : 'num' (0,1,2,3) ou 'bars' (I, II, III, rien pour 0)   // mg7/mg4 : bonus aimant du mode chaos
 try{ const o = JSON.parse(localStorage.getItem(OKEY)); if(o) Object.assign(OPT, o); }catch(e){}
-const applyVals = () => { document.body.dataset.vals = OPT.vals==='bars' ? 'bars' : 'num'; };
+const applyVals = () => { document.body.dataset.vals = OPT.vals==='bars' ? 'bars' : 'num'; document.body.dataset.sym = /^[0-4]$/.test(OPT.sym) ? OPT.sym : '1'; };
 function saveOpt(){ applyVals(); try{ localStorage.setItem(OKEY, JSON.stringify(OPT)); }catch(e){} }
 
 applyVals();
@@ -409,14 +416,33 @@ function barsSVG(v,cx,cy,fill,stroke){
 const wrap = inner => '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">'+inner+'</svg>';
 /* un symbole par joueur (J1 Σ, J2 7, J3 X, J4 S) ; chacun est imprimé au milieu d'un bord de chaque carte, orienté vers l'extérieur */
 const PSYM = ['Σ','7','X','S'];
-const EDGES = [                                                    // [symbole, x, y, rotation]
-  [PSYM[1], 50,  9, 180],                                          // haut    : 7
-  [PSYM[2], 50, 91,   0],                                          // bas     : X
-  [PSYM[3],  9, 50,  90],                                          // gauche  : S
-  [PSYM[0], 91, 50, -90]                                           // droite  : Σ
+const EDGES = [                                                    // [joueur, x, y, rotation]
+  [1, 50,  9, 180],                                                // haut    : J2
+  [2, 50, 91,   0],                                                // bas     : J3
+  [3,  9, 50,  90],                                                // gauche  : J4
+  [0, 91, 50, -90]                                                 // droite  : J1
 ];
-const edgeSyms = fill => EDGES.map(e => '<text x="'+e[1]+'" y="'+(e[2]+3.8)+'" text-anchor="middle" font-size="11" font-weight="700" font-family="Verdana,Geneva,sans-serif" fill="'+fill+'" '+
-  'transform="rotate('+e[3]+' '+e[1]+' '+e[2]+')">'+e[0]+'</text>').join('');
+/* 5 styles de symboles de joueurs (choix dans Options, changement immédiat) :
+   0 lettres Σ 7 X S · 1 ° °° °°° °°°° · 2 chiffres 1-4 · 3 carré triangle rond hexagone · 4 bouées cardinales N S E W */
+const BUOY = [['up','up',['#111','#f2c200']], ['down','down',['#f2c200','#111']], ['up','down',['#111','#f2c200','#111']], ['down','up',['#f2c200','#111','#f2c200']]];
+function symGlyph(style, k, fill){
+  const T = (d,y) => '<polygon points="'+(d==='up' ? '0,'+(y-3)+' -2.4,'+y+' 2.4,'+y : '-2.4,'+(y-3)+' 2.4,'+(y-3)+' 0,'+y)+'" fill="#111" stroke="#fff" stroke-width=".55" stroke-linejoin="round"/>';
+  if(style===0) return '<text y="3.8" text-anchor="middle" font-size="11" font-weight="700" font-family="Verdana,Geneva,sans-serif" fill="'+fill+'">'+PSYM[k]+'</text>';
+  if(style===1){ let r = '', n = k+1; for(let i=0;i<n;i++) r += '<circle cx="'+((i-(n-1)/2)*3.5)+'" cy="0" r="1.45" fill="none" stroke="'+fill+'" stroke-width=".95"/>'; return r; }
+  if(style===2) return '<text y="3.8" text-anchor="middle" font-size="11" font-weight="700" font-family="Verdana,Geneva,sans-serif" fill="'+fill+'">'+(k+1)+'</text>';
+  if(style===3) return [
+    '<rect x="-3.6" y="-3.6" width="7.2" height="7.2" fill="'+fill+'"/>',
+    '<polygon points="0,-4.4 4.2,3 -4.2,3" fill="'+fill+'"/>',
+    '<circle r="4" fill="'+fill+'"/>',
+    '<polygon points="4.2,0 2.1,3.6 -2.1,3.6 -4.2,0 -2.1,-3.6 2.1,-3.6" fill="'+fill+'"/>'][k];
+  const B = BUOY[k], cols = B[2], n = cols.length, h = 5.6/n;                // bouée : voyant (2 cônes) + corps rayé noir / jaune
+  let body = '';
+  cols.forEach((c,i) => { body += '<rect x="-2" y="'+(0.9+i*h)+'" width="4" height="'+h+'" fill="'+c+'"/>'; });
+  return '<g transform="translate(0 -1.2) scale(1.4)">'+T(B[0],-5.4)+T(B[1],-2.4)+body+'<rect x="-2" y="0.9" width="4" height="5.6" fill="none" stroke="#fff" stroke-width=".55"/></g>';
+}
+const edgeSyms = fill => EDGES.map(e => '<g transform="translate('+e[1]+' '+e[2]+') rotate('+e[3]+')">'+
+  [0,1,2,3,4].map(st => '<g class="sy sy'+st+'">'+symGlyph(st,e[0],fill)+'</g>').join('')+'</g>').join('');
+const psym = i => OPT.sym==='1' ? '°'.repeat(i+1) : OPT.sym==='2' ? String(i+1) : OPT.sym==='3' ? ['■','▲','●','⬢'][i] : OPT.sym==='4' ? ['N','S','E','W'][i] : PSYM[i];
 let handRot = 0;                                                   // angle ajouté aux cartes de la main du joueur au bas de l'écran (bouton « Main ⟳ », +90° à chaque appui)
 const oppIdx = pid => ((pid - G.view + G.n) % G.n) - 1;           // rang d'un adversaire dans la rangée du haut, selon le point de vue
 const viewRot = () => -360*G.view/G.n;                             // rotation du plateau vue par le joueur G.view
@@ -496,7 +522,7 @@ function computeLayout(){
   L.ow = Math.max(30, Math.min(L.hw*0.6, L.vw/Math.max(nopp,1)/3.3, 64));
   L.qw = L.ow*0.5;
   L.dw = L.hw*0.7;
-  L.oc = nopp===1 ? [L.vw/2] : nopp===2 ? [L.vw*.27, L.vw*.73] : nopp===5 ? [.1,.3,.5,.7,.9].map(f => L.vw*f) : [L.vw/6, L.vw/2, L.vw*5/6];
+  L.oc = nopp===1 ? [L.vw/2] : nopp===2 ? [L.vw*.27, L.vw*.73] : nopp>=5 ? Array.from({length:nopp},(_,k) => L.vw*(k+.5)/nopp) : [L.vw/6, L.vw/2, L.vw*5/6];
   L.topH = 24 + L.ow + 4 + L.qw + 6;
   L.handY = L.vh - L.hw/2 - 14;
   L.ptY = L.handY - L.hw/2 - L.pw/2 - 8;
@@ -527,7 +553,7 @@ function handPose(pid,i,n){
     return {x:L.vw/2+d*sp, y:L.handY+Math.abs(d)*L.hw*0.04, rot:d*4+handRot, s:sc(L.hw), up:vis, z:5000+i};
   }
   const colW = L.vw/Math.max(G.n-1,1)*0.92;                // grosses mains adverses : on resserre l'éventail
-  const sp = Math.min(L.ow*(G.n>=5?0.36:0.5), (colW-L.ow)/Math.max(n-1,1));
+  const sp = Math.min(L.ow*(G.n>=7?0.26:G.n>=5?0.36:0.5), (colW-L.ow)/Math.max(n-1,1));
   return {x:L.oc[oppIdx(pid)]+d*sp, y:24+L.ow/2+Math.abs(d)*2, rot:d*5, s:sc(L.ow), up:false, z:5000+i};
 }
 function ptPose(c){
@@ -644,14 +670,14 @@ function updateTotals(){
 function updateLabels(){
   G.players.forEach((p,i) => {
     if(G.chaos){                                                       // mode chaos : on compte les cartes en main
-      p.label.innerHTML = '<i style="background:'+COLORS[p.color].bg+'"></i><b>'+PSYM[i]+'</b> '+p.name+' · '+COLORS[p.color].name+' · '+p.hand.length+' carte'+(p.hand.length>1?'s':'')+(p.out ? ' · éliminé' : '');
+      p.label.innerHTML = '<i style="background:'+COLORS[p.color].bg+'"></i><b>'+psym(p.team)+'</b> '+p.name+' · '+COLORS[p.color].name+' · '+p.hand.length+' carte'+(p.hand.length>1?'s':'')+(p.out ? ' · éliminé' : '');
       p.label.classList.toggle('active', i===G.turn && !G.over && !p.out);
       p.label.style.opacity = p.out ? .45 : 1;
       return;
     }
     const short = G.n >= 5 && i > 0;                                   // étiquettes compactes à 6 joueurs
     const left = G.teams[p.team].members.reduce((a,id) => a+G.players[id].pts.length, 0);
-    p.label.innerHTML = '<i style="background:'+COLORS[p.color].bg+'"></i><b>'+PSYM[i]+'</b> '+(short
+    p.label.innerHTML = '<i style="background:'+COLORS[p.color].bg+'"></i><b>'+psym(p.team)+'</b> '+(short
       ? 'J'+(i+1)+' ★'+p.pts.length+'/'+left
       : p.name+' · '+COLORS[p.color].name+' · ★ '+p.pts.length+(G.teamMode ? ' (équipe : '+left+')' : ''));
     p.label.classList.toggle('active', i===G.turn && !G.over);
@@ -1297,7 +1323,7 @@ function newGame(n,nt){
 
   UI.pick = null; { const vt = document.getElementById('viewTxt'); if(vt) vt.textContent = 'Vue : Toi'; }
   G = {n, players:[], teams:[], islands:[], deck:[], turn:0, turnNo:0, over:false, sz:0, fz:0, all:[], log:[], setup:true, islSeq:0,
-       opt:Object.assign({}, OPT), chaos, view:0, reveal:false, teamMode:n===6, nTeams:(n===6 ? (nt===3 ? 3 : 2) : n)};   // 6 joueurs : 2 équipes de 3 ou 3 équipes de 2
+       opt:Object.assign({}, OPT), chaos, view:0, reveal:false, teamMode:n>4, nTeams:(n>4 ? Math.min(nt||2, 4) : n)};   // 6 joueurs : 2×3 ou 3×2 ; 8 joueurs : 2×4 ou 4×2 (4 équipes max)
   const keys = shuffle(PK.slice());
   const hc = (OPT.color !== 'auto' && COLORS[OPT.color]) ? OPT.color : null;      // couleur choisie pour le joueur (ou son équipe)
   const order = hc ? [hc].concat(keys.filter(k => k !== hc)) : keys;
@@ -1395,13 +1421,13 @@ document.getElementById('histCopy').addEventListener('click', copyHistory);
 document.getElementById('rules').addEventListener('click', () => { document.getElementById('help').style.display = 'block'; });
 /* menu Options */
 const selC = document.getElementById('optColor'), selD = document.getElementById('optDouble'), selM = document.getElementById('optMg');
-const selK = document.getElementById('optChaos'), sel7 = document.getElementById('optMg7'), sel4 = document.getElementById('optMg4'), selV = document.getElementById('optVals');
-function readOpts(){ OPT.color = selC.value; OPT.double = selD.value === 'O'; OPT.mg = selM.value === 'O'; OPT.chaos = selK.value === 'O'; OPT.mg7 = sel7.value === 'O'; OPT.mg4 = sel4.value === 'O'; OPT.vals = selV.value; saveOpt(); if(typeof syncMenu==='function') syncMenu(); }
+const selK = document.getElementById('optChaos'), sel7 = document.getElementById('optMg7'), sel4 = document.getElementById('optMg4'), selV = document.getElementById('optVals'), selS = document.getElementById('optSym');
+function readOpts(){ OPT.color = selC.value; OPT.double = selD.value === 'O'; OPT.mg = selM.value === 'O'; OPT.chaos = selK.value === 'O'; OPT.mg7 = sel7.value === 'O'; OPT.mg4 = sel4.value === 'O'; OPT.vals = selV.value; OPT.sym = selS.value; saveOpt(); if(typeof G!=='undefined' && G) updateLabels(); if(typeof syncMenu==='function') syncMenu(); }
 function showOpts(){
-  selC.value = OPT.color; selD.value = OPT.double ? 'O' : 'N'; selM.value = OPT.mg ? 'O' : 'N'; selK.value = OPT.chaos ? 'O' : 'N'; sel7.value = OPT.mg7 ? 'O' : 'N'; sel4.value = OPT.mg4 ? 'O' : 'N'; selV.value = OPT.vals;
+  selC.value = OPT.color; selD.value = OPT.double ? 'O' : 'N'; selM.value = OPT.mg ? 'O' : 'N'; selK.value = OPT.chaos ? 'O' : 'N'; sel7.value = OPT.mg7 ? 'O' : 'N'; sel4.value = OPT.mg4 ? 'O' : 'N'; selV.value = OPT.vals; selS.value = OPT.sym;
   document.getElementById('opts').style.display = 'block';
 }
-[selC, selD, selM, selK, sel7, sel4, selV].forEach(x => x.addEventListener('change', readOpts));
+[selC, selD, selM, selK, sel7, sel4, selV, selS].forEach(x => x.addEventListener('change', readOpts));
 document.getElementById('optBtn').addEventListener('click', showOpts);
 document.getElementById('optNew').addEventListener('click', () => { readOpts(); document.getElementById('opts').style.display = 'none'; startFromUI(); });
 let rzT = null;
@@ -1454,10 +1480,10 @@ try{ const v = localStorage.getItem(NPKEY); if(v && [...selN.options].some(o => 
 const $menu = document.getElementById('menu'), $tuto = document.getElementById('tuto');
 function syncMenu(){
   document.querySelectorAll('#menuMode button').forEach(b => b.classList.toggle('on', (b.dataset.m==='C') === !!OPT.chaos));
-  if(OPT.chaos && selN.value.startsWith('6')) selN.value = '4';          // chaos : 2 à 4 joueurs
+  if(OPT.chaos && Number(selN.value.split(':')[0])>4) selN.value = '4';          // chaos : 2 à 4 joueurs
   document.querySelectorAll('#menuPl button').forEach(b => {
     b.classList.toggle('on', b.dataset.v === selN.value);
-    b.classList.toggle('off', !!OPT.chaos && b.dataset.v.startsWith('6'));
+    b.classList.toggle('off', !!OPT.chaos && Number(b.dataset.v.split(':')[0])>4);
   });
 }
 function showMenu(){ syncMenu(); $menu.style.display = 'flex'; }
@@ -1470,13 +1496,15 @@ document.getElementById('menuOpt').addEventListener('click', showOpts);
 document.getElementById('menuTuto').addEventListener('click', () => showTuto(false));
 const demo = (a,b,c,d) => '<div class="demo">'+[a,b,c,d].map(x => '<b style="background:'+COLORS[x[0]].bg+'">'+x[1]+'</b>').join('')+'</div>';
 const TUTO = [
- {t:'Bienvenue dans 7shortcut', h:'<p>Des cartes à <b>4 couleurs</b> (rose, orange, vert, bleu), de valeur <b>0 à 3</b>, se posent autour de points centraux : les <b>îlots</b>.</p><p><b>Mode normal :</b> sois le premier à poser tes 4 cartes <b>Point</b> (3, 2, 1, 0).</p><p><b>Mode chaos :</b> garde tes cartes le plus longtemps possible ; le dernier joueur qui en a encore gagne.</p>'},
- {t:'Les îlots', h:demo(['rose',2],['orange',3],['vert',1],['bleu',0])+'<p>Quatre cartes entourent un point central. Chaque carte a un <b>coin coloré</b> qui doit toucher le centre : coin bas-droite → emplacement haut-gauche, bas-gauche → haut-droite, haut-droite → bas-gauche, haut-gauche → bas-droite.</p>'},
- {t:'Jouer une carte', h:'<p>À ton tour, <b>survole</b> une carte de ta main : les emplacements possibles s’illuminent. <b>Glisse</b> la carte dessus, ou touche-la puis touche l’emplacement.</p><p>Elle se pose <b>par-dessus</b> la carte déjà présente : seule la carte du dessus compte.</p><p>Tu as une couleur, affichée sous ton nom.</p>'},
- {t:'Totaux et pioche', h:'<p>Sous chaque îlot, des pastilles donnent le <b>total</b> de chaque couleur (cartes visibles).</p><p>Si le total de la couleur que tu viens de jouer est <b>égal ou supérieur</b> aux autres couleurs de l’îlot, tu <b>repioches obligatoirement</b> une carte. S’il est inférieur à celui d’une autre couleur, tu ne repioches pas.</p>'},
- {t:'Le bonus du 7', h:'<p>Dès qu’un total atteint <b>7 ou plus</b>, une animation « 7 » se déclenche.</p><p><b>Normal :</b> le propriétaire de la couleur pose une carte Point, et le joueur du tour peut en poser une aussi. Une carte Point est <b>verrouillée</b> (cadenas doré). Un îlot avec 3 Points est détruit au tour suivant.</p><p><b>Chaos :</b> les adversaires défaussent des cartes, l’îlot disparaît et tu repioches.</p>'},
- {t:'Jokers et aimants', h:'<p>Un <b>joker</b> ouvre un nouvel îlot (6 maximum, 4 en chaos). Un <b>aimant</b> fait de même et attire sur lui toutes les cartes visibles de sa couleur : tu choisis l’ordre pour viser un total de 7.</p><p><b>Chaos :</b> chacun a un aimant de sa couleur en main, et une 5e couleur neutre, le gris, entre dans la pioche. Quand un aimant ouvre un îlot au-delà de 4, le plus ancien disparaît.</p>'},
- {t:'À toi de jouer !', h:'<p>Choisis ensuite ton <b>mode</b> et le <b>nombre de joueurs</b> dans le menu. Tu peux relire les règles à tout moment avec le bouton <b>Règles</b>, et revoir ce tutoriel depuis le menu.</p><p>Dans <b>Options</b> : ta couleur, le double point et l’aimant personnel.</p>'}
+ {t:'Bienvenue dans 7shortcut', h:'<p>Des cartes à <b>4 couleurs</b> (rose, orange, vert, bleu), de valeur <b>0 à 3</b>, se posent autour de points centraux : les <b>îlots</b>.</p><p>Le jeu a deux modes : le <b>Normal</b> (présenté d’abord) et le <b>Compétitif</b>.</p><p><b>But du mode Normal :</b> garder ses cartes en main le plus longtemps possible. Le dernier joueur qui en a encore gagne !</p>'},
+ {t:'Les îlots', h:demo(['rose',2],['orange',3],['vert',1],['bleu',0])+'<p>Quatre cartes entourent un point central. Chaque carte a un <b>coin coloré</b> qui doit toucher le centre : coin bas-droite → emplacement haut-gauche, bas-gauche → haut-droite, haut-droite → bas-gauche, haut-gauche → bas-droite.</p><p>Au maximum <b>4 îlots</b> à la fois en mode Normal.</p>'},
+ {t:'Jouer une carte', h:'<p>À ton tour, <b>survole</b> une carte de ta main : les emplacements possibles s’illuminent. <b>Glisse</b> la carte dessus, ou touche-la puis touche l’emplacement.</p><p>Elle se pose <b>par-dessus</b> la carte déjà présente : seule la carte du dessus compte.</p><p>Chaque joueur a une couleur (sous son nom) et un symbole (° °° °°° °°°°) imprimé au bord des cartes.</p>'},
+ {t:'Totaux et pioche', h:'<p>Sous chaque îlot, des pastilles donnent le <b>total</b> de chaque couleur (cartes visibles). Une 5e couleur neutre, le <b>gris</b>, est aussi dans la pioche.</p><p>Si le total de la couleur que tu viens de jouer est <b>égal ou supérieur</b> aux autres, tu <b>repioches obligatoirement</b>. S’il est inférieur à celui d’une autre couleur, tu ne repioches pas : ta main diminue.</p>'},
+ {t:'Bonus et aimants (Normal)', h:'<p>Dès qu’un total atteint <b>7 ou plus</b>, une animation « 7 » se déclenche : les adversaires <b>défaussent</b> des cartes, l’îlot disparaît et le joueur qui l’a provoqué repioche.</p><p>Le propriétaire de la couleur gagne un <b>aimant</b> en main. Il en va de même quand les 4 cartes d’un îlot sont de sa couleur.</p><p>Un <b>aimant</b> ouvre un nouvel îlot et attire sur lui toutes les cartes visibles de sa couleur. Au-delà de 4 îlots, le plus ancien est détruit. Chacun commence avec un aimant de sa couleur.</p>'},
+ {t:'Mode Compétitif', h:'<p>L’autre mode, <b>Compétitif</b>, ajoute des <b>cartes « Point »</b> (3, 2, 1, 0) pour chaque joueur, ainsi que des jokers.</p><p><b>La condition de victoire change :</b> il ne s’agit plus de garder ses cartes, mais d’être le premier à avoir <b>posé toutes ses cartes Point</b>.</p><p>Un total de 7 ou plus permet de poser des Points (propriétaire de la couleur, et joueur du tour). Une carte Point est <b>verrouillée</b> (cadenas doré) ; un îlot avec 3 Points est détruit au tour suivant.</p>'},
+ {t:'Compétitif : jusqu’à 8 joueurs', h:'<p>Le Compétitif se joue de <b>2 à 8 joueurs</b>, avec au maximum <b>4 équipes</b> : à 6 joueurs 2 équipes de 3 ou 3 équipes de 2, à 8 joueurs 2 équipes de 4 ou 4 équipes de 2.</p><p>Une équipe gagne quand tous les Points de ses membres sont posés. Les équipes alternent autour de la table.</p>'},
+ {t:'Commandes', h:'<p><b>◀ ▶</b> (ou flèches du clavier) : changer de point de vue.<br><b>U</b> : afficher/masquer les cartes du joueur observé (debug).<br><b>Main ⟳</b> (ou R) : pivoter tes cartes en main de 90°.</p><p>Règles complètes : bouton <b>Règles</b>. Tutoriel : depuis le <b>Menu</b>.</p>'},
+ {t:'À toi de jouer !', h:'<p>Choisis ton <b>mode</b> (Normal ou Compétitif) et le <b>nombre de joueurs</b> dans le menu.</p><p>Dans <b>Options</b> : ta couleur, le style des cartes et des symboles, et les bonus.</p>'}
 ];
 let tutoI = 0, tutoFirst = false;
 function renderTuto(){
