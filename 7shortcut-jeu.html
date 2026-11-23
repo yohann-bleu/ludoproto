@@ -128,7 +128,10 @@ body{display:flex;flex-direction:column}
 body[data-vals="bars"] .vn{display:none}
 body[data-vals="num"] .vb{display:none}
 .sy{display:none}
-body[data-sym="0"] .sy0, body[data-sym="1"] .sy1, body[data-sym="2"] .sy2, body[data-sym="3"] .sy3, body[data-sym="4"] .sy4{display:inline}
+body[data-design="0"] .d1, body[data-design="2"] .d1, body[data-design="1"] .d0{display:none}
+body[data-design="2"] .pw{display:none}
+body[data-design="2"] .cs, body:not([data-design="2"]) .cb{display:none}
+body[data-sym="0"] .sy0, body[data-sym="1"] .sy1, body[data-sym="2"] .sy2, body[data-sym="3"] .sy3, body[data-sym="4"] .sy4, body[data-sym="5"] .sy5, body[data-sym="6"] .sy6, body[data-sym="7"] .sy7, body[data-sym="8"] .sy8, body[data-sym="9"] .sy9, body[data-sym="10"] .sy10, body[data-sym="11"] .sy11, body[data-sym="12"] .sy12, body[data-sym="13"] .sy13, body[data-sym="14"] .sy14, body[data-sym="15"] .sy15{display:inline}
 </style>
 </head>
 <body>
@@ -202,8 +205,10 @@ body[data-sym="0"] .sy0, body[data-sym="1"] .sy1, body[data-sym="2"] .sy2, body[
     <select id="optChaos"><option value="O">Oui</option><option value="N">Non</option></select></div>
   <div class="orow"><label for="optVals">Valeur des cartes<br><small>chiffres 0, 1, 2, 3 ou bâtons I, II, III (rien pour 0) ; le disque de couleur reste (s’applique tout de suite)</small></label>
     <select id="optVals"><option value="num">Chiffres</option><option value="bars">Bâtons</option></select></div>
+  <div class="orow"><label for="optDesign">Design des cartes<br><small>Classique, Design 02 (comme le classique sans le pion central) ou Design 01 (fond de couleur, disque central blanc sans logo, points cardinaux = ronds noirs) ; s’applique tout de suite</small></label>
+    <select id="optDesign"><option value="0">Classique</option><option value="1">Design 01</option><option value="2">Design 02</option></select></div>
   <div class="orow"><label for="optSym">Symboles des joueurs<br><small>imprimés au milieu des bords de chaque carte (s’applique tout de suite)</small></label>
-    <select id="optSym"><option value="0">Lettres Σ 7 X S</option><option value="1">Points ° °° °°° °°°°</option><option value="2">Chiffres 1 2 3 4</option><option value="3">Formes ■ ▲ ● ⬢</option><option value="4">Bouées N S E W</option></select></div>
+    <select id="optSym"><option value="0">Lettres Σ 7 X S</option><option value="1">Points ° °° °°° °°°°</option><option value="2">Chiffres 1 2 3 4</option><option value="3">Formes ■ ▲ ● ⬢</option><option value="4">Bouées N S E W</option><option value="5">Unité · Dualité · Triade · Quaternité</option><option value="7">Bauhaus · barres</option><option value="10">Bauhaus · quarts de disque</option><option value="13">Bauhaus · rayons</option><option value="15">Bauhaus · losanges</option></select></div>
   <div class="orow"><label for="optMg7">Chaos : aimant sur un 7<br><small>le joueur dont la couleur fait le total de 7 ou plus récupère un aimant de sa couleur en main</small></label>
     <select id="optMg7"><option value="O">Oui</option><option value="N">Non</option></select></div>
   <div class="orow"><label for="optMg4">Chaos : aimant sur un îlot de 4 cartes<br><small>quand les 4 cartes d’un îlot sont de la couleur d’un joueur, il récupère un aimant (avec une animation)</small></label>
@@ -264,9 +269,9 @@ const TPL = {1:[[1]], 2:[[2],[1,1]], 3:[[3],[2,1],[1,2],[1,1,1]], 4:[[2,2],[4],[
 /* Options (enregistrées dans le navigateur, appliquées à la prochaine partie) */
 const TEAM_POINTS = [3,2,1,0];     // cartes Point d'une équipe à 6 ou 8 joueurs : réparties entre ses 3 joueurs
 const OKEY = 'losanges7_opt';
-const OPT = {color:'auto', double:true, mg:false, chaos:true, mg7:true, mg4:true, vals:'num', sym:'1'};   // sym : style des symboles de joueurs (0 lettres, 1 points, 2 chiffres, 3 formes, 4 bouées)   // vals : 'num' (0,1,2,3) ou 'bars' (I, II, III, rien pour 0)   // mg7/mg4 : bonus aimant du mode chaos
+const OPT = {color:'auto', double:true, mg:false, chaos:true, design:'0', mg7:true, mg4:true, vals:'num', sym:'1'};   // sym : style des symboles de joueurs (0 lettres, 1 points, 2 chiffres, 3 formes, 4 bouées)   // vals : 'num' (0,1,2,3) ou 'bars' (I, II, III, rien pour 0)   // mg7/mg4 : bonus aimant du mode chaos
 try{ const o = JSON.parse(localStorage.getItem(OKEY)); if(o) Object.assign(OPT, o); }catch(e){}
-const applyVals = () => { document.body.dataset.vals = OPT.vals==='bars' ? 'bars' : 'num'; document.body.dataset.sym = /^[0-4]$/.test(OPT.sym) ? OPT.sym : '1'; };
+const applyVals = () => { document.body.dataset.vals = OPT.vals==='bars' ? 'bars' : 'num'; document.body.dataset.design = /^[12]$/.test(OPT.design) ? OPT.design : '0'; document.body.dataset.sym = /^([0-9]|1[0-5])$/.test(OPT.sym) ? OPT.sym : '1'; };
 function saveOpt(){ applyVals(); try{ localStorage.setItem(OKEY, JSON.stringify(OPT)); }catch(e){} }
 
 applyVals();
@@ -425,6 +430,26 @@ const EDGES = [                                                    // [joueur, x
 /* 5 styles de symboles de joueurs (choix dans Options, changement immédiat) :
    0 lettres Σ 7 X S · 1 ° °° °°° °°°° · 2 chiffres 1-4 · 3 carré triangle rond hexagone · 4 bouées cardinales N S E W */
 const BUOY = [['up','up',['#111','#f2c200']], ['down','down',['#f2c200','#111']], ['up','down',['#111','#f2c200','#111']], ['down','up',['#f2c200','#111','#f2c200']]];
+
+/* 4 jeux de symboles supplémentaires, style Bauhaus : styles 7, 10, 13 et 15, chacun 4 glyphes (joueurs 1 à 4) */
+const BH = (() => {
+  const f = c => ' fill="'+c+'"', so = (c,w) => ' fill="none" stroke="'+c+'" stroke-width="'+w+'" stroke-linecap="round" stroke-linejoin="round"';
+  const P = (a,r) => [(r*Math.cos(a*Math.PI/180)).toFixed(2), (r*Math.sin(a*Math.PI/180)).toFixed(2)];
+  const sector = (a0,a1,r,c) => { const p0 = P(a0,r), p1 = P(a1,r); return '<path d="M0,0 L'+p0+' A'+r+','+r+' 0 '+((a1-a0)>180?1:0)+' 1 '+p1+' Z"'+f(c)+'/>'; };
+  const diam = (x,y,w,h,c) => '<polygon points="'+x+','+(y-h)+' '+(x+w)+','+y+' '+x+','+(y+h)+' '+(x-w)+','+y+'"'+f(c)+'/>';
+  const tri = (x,y,w,h,c) => '<polygon points="'+x+','+(y-h)+' '+(x+w)+','+(y+h)+' '+(x-w)+','+(y+h)+'"'+f(c)+'/>';
+  const row = (n,sp,fn) => Array.from({length:n},(_,i) => fn((i-(n-1)/2)*sp)).join('');
+  return {
+    7: c => [1,2,3,4].map(n => row(n,2.5,x => '<rect x="'+(x-.7)+'" y="-4.4" width="1.4" height="8.8" rx=".7"'+f(c)+'/>')),                                              // barres
+    10: c => [1,2,3,4].map(n => [0,180,90,270].slice(0,n).map(a => '<path transform="rotate('+a+')" d="M-.5,-.5 L-.5,-4.7 A4.2,4.2 0 0 0 -4.7,-.5 Z"'+f(c)+'/>').join('')),   // quarts de disque
+    13: c => [1,2,3,4].map(n => Array.from({length:n},(_,i) => '<line transform="rotate('+(90+i*180/n)+')" x1="-4.6" x2="4.6"'+so(c,1.1)+'/>').join('')),                        // rayons
+    15: c => [1,2,3,4].map(n => n===1 ? diam(0,0,2.4,4.4,c) : n===2 ? diam(-2.2,0,1.9,3.6,c)+diam(2.2,0,1.9,3.6,c)
+         : n===3 ? diam(0,-2.4,1.7,2.4,c)+diam(-2.4,1.8,1.7,2.4,c)+diam(2.4,1.8,1.7,2.4,c)
+         : diam(0,-2.9,1.5,2.1,c)+diam(0,2.9,1.5,2.1,c)+diam(-2.9,0,2.1,1.5,c).replace(/^/,'')+diam(2.9,0,2.1,1.5,c))                                                              // losanges
+  };
+})();
+const BH_LABEL = { 7:['❘','❘❘','❘❘❘','❘❘❘❘'], 10:['◜','◜◞','◜◞◝','◜◞◝◟'], 13:['|','+','✳','✺'], 15:['◆','◆◆','◆◆◆','◆◆◆◆']};
+
 function symGlyph(style, k, fill){
   const T = (d,y) => '<polygon points="'+(d==='up' ? '0,'+(y-3)+' -2.4,'+y+' 2.4,'+y : '-2.4,'+(y-3)+' 2.4,'+(y-3)+' 0,'+y)+'" fill="#111" stroke="#fff" stroke-width=".55" stroke-linejoin="round"/>';
   if(style===0) return '<text y="3.8" text-anchor="middle" font-size="11" font-weight="700" font-family="Verdana,Geneva,sans-serif" fill="'+fill+'">'+PSYM[k]+'</text>';
@@ -435,14 +460,22 @@ function symGlyph(style, k, fill){
     '<polygon points="0,-4.4 4.2,3 -4.2,3" fill="'+fill+'"/>',
     '<circle r="4" fill="'+fill+'"/>',
     '<polygon points="4.2,0 2.1,3.6 -2.1,3.6 -4.2,0 -2.1,-3.6 2.1,-3.6" fill="'+fill+'"/>'][k];
+  if(style>=6) return BH[style] ? BH[style](fill)[k] : '';
+  if(style===5){                                                   // Unité / Dualité / Triade / Quaternité (traits arrondis)
+    const st = ' fill="none" stroke="'+fill+'" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round"';
+    if(k===0) return '<circle r="4.3"'+st+'/><circle r="1.35" fill="'+fill+'"/>';
+    if(k===1) return '<circle cx="-1.9" r="3.5"'+st+'/><circle cx="1.9" r="3.5"'+st+'/>';
+    if(k===2) return '<polygon points="0,-4.6 4.6,3.4 -4.6,3.4"'+st+'/><line x1="-1.7" y1="1" x2="1.7" y2="1"'+st+'/>';
+    return [0,90,180,270].map(a => '<polygon transform="rotate('+a+')" points="0,-4.8 1.5,-2.6 0,-0.5 -1.5,-2.6"'+st+'/>').join('');
+  }
   const B = BUOY[k], cols = B[2], n = cols.length, h = 5.6/n;                // bouée : voyant (2 cônes) + corps rayé noir / jaune
   let body = '';
   cols.forEach((c,i) => { body += '<rect x="-2" y="'+(0.9+i*h)+'" width="4" height="'+h+'" fill="'+c+'"/>'; });
   return '<g transform="translate(0 -1.2) scale(1.4)">'+T(B[0],-5.4)+T(B[1],-2.4)+body+'<rect x="-2" y="0.9" width="4" height="5.6" fill="none" stroke="#fff" stroke-width=".55"/></g>';
 }
 const edgeSyms = fill => EDGES.map(e => '<g transform="translate('+e[1]+' '+e[2]+') rotate('+e[3]+')">'+
-  [0,1,2,3,4].map(st => '<g class="sy sy'+st+'">'+symGlyph(st,e[0],fill)+'</g>').join('')+'</g>').join('');
-const psym = i => OPT.sym==='1' ? '°'.repeat(i+1) : OPT.sym==='2' ? String(i+1) : OPT.sym==='3' ? ['■','▲','●','⬢'][i] : OPT.sym==='4' ? ['N','S','E','W'][i] : PSYM[i];
+  [0,1,2,3,4,5,7,10,13,15].map(st => '<g class="sy sy'+st+'">'+symGlyph(st,e[0],fill)+'</g>').join('')+'</g>').join('');
+const psym = i => OPT.sym==='1' ? '°'.repeat(i+1) : OPT.sym==='2' ? String(i+1) : OPT.sym==='3' ? ['■','▲','●','⬢'][i] : OPT.sym==='4' ? ['N','S','E','W'][i] : OPT.sym==='5' ? ['⊙','∞','△','✦'][i] : BH_LABEL[OPT.sym] ? BH_LABEL[OPT.sym][i] : PSYM[i];
 let handRot = 0;                                                   // angle ajouté aux cartes de la main du joueur au bas de l'écran (bouton « Main ⟳ », +90° à chaque appui)
 const oppIdx = pid => ((pid - G.view + G.n) % G.n) - 1;           // rang d'un adversaire dans la rangée du haut, selon le point de vue
 const viewRot = () => -360*G.view/G.n;                             // rotation du plateau vue par le joueur G.view
@@ -452,11 +485,23 @@ const GRID = '<path d="M25 0V100M50 0V100M75 0V100M0 25H100M0 50H100M0 75H100" s
 /* carte numérotée : fond sombre quadrillé, grand disque de couleur, chiffre en biais, symboles des joueurs sur les bords, quart de cercle + morceau de pion dans le coin du centre */
 function numSVG(v,color,corner){
   const C = COLORS[color], p = CXY[corner];
-  return wrap('<rect width="100" height="100" fill="#383838"/>'+GRID+
+  return wrap('<g class="d0"><rect width="100" height="100" fill="#383838"/>'+GRID+
     '<circle cx="50" cy="50" r="37" fill="'+C.bg+'"/>'+
-    '<circle cx="'+p[0]+'" cy="'+p[1]+'" r="32" fill="'+C.bg+'"/>'+pawn(p[0],p[1],1.2,'#b5440a')+
+    '<circle class="cs" cx="'+p[0]+'" cy="'+p[1]+'" r="32" fill="'+C.bg+'"/><circle class="cb" cx="'+p[0]+'" cy="'+p[1]+'" r="44" fill="'+C.bg+'"/>'+'<g class="pw">'+pawn(p[0],p[1],1.2,'#b5440a')+'</g>'+
     '<g transform="rotate('+TILT[corner]+' 50 50)"><g class="vn"><text x="50" y="68" text-anchor="middle" font-size="56" font-weight="800" font-family=\''+FONT+'\' fill="#fafafa" stroke="rgba(0,0,0,.2)" stroke-width="2" paint-order="stroke" stroke-linejoin="round">'+v+'</text></g>'+barsSVG(v,50,50,'#fafafa','rgba(0,0,0,.25)')+'</g>'+
-    edgeSyms('#f5f5f5'));
+    edgeSyms('#f5f5f5')+'</g>'+design01(v,color,corner));
+}
+/* Design 01 : fond de la couleur, grand disque blanc central (sans logo) qui touche le centre de l'îlot, disque blanc du chiffre (noir),
+   points cardinaux des joueurs = ronds noirs (1 à 4) au milieu des bords */
+function design01(v,color,corner){
+  const C = COLORS[color], p = CXY[corner], cx = 50-(p[0]-50)*0.16, cy = 50-(p[1]-50)*0.16;
+  const dots = EDGES.map(e => { const n = e[0]+1; let r = '';
+    for(let i=0;i<n;i++) r += '<circle cx="'+((i-(n-1)/2)*5)+'" cy="0" r="2.1" fill="#000"/>';
+    return '<g transform="translate('+e[1]+' '+e[2]+') rotate('+e[3]+')">'+r+'</g>'; }).join('');
+  return '<g class="d1"><rect width="100" height="100" fill="'+C.bg+'"/><circle cx="'+p[0]+'" cy="'+p[1]+'" r="70" fill="#fff"/>'+
+    '<circle cx="'+cx+'" cy="'+cy+'" r="37" fill="#fff"/>'+
+    '<g transform="rotate('+TILT[corner]+' '+cx+' '+cy+')"><g class="vn"><text x="'+cx+'" y="'+(cy+23)+'" text-anchor="middle" font-size="72" font-weight="700" font-family=\''+FONT+'\' fill="#000">'+v+'</text></g>'+
+    barsSVG(v,cx,cy,'#000','none')+'</g>'+dots+'</g>';
 }
 function pointSVG(v,color){
   const C = COLORS[color], corner = POINT_CORNER[v], p = CXY[corner];
@@ -1422,12 +1467,12 @@ document.getElementById('rules').addEventListener('click', () => { document.getE
 /* menu Options */
 const selC = document.getElementById('optColor'), selD = document.getElementById('optDouble'), selM = document.getElementById('optMg');
 const selK = document.getElementById('optChaos'), sel7 = document.getElementById('optMg7'), sel4 = document.getElementById('optMg4'), selV = document.getElementById('optVals'), selS = document.getElementById('optSym');
-function readOpts(){ OPT.color = selC.value; OPT.double = selD.value === 'O'; OPT.mg = selM.value === 'O'; OPT.chaos = selK.value === 'O'; OPT.mg7 = sel7.value === 'O'; OPT.mg4 = sel4.value === 'O'; OPT.vals = selV.value; OPT.sym = selS.value; saveOpt(); if(typeof G!=='undefined' && G) updateLabels(); if(typeof syncMenu==='function') syncMenu(); }
+function readOpts(){ OPT.color = selC.value; OPT.double = selD.value === 'O'; OPT.mg = selM.value === 'O'; OPT.chaos = selK.value === 'O'; OPT.mg7 = sel7.value === 'O'; OPT.mg4 = sel4.value === 'O'; OPT.vals = selV.value; OPT.sym = selS.value; OPT.design = document.getElementById('optDesign').value; saveOpt(); if(typeof G!=='undefined' && G) updateLabels(); if(typeof syncMenu==='function') syncMenu(); }
 function showOpts(){
-  selC.value = OPT.color; selD.value = OPT.double ? 'O' : 'N'; selM.value = OPT.mg ? 'O' : 'N'; selK.value = OPT.chaos ? 'O' : 'N'; sel7.value = OPT.mg7 ? 'O' : 'N'; sel4.value = OPT.mg4 ? 'O' : 'N'; selV.value = OPT.vals; selS.value = OPT.sym;
+  selC.value = OPT.color; selD.value = OPT.double ? 'O' : 'N'; selM.value = OPT.mg ? 'O' : 'N'; selK.value = OPT.chaos ? 'O' : 'N'; sel7.value = OPT.mg7 ? 'O' : 'N'; sel4.value = OPT.mg4 ? 'O' : 'N'; selV.value = OPT.vals; selS.value = OPT.sym; document.getElementById('optDesign').value = /^[12]$/.test(OPT.design) ? OPT.design : '0';
   document.getElementById('opts').style.display = 'block';
 }
-[selC, selD, selM, selK, sel7, sel4, selV, selS].forEach(x => x.addEventListener('change', readOpts));
+[selC, selD, selM, selK, sel7, sel4, selV, selS, document.getElementById('optDesign')].forEach(x => x.addEventListener('change', readOpts));
 document.getElementById('optBtn').addEventListener('click', showOpts);
 document.getElementById('optNew').addEventListener('click', () => { readOpts(); document.getElementById('opts').style.display = 'none'; startFromUI(); });
 let rzT = null;
