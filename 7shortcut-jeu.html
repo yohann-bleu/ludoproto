@@ -128,9 +128,10 @@ body{display:flex;flex-direction:column}
 body[data-vals="bars"] .vn{display:none}
 body[data-vals="num"] .vb{display:none}
 .sy{display:none}
-body[data-design="0"] .d1, body[data-design="2"] .d1, body[data-design="1"] .d0{display:none}
+body[data-design="0"] .d1, body[data-design="2"] .d1, body[data-design="3"] .d1, body[data-design="1"] .d0{display:none}
 body[data-design="2"] .pw{display:none}
-body[data-design="2"] .cs, body:not([data-design="2"]) .cb{display:none}
+body[data-design="2"] .cs, body[data-design="3"] .cs, body[data-design="0"] .cb, body[data-design="1"] .cb{display:none}
+body[data-design="3"] .pw, body:not([data-design="3"]) .lg{display:none}
 body[data-sym="0"] .sy0, body[data-sym="1"] .sy1, body[data-sym="2"] .sy2, body[data-sym="3"] .sy3, body[data-sym="4"] .sy4, body[data-sym="5"] .sy5, body[data-sym="6"] .sy6, body[data-sym="7"] .sy7, body[data-sym="8"] .sy8, body[data-sym="9"] .sy9, body[data-sym="10"] .sy10, body[data-sym="11"] .sy11, body[data-sym="12"] .sy12, body[data-sym="13"] .sy13, body[data-sym="14"] .sy14, body[data-sym="15"] .sy15{display:inline}
 </style>
 </head>
@@ -205,8 +206,8 @@ body[data-sym="0"] .sy0, body[data-sym="1"] .sy1, body[data-sym="2"] .sy2, body[
     <select id="optChaos"><option value="O">Oui</option><option value="N">Non</option></select></div>
   <div class="orow"><label for="optVals">Valeur des cartes<br><small>chiffres 0, 1, 2, 3 ou bâtons I, II, III (rien pour 0) ; le disque de couleur reste (s’applique tout de suite)</small></label>
     <select id="optVals"><option value="num">Chiffres</option><option value="bars">Bâtons</option></select></div>
-  <div class="orow"><label for="optDesign">Design des cartes<br><small>Classique, Design 02 (comme le classique sans le pion central) ou Design 01 (fond de couleur, disque central blanc sans logo, points cardinaux = ronds noirs) ; s’applique tout de suite</small></label>
-    <select id="optDesign"><option value="0">Classique</option><option value="1">Design 01</option><option value="2">Design 02</option></select></div>
+  <div class="orow"><label for="optDesign">Design des cartes<br><small>Classique, Design 03 (logo coloré au centre, cercle agrandi), Design 02 (comme le classique sans le pion central) ou Design 01 (fond de couleur, disque central blanc sans logo, points cardinaux = ronds noirs) ; s’applique tout de suite</small></label>
+    <select id="optDesign"><option value="0">Classique</option><option value="1">Design 01</option><option value="2">Design 02</option><option value="3">Design 03</option></select></div>
   <div class="orow"><label for="optSym">Symboles des joueurs<br><small>imprimés au milieu des bords de chaque carte (s’applique tout de suite)</small></label>
     <select id="optSym"><option value="0">Lettres Σ 7 X S</option><option value="1">Points ° °° °°° °°°°</option><option value="2">Chiffres 1 2 3 4</option><option value="3">Formes ■ ▲ ● ⬢</option><option value="4">Bouées N S E W</option><option value="5">Unité · Dualité · Triade · Quaternité</option><option value="7">Bauhaus · barres</option><option value="10">Bauhaus · quarts de disque</option><option value="13">Bauhaus · rayons</option><option value="15">Bauhaus · losanges</option></select></div>
   <div class="orow"><label for="optMg7">Chaos : aimant sur un 7<br><small>le joueur dont la couleur fait le total de 7 ou plus récupère un aimant de sa couleur en main</small></label>
@@ -271,7 +272,7 @@ const TEAM_POINTS = [3,2,1,0];     // cartes Point d'une équipe à 6 ou 8 joueu
 const OKEY = 'losanges7_opt';
 const OPT = {color:'auto', double:true, mg:false, chaos:true, design:'0', mg7:true, mg4:true, vals:'num', sym:'1'};   // sym : style des symboles de joueurs (0 lettres, 1 points, 2 chiffres, 3 formes, 4 bouées)   // vals : 'num' (0,1,2,3) ou 'bars' (I, II, III, rien pour 0)   // mg7/mg4 : bonus aimant du mode chaos
 try{ const o = JSON.parse(localStorage.getItem(OKEY)); if(o) Object.assign(OPT, o); }catch(e){}
-const applyVals = () => { document.body.dataset.vals = OPT.vals==='bars' ? 'bars' : 'num'; document.body.dataset.design = /^[12]$/.test(OPT.design) ? OPT.design : '0'; document.body.dataset.sym = /^([0-9]|1[0-5])$/.test(OPT.sym) ? OPT.sym : '1'; };
+const applyVals = () => { document.body.dataset.vals = OPT.vals==='bars' ? 'bars' : 'num'; document.body.dataset.design = /^[123]$/.test(OPT.design) ? OPT.design : '0'; document.body.dataset.sym = /^([0-9]|1[0-5])$/.test(OPT.sym) ? OPT.sym : '1'; };
 function saveOpt(){ applyVals(); try{ localStorage.setItem(OKEY, JSON.stringify(OPT)); }catch(e){} }
 
 applyVals();
@@ -483,11 +484,15 @@ const rotv = (x,y) => { const a = viewRot()*Math.PI/180, c = Math.cos(a), sn = M
 const TILT = {br:-45, bl:45, tr:-135, tl:135};                       // angle fixe du chiffre selon l'emplacement de la carte (br = haut-gauche, bl = haut-droite, tr = bas-gauche, tl = bas-droite)
 const GRID = '<path d="M25 0V100M50 0V100M75 0V100M0 25H100M0 50H100M0 75H100" stroke="#fff" stroke-opacity=".1" stroke-width=".8" stroke-dasharray="1.2 3.6"/>';
 /* carte numérotée : fond sombre quadrillé, grand disque de couleur, chiffre en biais, symboles des joueurs sur les bords, quart de cercle + morceau de pion dans le coin du centre */
+const LOGO = ['178.0,152.3 285.0,206.0 265.0,226.0 207.0,226.0 205.0,205.0 166.0,187.0 166.0,266.0 287.0,266.0 326.0,227.0 326.0,186.0 194.0,119.7','85.0,6.0 46.0,45.0 46.0,86.0 178.0,152.3 194.0,119.7 87.0,66.0 107.0,46.0 165.0,46.0 167.0,67.0 206.0,85.0 206.0,6.0','226.0,6.0 226.0,66.0 263.0,85.0 266.0,85.0 267.0,46.0 325.0,47.0 267.0,153.0 267.0,157.0 303.0,175.0 307.0,175.0 366.0,67.0 366.0,6.0','65.0,97.0 6.0,205.0 6.0,266.0 146.0,266.0 146.0,206.0 109.0,187.0 106.0,187.0 105.0,226.0 47.0,225.0 105.0,119.0 105.0,115.0 69.0,97.0'];   // logo central : demi-bandes A/B, crochets C/D (px, centre 186,136)
+const logoSVG = (x,y) => { const K = ['rose','vert','orange','bleu'];
+  return '<g class="lg" transform="translate('+x+' '+y+') scale(.13) translate(-186 -136)" stroke="#2a2a2e" stroke-width="8" stroke-linejoin="round">'+
+    LOGO.map((q,i) => '<polygon points="'+q+'" fill="'+COLORS[K[i]].bg+'"/>').join('')+'</g>'; };
 function numSVG(v,color,corner){
   const C = COLORS[color], p = CXY[corner];
   return wrap('<g class="d0"><rect width="100" height="100" fill="#383838"/>'+GRID+
     '<circle cx="50" cy="50" r="37" fill="'+C.bg+'"/>'+
-    '<circle class="cs" cx="'+p[0]+'" cy="'+p[1]+'" r="32" fill="'+C.bg+'"/><circle class="cb" cx="'+p[0]+'" cy="'+p[1]+'" r="44" fill="'+C.bg+'"/>'+'<g class="pw">'+pawn(p[0],p[1],1.2,'#b5440a')+'</g>'+
+    '<circle class="cs" cx="'+p[0]+'" cy="'+p[1]+'" r="32" fill="'+C.bg+'"/><circle class="cb" cx="'+p[0]+'" cy="'+p[1]+'" r="44" fill="'+C.bg+'"/>'+'<g class="pw">'+pawn(p[0],p[1],1.2,'#b5440a')+'</g>'+logoSVG(p[0],p[1])+
     '<g transform="rotate('+TILT[corner]+' 50 50)"><g class="vn"><text x="50" y="68" text-anchor="middle" font-size="56" font-weight="800" font-family=\''+FONT+'\' fill="#fafafa" stroke="rgba(0,0,0,.2)" stroke-width="2" paint-order="stroke" stroke-linejoin="round">'+v+'</text></g>'+barsSVG(v,50,50,'#fafafa','rgba(0,0,0,.25)')+'</g>'+
     edgeSyms('#f5f5f5')+'</g>'+design01(v,color,corner));
 }
@@ -1469,7 +1474,7 @@ const selC = document.getElementById('optColor'), selD = document.getElementById
 const selK = document.getElementById('optChaos'), sel7 = document.getElementById('optMg7'), sel4 = document.getElementById('optMg4'), selV = document.getElementById('optVals'), selS = document.getElementById('optSym');
 function readOpts(){ OPT.color = selC.value; OPT.double = selD.value === 'O'; OPT.mg = selM.value === 'O'; OPT.chaos = selK.value === 'O'; OPT.mg7 = sel7.value === 'O'; OPT.mg4 = sel4.value === 'O'; OPT.vals = selV.value; OPT.sym = selS.value; OPT.design = document.getElementById('optDesign').value; saveOpt(); if(typeof G!=='undefined' && G) updateLabels(); if(typeof syncMenu==='function') syncMenu(); }
 function showOpts(){
-  selC.value = OPT.color; selD.value = OPT.double ? 'O' : 'N'; selM.value = OPT.mg ? 'O' : 'N'; selK.value = OPT.chaos ? 'O' : 'N'; sel7.value = OPT.mg7 ? 'O' : 'N'; sel4.value = OPT.mg4 ? 'O' : 'N'; selV.value = OPT.vals; selS.value = OPT.sym; document.getElementById('optDesign').value = /^[12]$/.test(OPT.design) ? OPT.design : '0';
+  selC.value = OPT.color; selD.value = OPT.double ? 'O' : 'N'; selM.value = OPT.mg ? 'O' : 'N'; selK.value = OPT.chaos ? 'O' : 'N'; sel7.value = OPT.mg7 ? 'O' : 'N'; sel4.value = OPT.mg4 ? 'O' : 'N'; selV.value = OPT.vals; selS.value = OPT.sym; document.getElementById('optDesign').value = /^[123]$/.test(OPT.design) ? OPT.design : '0';
   document.getElementById('opts').style.display = 'block';
 }
 [selC, selD, selM, selK, sel7, sel4, selV, selS, document.getElementById('optDesign')].forEach(x => x.addEventListener('change', readOpts));
