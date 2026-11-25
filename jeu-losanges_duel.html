@@ -692,6 +692,7 @@ const ARCHE = (() => {
 
 // ---------- dimensions (fixées par regler_taille)
 let NR = 6, NJ = 4, NC = 3, GC0 = 0, GR0 = 0, NCOL = NB_COL, NLIG = NB_LIG;     // zone de grille affichée (colonne / ligne de départ, nombre de colonnes / lignes)
+let OFFX = 0, HORIZ = false;
 let D, DX, S, SU, SP, MARGE, ECART, LARGEUR, HAUTEUR, PW, PH, LB, HB, WTOT, HTOT, TALL, EP, PAS_RES;
 let SOMPX = [], CENPX = [];
 function regler_taille(d, tall, nr = 6, nj = 4, grille = 0) {
@@ -701,9 +702,9 @@ function regler_taille(d, tall, nr = 6, nj = 4, grille = 0) {
   MARGE = Math.round(38 * S); ECART = Math.round(22 * S);
   LARGEUR = 2 * MARGE + (NCOL - 1) * DX; HAUTEUR = 2 * MARGE + (NLIG - 1) * D;
   if (!tall) {
-    HB = HAUTEUR / 2; EP = ECART; LB = NC * (2 * FR * DX + ECART / 4);
+    HB = (HORIZ && nj === 2) ? HAUTEUR : HAUTEUR / 2; EP = ECART; LB = NC * (2 * FR * DX + ECART / 4);
     const f = Math.min(1, (0.68 * HB / NR) / (1.25 * 2 * FR * D));      // beaucoup de lignes : pièces de réserve plus petites
-    PW = FR * DX * f; PH = FR * D * f; WTOT = LARGEUR + (NJ === 2 ? 2 * ECART + LB : 3 * ECART + 2 * LB); HTOT = HAUTEUR;
+    PW = FR * DX * f; PH = FR * D * f; WTOT = (HORIZ && nj === 2) ? LARGEUR + 2 * (ECART + LB) : LARGEUR + (NJ === 2 ? 2 * ECART + LB : 3 * ECART + 2 * LB); HTOT = HAUTEUR;
   } else {
     EP = 10; LB = (LARGEUR - 3 * EP) / 2;
     PW = Math.min(FR * DX, LB / NC * 0.46); PH = PW / SQ3;
@@ -711,8 +712,9 @@ function regler_taille(d, tall, nr = 6, nj = 4, grille = 0) {
   }
   PAS_RES = 0.68 * HB / NR;
   SP = PW / (FR * SQ3 * 28);
-  SOMPX = PL.map(p => p.som.map(([c, r]) => [MARGE + (c - GC0) * DX, MARGE + (r - GR0) * D]));
-  CENPX = PL.map(p => [MARGE + (p.C / 2 - GC0) * DX, MARGE + (p.R / 2 - GR0) * D]);
+  OFFX = (HORIZ && nj === 2 && !tall) ? LB + ECART : 0;
+  SOMPX = PL.map(p => p.som.map(([c, r]) => [OFFX + MARGE + (c - GC0) * DX, MARGE + (r - GR0) * D]));
+  CENPX = PL.map(p => [OFFX + MARGE + (p.C / 2 - GC0) * DX, MARGE + (p.R / 2 - GR0) * D]);
 }
 function tailles_possibles(W, H, nj = 4, grille = 0) {
   const NB_COL = 2 * (GRILLES[grille] || GRILLES[0])[0] + 1, NB_LIG = 2 * (GRILLES[grille] || GRILLES[0])[1] + 1;
@@ -851,14 +853,15 @@ class App {
     const haut = this.menu ? document.getElementById("haut").offsetHeight : 0, bas = document.getElementById("bas").offsetHeight;
     const H = Math.max(200, Hfen - haut - bas - 6);
     const nj = (this.partie && !this.menu) ? this.partie.np : 4, gr = (this.partie && !this.menu) ? (this.partie.grille || 0) : 0, t = tailles_possibles(W, H, nj, gr);   // écran de choix : disposition FIXE (4 joueurs)
+    HORIZ = this.vue === "cote" && nj === 2;
     let tall;
-    if (this.vue === "large") tall = false; else if (this.vue === "haut") tall = true;
+    if (HORIZ) tall = false; else if (this.vue === "large") tall = false; else if (this.vue === "haut") tall = true;
     else tall = (W < Hfen) ? !(t.wide >= 0.6 * t.tall && t.wide >= 18) : false;
-    regler_taille(tall ? t.tall : t.wide, tall, (this.partie && !this.menu) ? this.partie.total + 1 : 6, nj, gr);
+    regler_taille(tall ? t.tall : (HORIZ ? tailles_possibles(W, H, 3, gr).wide : t.wide), tall, (this.partie && !this.menu) ? this.partie.total + 1 : 6, nj, gr);
     this.dpr = Math.min(3, window.devicePixelRatio || 1);
     for (const c of [this.cvEl, this.off]) { c.width = Math.round(WTOT * this.dpr); c.height = Math.round(HTOT * this.dpr); }
     this.cvEl.style.width = WTOT + "px"; this.cvEl.style.height = HTOT + "px";
-    const sp = document.getElementById("surplateau"); sp.style.width = LARGEUR + "px"; sp.style.height = HAUTEUR + "px";
+    const sp = document.getElementById("surplateau"); sp.style.left = OFFX + "px"; sp.style.width = LARGEUR + "px"; sp.style.height = HAUTEUR + "px";
     this.fantome = null; this.anims = [];
     if (!premiere) this.mettre_a_jour();
   }
@@ -1151,7 +1154,7 @@ onmessage = e => { const { id, niveau, partie } = e.data; Object.setPrototypeOf(
 
   // -- panneau des réserves
   origine_bloc(j) {
-    if (!TALL) return NJ === 2 ? [LARGEUR + ECART, j * HB] : [LARGEUR + ECART + (j % 2) * (LB + ECART), (j >> 1) * HB];
+    if (!TALL) return (HORIZ && NJ === 2) ? [j === 0 ? 0 : OFFX + LARGEUR + ECART, 0] : NJ === 2 ? [LARGEUR + ECART, j * HB] : [LARGEUR + ECART + (j % 2) * (LB + ECART), (j >> 1) * HB];
     return [EP + (j % 2) * (LB + EP), HAUTEUR + (j >> 1) * HB];
   }
   colonne_x(j) { return this.origine_bloc(j)[0] + LB / 2; }
@@ -1198,7 +1201,7 @@ onmessage = e => { const { id, niveau, partie } = e.data; Object.setPrototypeOf(
         { neutre: piece.neutre, gardien: gd, ombre: true, pastille: piece.autre[0] });
     });
     // réserves
-    if (!TALL) rect(g, LARGEUR, 0, WTOT, HTOT, { fill: "rgba(34,45,74,0.85)", outline: "rgba(244,177,131,0.5)", width: 1.5 });
+    if (!TALL) (HORIZ && NJ === 2 ? [[0, LB + ECART / 2], [OFFX + LARGEUR + ECART / 2, WTOT]] : [[LARGEUR, WTOT]]).forEach(([a_, b_]) => rect(g, a_, 0, b_, HTOT, { fill: "rgba(34,45,74,0.85)", outline: "rgba(244,177,131,0.5)", width: 1.5 }));
     else rect(g, 0, HAUTEUR, WTOT, HTOT, { fill: "rgba(34,45,74,0.85)", outline: "rgba(244,177,131,0.5)", width: 1.5 });
     const sc = p.scores(), tete = p.en_tete();
     for (let j = 0; j < p.np; j++) {
@@ -1227,12 +1230,12 @@ onmessage = e => { const { id, niveau, partie } = e.data; Object.setPrototypeOf(
       texte(g, x0, y0 + HB - 0.128 * HB, etoile + grand, COULEURS[j], 12, { halo: null, ss: SP });
       ecrire(g, x0, y0 + HB - 0.080 * HB, petit, "#8e98bf", police(8, false, SP));
     }
-    const larg_pied = TALL ? WTOT : WTOT - LARGEUR, f_pied = police(7.5, false, SP);
+    const larg_pied = TALL ? WTOT : (HORIZ && NJ === 2) ? LB : WTOT - LARGEUR, f_pied = police(7.5, false, SP);
     g.font = f_pied;
     const pieds = p.mode === MODE_CHAOS ? ["réserves : face adverse (pastille = propriétaire)", "face adverse (pastille = propriétaire)", "face adverse"]
       : ["médaillon = gardien · réserves : votre face (pastille = dos)", "votre face (pastille = dos)", "votre face"];
     const pied = pieds.find(t => g.measureText(t).width <= larg_pied - 6) || pieds[2];
-    ecrire(g, TALL ? WTOT / 2 : LARGEUR + (WTOT - LARGEUR) / 2, HTOT - 5 * SP, pied, "#8e98bf", f_pied);
+    ecrire(g, TALL ? WTOT / 2 : (HORIZ && NJ === 2) ? OFFX + LARGEUR + ECART + LB / 2 : LARGEUR + (WTOT - LARGEUR) / 2, HTOT - 5 * SP, pied, "#8e98bf", f_pied);
     this.barre_etat();
     this.planifier_ia();
   }
@@ -1495,8 +1498,8 @@ onmessage = e => { const { id, niveau, partie } = e.data; Object.setPrototypeOf(
   }
   dessiner_intro(now) {
     const g = this.gf, t = now - this.intro.t0, gg = this.intro.gagnant;
-    rect(g, 0, 0, LARGEUR, HAUTEUR, { fill: "rgba(1,2,10,0.80)" });
-    const cx = LARGEUR / 2, cy = HAUTEUR / 2, R = Math.min(4.2 * D, LARGEUR * 0.3);
+    rect(g, OFFX, 0, OFFX + LARGEUR, HAUTEUR, { fill: "rgba(1,2,10,0.80)" });
+    const cx = (OFFX + LARGEUR / 2), cy = HAUTEUR / 2, R = Math.min(4.2 * D, LARGEUR * 0.3);
     const u = borne(t / DUREE_PILE), wd = 360 / this.partie.np, total = 360 * 4 + ((((-90 - wd / 2 - wd * gg) % 360) + 360) % 360);
     this.dessiner_roue(cx, cy, R, total * ease_out(u));
     if (t < DUREE_PILE) { ecrire(g, cx, cy + R + 50 * SU, "Tirage au sort : qui commence ?", "#8e98bf", police(11, false, SU)); return; }
@@ -1520,7 +1523,7 @@ onmessage = e => { const { id, niveau, partie } = e.data; Object.setPrototypeOf(
   }
   // -- menu de choix du mode
   cartes_menu() {
-    const x0 = 0.06 * LARGEUR, x1 = 0.94 * LARGEUR, h = 0.22 * HAUTEUR, ec = 0.02 * HAUTEUR;
+    const x0 = (OFFX + 0.06 * LARGEUR), x1 = (OFFX + 0.94 * LARGEUR), h = 0.22 * HAUTEUR, ec = 0.02 * HAUTEUR;
     return [0, 1, 2].map(k => [x0, 0.19 * HAUTEUR + k * (h + ec), x1, 0.19 * HAUTEUR + k * (h + ec) + h]);
   }
   rects_cfg(k) {                 // boutons − et + (joueurs, total des faces) en bas de la carte k ; s'adaptent à la largeur
@@ -1557,9 +1560,9 @@ onmessage = e => { const { id, niveau, partie } = e.data; Object.setPrototypeOf(
   }
   dessiner_menu(now) {
     const g = this.gf, pulse = (Math.sin(now * 4) + 1) / 2, teintes = ["#f5a142", "#5fc46a", "#ff5c8a"];
-    rect(g, 0, 0, LARGEUR, HAUTEUR, { fill: "rgba(1,2,10,0.80)" });
-    ecrire(g, LARGEUR / 2, 0.06 * HAUTEUR, "Losanges", "#ffffff", police(30, true, SU));
-    ecrire(g, LARGEUR / 2, 0.115 * HAUTEUR, "Choisissez le mode de jeu", "#c9d1f2", police(13, false, SU));
+    rect(g, OFFX, 0, OFFX + LARGEUR, HAUTEUR, { fill: "rgba(1,2,10,0.80)" });
+    ecrire(g, (OFFX + LARGEUR / 2), 0.06 * HAUTEUR, "Losanges", "#ffffff", police(30, true, SU));
+    ecrire(g, (OFFX + LARGEUR / 2), 0.115 * HAUTEUR, "Choisissez le mode de jeu", "#c9d1f2", police(13, false, SU));
     this.cartes_menu().forEach(([x0, y0, x1, y1], k) => {
       const surv = this.survol_menu === k;
       rect(g, x0 + 4 * SU, y0 + 5 * SU, x1 + 4 * SU, y1 + 5 * SU, { fill: OMBRE });
@@ -1596,14 +1599,14 @@ onmessage = e => { const { id, niveau, partie } = e.data; Object.setPrototypeOf(
       ecrire(g, R.jv, yc, String(c.np), teintes[k], "bold 18px " + FONTE);
       ecrire(g, R.fv, yc, String(c.total), teintes[k], "bold 18px " + FONTE);
     });
-    ecrire(g, LARGEUR / 2, 0.955 * HAUTEUR, "Touchez un mode · Éq. = équipes · Départ = schéma de départ", "#8e98bf", police(10, false, SU));
-    ecrire(g, LARGEUR / 2, 0.985 * HAUTEUR, "© 2026 Yohann Lecarpentier", "#6f7899", police(9, false, SU));
+    ecrire(g, (OFFX + LARGEUR / 2), 0.955 * HAUTEUR, "Touchez un mode · Éq. = équipes · Départ = schéma de départ", "#8e98bf", police(10, false, SU));
+    ecrire(g, (OFFX + LARGEUR / 2), 0.985 * HAUTEUR, "© 2026 Yohann Lecarpentier", "#6f7899", police(9, false, SU));
   }
   dessiner_fin(now) {
     const g = this.gf, p = this.partie;
     if (this.t_fin === null) this.t_fin = now;
     const k = ease_out_back(borne((now - this.t_fin) / 0.55)), v = p.vainqueur(), sc = p.scores();
-    const cx = LARGEUR / 2, cy = HAUTEUR / 2, w = 160 * SU * k, h = 92 * SU * k;
+    const cx = (OFFX + LARGEUR / 2), cy = HAUTEUR / 2, w = 160 * SU * k, h = 92 * SU * k;
     rect(g, cx - w, cy - h, cx + w, cy + h, { fill: FOND_PANNEAU, outline: v === null ? OR : COULEURS[v], width: 3 * SU });
     if (k > 0.6) {
       ecrire(g, cx, cy - 48 * SU, MODES[p.mode], "#8e98bf", police(9, false, SU));
@@ -1646,7 +1649,7 @@ onmessage = e => { const { id, niveau, partie } = e.data; Object.setPrototypeOf(
   }
 
   // -- placement avec aimantation
-  dans_plateau(x, y) { return x >= 0 && x <= LARGEUR && y >= 0 && y <= HAUTEUR; }
+  dans_plateau(x, y) { return x >= OFFX && x <= OFFX + LARGEUR && y >= 0 && y <= HAUTEUR; }
   trouver_position(x, y) {
     const p = this.partie;
     if (p.phase !== "pose" || !this.dans_plateau(x, y) || this.tour_ia() || this.verrou()) return null;
@@ -2267,7 +2270,7 @@ App.prototype.neon_fond = function (now) {
     g.fillStyle = rg; g.fillRect(0, 0, W, H);
   }
   // réseau de points
-  const cx = LARGEUR / 2, cy = HAUTEUR / 2;
+  const cx = (OFFX + LARGEUR / 2), cy = HAUTEUR / 2;
   for (let c = 0; c < NCOL; c++) for (let r = 0; r < NLIG; r++) {
     const x = MARGE + c * DX, y = MARGE + r * D, d = Math.hypot(x - cx, y - cy);
     const w = 0.5 + 0.5 * Math.sin(d * 0.022 - now * 2.4), rr = (0.9 + 1.9 * w * w) * S;
@@ -2389,7 +2392,7 @@ App.prototype.neon_titre_dom = function (now) {
 // ---------- menu de choix du mode, version arcade
 App.prototype.dessiner_menu = function (now) {
   const g = this.gf, pulse = (Math.sin(now * 4) + 1) / 2, h0 = now * NEO.VITESSE_HUE * 1.4;
-  rect(g, 0, 0, LARGEUR, HAUTEUR, { fill: "rgba(20,28,52,0.55)" });
+  rect(g, OFFX, 0, OFFX + LARGEUR, HAUTEUR, { fill: "rgba(20,28,52,0.55)" });
   // losanges flottants
   for (let i = 0; i < 10; i++) {
     const x = LARGEUR * (0.5 + 0.48 * Math.sin(now * (0.12 + i * 0.013) + i * 1.7)), y = HAUTEUR * (0.5 + 0.48 * Math.cos(now * (0.10 + i * 0.011) + i * 2.3));
@@ -2398,7 +2401,7 @@ App.prototype.dessiner_menu = function (now) {
     poly(g, pts, { outline: hsl(h0 + i * 36, 100, 62, 0.28), width: 1.4 * SU });
   }
   // titre
-  const tx = LARGEUR / 2, ty = 0.062 * HAUTEUR, f = police(31, true, SU), titre = "L O S A N G E S";
+  const tx = (OFFX + LARGEUR / 2), ty = 0.062 * HAUTEUR, f = police(31, true, SU), titre = "L O S A N G E S";
   g.save(); g.font = f; g.textAlign = "center"; g.textBaseline = "middle";
   const dec = (1.5 + 1.5 * Math.sin(now * 3)) * SU;
   g.globalCompositeOperation = "lighter"; g.fillStyle = "rgba(242,140,40,0.8)"; g.fillText(titre, tx - dec, ty); g.fillStyle = "rgba(244,177,131,0.8)"; g.fillText(titre, tx + dec, ty);
@@ -2449,8 +2452,8 @@ App.prototype.dessiner_menu = function (now) {
     glow_txt(g, R.jv, yc, String(c.np), tc, "bold 19px " + FONTE, tc, 10);
     glow_txt(g, R.fv, yc, String(c.total), tc, "bold 19px " + FONTE, tc, 10);
   });
-  ecrire(g, LARGEUR / 2, 0.948 * HAUTEUR, "Touchez un mode · Éq. = équipes · Départ = schéma de départ", "#79c", police(9.5, false, SU));
-  glow_txt(g, LARGEUR / 2, 0.980 * HAUTEUR, "© 2026 Yohann Lecarpentier", hsl(h0 + 200, 100, 75), police(9, true, SU), hsl(h0 + 200, 100, 60), 6);
+  ecrire(g, (OFFX + LARGEUR / 2), 0.948 * HAUTEUR, "Touchez un mode · Éq. = équipes · Départ = schéma de départ", "#79c", police(9.5, false, SU));
+  glow_txt(g, (OFFX + LARGEUR / 2), 0.980 * HAUTEUR, "© 2026 Yohann Lecarpentier", hsl(h0 + 200, 100, 75), police(9, true, SU), hsl(h0 + 200, 100, 60), 6);
 };
 
 // ---------- écran de fin : confettis néon
@@ -2459,7 +2462,7 @@ App.prototype.dessiner_fin = function (now) {
   if (this.t_fin === null) { this.t_fin = now; SON.jouer("fin", 0); }
   const k = ease_out_back(borne((now - this.t_fin) / 0.55)), v = p.vainqueur(), sc = p.scores(), h0 = now * 90;
   if (Math.random() < 0.25) this.jaillir(LARGEUR * Math.random(), HAUTEUR * 0.25 * Math.random(), "#" + [0, 1, 2].map(() => Math.floor(110 + Math.random() * 145).toString(16).padStart(2, "0")).join(""), 2, 40, 0, 1.6);
-  const cx = LARGEUR / 2, cy = HAUTEUR / 2, w = 160 * SU * k, h = 92 * SU * k, bord = v === null ? "#f4b183" : COULEURS[v];
+  const cx = (OFFX + LARGEUR / 2), cy = HAUTEUR / 2, w = 160 * SU * k, h = 92 * SU * k, bord = v === null ? "#f4b183" : COULEURS[v];
   nrect(g, cx - w, cy - h, cx + w, cy + h, "rgba(2,4,16,0.92)", bord, (3 + Math.sin(now * 6)) * SU, 26);
   if (k > 0.6) {
     ecrire(g, cx, cy - 48 * SU, MODES[p.mode].toUpperCase(), "#79c", police(9, true, SU));
@@ -2658,7 +2661,7 @@ App.prototype.neon_fond = function (now) {
     for (const s of SOMPX) for (const [x, y] of s) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
     this._bb = { k: SOMPX, x0, y0, x1, y1 };
   }
-  const R = GRILLES[this.partie ? this.partie.grille : 0][0], cxp = MARGE + (6 - GC0) * DX, cyp = MARGE + (13 - GR0) * D;
+  const R = GRILLES[this.partie ? this.partie.grille : 0][0], cxp = OFFX + MARGE + (6 - GC0) * DX, cyp = MARGE + (13 - GR0) * D;
   const k = 1 + 9 * S / (2 * R * D), HX = [[0, -2 * R], [R, -R], [R, R], [0, 2 * R], [-R, R], [-R, -R]].map(([a, b]) => [cxp + a * DX * k, cyp + b * D * k]);
   g.beginPath(); HX.forEach(([x, y], i) => i ? g.lineTo(x, y) : g.moveTo(x, y)); g.closePath();
   g.fillStyle = "#222f55"; g.fill(); g.lineJoin = "round"; g.lineWidth = 1.4 * S; g.strokeStyle = "rgba(244,177,131,0.55)"; g.stroke();
@@ -2666,7 +2669,7 @@ App.prototype.neon_fond = function (now) {
   for (let c = 0; c < NCOL; c++) for (let r = 0; r < NLIG; r++) {
     const ac = GC0 + c, ar = GR0 + r;
     if ((ac + ar) % 2 !== 1 || Math.abs(ac - 6) > R || Math.abs(ac - 6) + Math.abs(ar - 13) > 2 * R) continue;
-    g.beginPath(); g.arc(MARGE + c * DX, MARGE + r * D, 1.2 * S, 0, 6.2832); g.fill();
+    g.beginPath(); g.arc(OFFX + MARGE + c * DX, MARGE + r * D, 1.2 * S, 0, 6.2832); g.fill();
   }
 };
 App.prototype.neon_overlay = function () {};
@@ -2691,16 +2694,23 @@ App.prototype.changer_cfg = function () {}; App.prototype.changer_depart = funct
   const a = window.__app;
   try { localStorage.removeItem("losanges_grille"); } catch (e) {}
   GRILLE_CHOIX[2] = 2;                       // grille « Petite » (hexagone de côté 4)
-  a.vue = "haut"; a.popup = false;                           // pas de panneau de tuiles pop-up
+  const VUES = { haut: "⇅ Vue", cote: "⇄ Vue" };
+  let vue0 = (document.documentElement.clientWidth >= window.innerHeight) ? "cote" : "haut";
+  try { vue0 = localStorage.getItem("losanges_vue_duel") || vue0; } catch (e) {}
+  a.vue = vue0; a.popup = false;                           // pas de panneau de tuiles pop-up
   const d = document.createElement("div"); d.id = "choix";
   d.innerHTML = '<div class="bloc"><div class="titre">LOSANGES</div><div class="sous">2 joueurs · 6 faces · plateau hexagonal</div>' +
     '<button id="c-ordi">Contre l’ordinateur</button><button id="c-humain">Contre un humain</button>' +
     '<div class="copy">© 2026 Yohann Lecarpentier</div></div>';
   document.body.appendChild(d);
-  const lancer = m => { a.mode = m; a.vue = "haut"; a.popup = false; a.humain = 0; GRILLE_CHOIX[2] = 2; d.style.display = "none"; a.nouvelle_partie(); };
+  const lancer = m => { a.mode = m; a.popup = false; a.humain = 0; GRILLE_CHOIX[2] = 2; d.style.display = "none"; a.nouvelle_partie(); };
   document.getElementById("c-ordi").onclick = () => lancer(1);
   document.getElementById("c-humain").onclick = () => lancer(2);
   const m = document.getElementById("b-menu"), m2 = m.cloneNode(true); m.parentNode.replaceChild(m2, m);
+  const bv = document.createElement("button"); bv.id = "b-vue2"; bv.textContent = VUES[a.vue] || VUES.haut;
+  m2.parentNode.insertBefore(bv, m2);
+  bv.onclick = () => { a.vue = a.vue === "cote" ? "haut" : "cote"; bv.textContent = VUES[a.vue]; try { localStorage.setItem("losanges_vue_duel", a.vue); } catch (e) {} a.relayout(); };
+  a.relayout();
   m2.textContent = "↺"; m2.setAttribute("aria-label", "Nouvelle partie");
   m2.onclick = () => { d.style.display = "flex"; };
 })();
