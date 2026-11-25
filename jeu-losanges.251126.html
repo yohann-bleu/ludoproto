@@ -1,0 +1,2577 @@
+<!DOCTYPE html>
+<!-- Losanges — © 2026 Yohann Lecarpentier. Jeu de plateau original créé par Yohann Lecarpentier. -->
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="author" content="Yohann Lecarpentier">
+<meta name="copyright" content="© 2026 Yohann Lecarpentier">
+<meta name="description" content="Losanges, un jeu de plateau créé par Yohann Lecarpentier.">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Losanges Néon">
+<meta name="theme-color" content="#000000">
+<meta name="format-detection" content="telephone=no">
+<link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAAFf0lEQVR4nO3dIXIcRxSH8XYqVEJiqoCUjxBkI3EDXSLAUJWDuAwDfAmBcKPNKQLNhKQLGLyo3d7d/87O7HT3e9PfD9msS/7q9Xi2t/Xmt9//SMAxv/ReAPwiDkjEAYk4IBEHJOKARByQiAMScUAiDkjEAYk4IBEHJOKARByQiAMScUAiDkjEAYk4IBEHJOKARByQiAMScUAiDkjEAYk4IBEHJOKARByQiAMScUAiDkjEASleHC/PTy/PT71XMVvEZceLI6X07dPbQD9rW+r7z197L2S2X3svYKFvn96mlG7/+i+ldHV903s5x1m+EbMwUeMwbhOJnoWJHYdxlcg2sjBbiMN0T2RLWZhgcbw8P1kESpdEtpeFCRbHmZolstUszDbjMFUT2XYW5k2si/EntxVlxUQuyWL3cNf9kfl8W54cpVWmyAjTojRKHGZxIqNlYcaKw8xKZMwszIhxmMlERs7CjBuHOZoIWZjR4zBlIoksXoX8yL4SS4QyMuKAFCmOxW/AsEykONAYcUAiDkjEAYk4IBEHJOKARBxNvf/8Ncp3sRJx4ATigBQmDt6dtxcmDrRHHJCIAxJxQCIOSAHOkObjvrcPd+n1MF9Eu9f1O7ktYpL3OMoLk+wPERPZ/bzmfJ7ZeR+u4zh6lVZOJEofO7FU/yPEaRyT3xwJscvsplbofIR4jOPMu/c87zKTWZRshDjsw1ccC75q5jARtY+c4HOLcRTHJZd1OnkQmTUw9jjcYrzEsco1rh0fRC7JouRqhPSPY91vLXfZZRbsIyf4GSGd46h073OzXWatgXHIwwjpFkeDaw5q7zLrDoxD3UdInziaXRRfaZepNzAOdRwhHeJo/ysEVtxlWmaR9RohTePoe2PO5btM7X3ktPYjpF0cHn7nyOJdpsvAONR4hLSIw9sVW7MScZJFqdnr9upxeBgYR53zINJ3HzmhzRZTNw63ZWTqQcThwNjTYIupdfe5t61kktWQec5iT70RUiUO/wNDcbuPTKoxQpgc/2NyHKr7KzVCjBDL4u8//00pffzy7v7xQ0rp8f6fFCGRqs8cdR9Ir65v7EfvM5Eyiz2WyK3jRML/byW9rn73cOeqjxNZlHIi3vrYyHsO42qE7B7uJrMo3T9+8DNCWr5Bb/f63MMIOXNgHHKyyzT+7K31p7K9RsjiLEodE+nyqX2Hj+wbj5BVsii1fxDpdd6n20mwNiNk7uPF+do8iPQ9KdjzDGnVEbL6wDhUdZfpfoA0dT9gnF5HyIp9NMiiVGOX8XD0PHmII623xTTOorTWLuNhYGQu4kgXbzEds8gu32WcDIzMSxxm2Qip99S5wLJEXA2MzFccaeYI8TAwjpr1IOJtYGTu4jCTI8RtFqXJBxGfAyNzGkfSIyREFtmJXcbtwMj8xmHKERIri9JeIs4HRuY9jlSMkIhZlHIi/rMw3EMKiTggEQck4oBEHJCIAxJxQCIOSGHiuLq++fjlXe9VXOoxzhuwFCgOtEcckIgDEnFAIg5IxAGJOCARByTigEQcP9gbWLsNDCnEGdIGLIv8Ytv6sCOfIxs9jr0sjP2VRMaN42gWJRIZMY7JLEojJzJWHLOyKI2ZyChxLM6iNFoida+3Xt3L89Pc772tksXRlaSZicQ66ZM2PDnysbFK/x4jTJENxlFpVBy17UQ2FUfLLEpbTWQjcfTKorS9RMLH4SGL0pYSCRyHtyxK20gkZByesyhFTyTee44UIYtDEVcebHLE+uGWIq6cwz6QiAMScUAiDkjEAYk4IBEHJOKARByQiAMScUAiDkjEAYk4IBEHJOKARByQiAMScUAiDkjEAYk4IBEHJOKARByQiAMScUAiDkjEAYk4IBEHJOKARByQiAMScUD6DrCR5TB1v2PwAAAAAElFTkSuQmCC">
+<link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAAFf0lEQVR4nO3dIXIcRxSH8XYqVEJiqoCUjxBkI3EDXSLAUJWDuAwDfAmBcKPNKQLNhKQLGLyo3d7d/87O7HT3e9PfD9msS/7q9Xi2t/Xmt9//SMAxv/ReAPwiDkjEAYk4IBEHJOKARByQiAMScUAiDkjEAYk4IBEHJOKARByQiAMScUAiDkjEAYk4IBEHJOKARByQiAMScUAiDkjEAYk4IBEHJOKARByQiAMScUAiDkjEASleHC/PTy/PT71XMVvEZceLI6X07dPbQD9rW+r7z197L2S2X3svYKFvn96mlG7/+i+ldHV903s5x1m+EbMwUeMwbhOJnoWJHYdxlcg2sjBbiMN0T2RLWZhgcbw8P1kESpdEtpeFCRbHmZolstUszDbjMFUT2XYW5k2si/EntxVlxUQuyWL3cNf9kfl8W54cpVWmyAjTojRKHGZxIqNlYcaKw8xKZMwszIhxmMlERs7CjBuHOZoIWZjR4zBlIoksXoX8yL4SS4QyMuKAFCmOxW/AsEykONAYcUAiDkjEAYk4IBEHJOKARBxNvf/8Ncp3sRJx4ATigBQmDt6dtxcmDrRHHJCIAxJxQCIOSAHOkObjvrcPd+n1MF9Eu9f1O7ktYpL3OMoLk+wPERPZ/bzmfJ7ZeR+u4zh6lVZOJEofO7FU/yPEaRyT3xwJscvsplbofIR4jOPMu/c87zKTWZRshDjsw1ccC75q5jARtY+c4HOLcRTHJZd1OnkQmTUw9jjcYrzEsco1rh0fRC7JouRqhPSPY91vLXfZZRbsIyf4GSGd46h073OzXWatgXHIwwjpFkeDaw5q7zLrDoxD3UdInziaXRRfaZepNzAOdRwhHeJo/ysEVtxlWmaR9RohTePoe2PO5btM7X3ktPYjpF0cHn7nyOJdpsvAONR4hLSIw9sVW7MScZJFqdnr9upxeBgYR53zINJ3HzmhzRZTNw63ZWTqQcThwNjTYIupdfe5t61kktWQec5iT70RUiUO/wNDcbuPTKoxQpgc/2NyHKr7KzVCjBDL4u8//00pffzy7v7xQ0rp8f6fFCGRqs8cdR9Ir65v7EfvM5Eyiz2WyK3jRML/byW9rn73cOeqjxNZlHIi3vrYyHsO42qE7B7uJrMo3T9+8DNCWr5Bb/f63MMIOXNgHHKyyzT+7K31p7K9RsjiLEodE+nyqX2Hj+wbj5BVsii1fxDpdd6n20mwNiNk7uPF+do8iPQ9KdjzDGnVEbL6wDhUdZfpfoA0dT9gnF5HyIp9NMiiVGOX8XD0PHmII623xTTOorTWLuNhYGQu4kgXbzEds8gu32WcDIzMSxxm2Qip99S5wLJEXA2MzFccaeYI8TAwjpr1IOJtYGTu4jCTI8RtFqXJBxGfAyNzGkfSIyREFtmJXcbtwMj8xmHKERIri9JeIs4HRuY9jlSMkIhZlHIi/rMw3EMKiTggEQck4oBEHJCIAxJxQCIOSGHiuLq++fjlXe9VXOoxzhuwFCgOtEcckIgDEnFAIg5IxAGJOCARByTigEQcP9gbWLsNDCnEGdIGLIv8Ytv6sCOfIxs9jr0sjP2VRMaN42gWJRIZMY7JLEojJzJWHLOyKI2ZyChxLM6iNFoida+3Xt3L89Pc772tksXRlaSZicQ66ZM2PDnysbFK/x4jTJENxlFpVBy17UQ2FUfLLEpbTWQjcfTKorS9RMLH4SGL0pYSCRyHtyxK20gkZByesyhFTyTee44UIYtDEVcebHLE+uGWIq6cwz6QiAMScUAiDkjEAYk4IBEHJOKARByQiAMScUAiDkjEAYk4IBEHJOKARByQiAMScUAiDkjEAYk4IBEHJOKARByQiAMScUAiDkjEAYk4IBEHJOKARByQiAMScUD6DrCR5TB1v2PwAAAAAElFTkSuQmCC">
+<title>Losanges Néon</title>
+<style>
+  :root { --fond:#1d2133; --panneau:#161a28; --bord:#2c3350; --texte:#c9d1f2; --doux:#8e98bf; --accent:#4aa3df; }
+  * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html,body { margin:0; background:var(--fond); color:var(--texte); font:14px -apple-system,"Helvetica Neue",Arial,sans-serif;
+    -webkit-user-select:none; user-select:none; -webkit-touch-callout:none; overscroll-behavior:none; }
+  body { min-height:100dvh; display:flex; flex-direction:column; padding-left:env(safe-area-inset-left); padding-right:env(safe-area-inset-right); }
+  #haut,#bas { background:var(--panneau); }
+  #haut { display:flex; flex-wrap:wrap; gap:6px; padding:calc(6px + env(safe-area-inset-top)) 8px 6px; border-bottom:1px solid var(--bord); }
+  #zone { flex:1; display:flex; justify-content:center; align-items:flex-start; }
+  #wrap { position:relative; }
+  #surplateau { position:absolute; left:0; top:0; touch-action:pinch-zoom; }
+  #cv { display:block; touch-action:manipulation; background:var(--fond); }
+  #bas { position:sticky; bottom:0; z-index:5; padding:6px 8px calc(8px + env(safe-area-inset-bottom)); border-top:1px solid var(--bord); }
+  #statut { min-height:2.6em; max-height:4.2em; overflow:hidden; font-size:12.5px; line-height:1.3; color:var(--texte); margin-bottom:6px; }
+  #actions { display:flex; gap:6px; }
+  button { font:600 13px -apple-system,Arial,sans-serif; color:#fff; background:#2b3354; border:1px solid #3d4875; border-radius:9px;
+    padding:9px 12px; min-height:40px; cursor:pointer; }
+  button:active:not(:disabled) { background:#3a4570; }
+  button:disabled { opacity:.38; }
+  #actions button { flex:1; }
+  #b-poser { background:#2f7d4a; border-color:#43a566; }
+  body.jeu #haut { display:none; position:fixed; top:0; left:0; right:0; z-index:10; box-shadow:0 6px 18px rgba(0,0,0,.5); }
+  body.jeu.menuouvert #haut { display:flex; }
+  #b-menu { flex:0 0 52px; font-size:17px; padding:9px 0; }
+  #haut button { padding:7px 10px; min-height:36px; font-size:12.5px; }
+
+  #opt { position:fixed; inset:0; z-index:45; display:none; align-items:center; justify-content:center; background:rgba(8,10,18,.8); padding:14px; }
+  #opt.on { display:flex; }
+  #opt .carte { width:min(380px,100%); background:var(--panneau); border:1px solid var(--bord); border-radius:16px; padding:14px; box-shadow:0 12px 40px rgba(0,0,0,.6); }
+  #opt h2 { margin:0 0 10px; font-size:18px; color:#fff; }
+  #opt .grille { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:10px; }
+  #opt .ferm { width:100%; background:#2f7d4a; border-color:#43a566; }
+  #pop { position:fixed; left:0; right:0; z-index:8; display:none; background:rgba(12,16,32,.96); border-top:1px solid var(--bord); box-shadow:0 -8px 24px rgba(0,0,0,.5); padding:4px 8px 6px; }
+  #pop.on { display:block; }
+  #pop .ent { display:flex; justify-content:space-between; align-items:center; font-size:12px; color:var(--texte); margin-bottom:2px; }
+  #pop .ent button { min-height:28px; padding:2px 12px; font-size:16px; }
+  #pop-cv { display:block; margin:0 auto; touch-action:manipulation; }
+  #pop-tab { position:fixed; right:8px; z-index:8; display:none; min-height:32px; padding:4px 12px; }
+  #pop-tab.on { display:block; }
+
+  /* ===== thème Néon / Tron ===== */
+  :root { --fond:#03040c; --panneau:#050818; --bord:#0ff5; --texte:#bff6ff; --doux:#6fd; --hue:180; }
+  html,body { background:#02030a; font-family:"Avenir Next","Trebuchet MS","Segoe UI",-apple-system,Arial,sans-serif; letter-spacing:.2px; }
+  body::before { content:""; position:fixed; inset:0; z-index:-1; background:linear-gradient(120deg,#02030a,#0a0420,#021220,#14052a); background-size:300% 300%; animation:flux 14s ease-in-out infinite; }
+  @keyframes flux { 0%,100% { background-position:0% 50% } 50% { background-position:100% 50% } }
+  @keyframes bord { to { background-position:300% 0 } }
+  @keyframes pouls { 0%,100% { box-shadow:0 0 6px #0ff8,inset 0 0 6px #0ff3 } 50% { box-shadow:0 0 16px #f0f9,inset 0 0 10px #f0f3 } }
+  #haut,#bas { background:rgba(3,5,18,.92); border-color:transparent; }
+  #haut { border-bottom:2px solid transparent; border-image:linear-gradient(90deg,#0ff,#f0f,#ff0,#0ff) 1; }
+  #bas { border-top:2px solid transparent; border-image:linear-gradient(90deg,#f0f,#0ff,#ff0,#f0f) 1; }
+  #statut { color:#9ff; text-shadow:0 0 8px #0ff9; }
+  button { color:#e8ffff; text-transform:uppercase; letter-spacing:.8px; font-weight:700; font-size:12px; border:2px solid transparent; border-radius:10px;
+    background:linear-gradient(#060a1f,#060a1f) padding-box,linear-gradient(90deg,#0ff,#f0f,#ff0,#0ff) border-box; background-size:100% 100%,300% 100%;
+    animation:bord 5s linear infinite; text-shadow:0 0 6px #0ff; }
+  button:active:not(:disabled) { filter:brightness(1.8) hue-rotate(40deg); transform:scale(.97); }
+  button:disabled { opacity:.30; animation:none; }
+  #b-poser { background:linear-gradient(#04210f,#04210f) padding-box,linear-gradient(90deg,#39ff14,#0ff,#39ff14) border-box; background-size:100% 100%,300% 100%; text-shadow:0 0 8px #39ff14; animation:bord 3s linear infinite,pouls 1.6s ease-in-out infinite; }
+  #b-menu { font-size:17px; }
+  #haut button { font-size:11.5px; }
+  #tuto .carte,#edt .carte { background:#050818; border:2px solid #0ff; box-shadow:0 0 24px #0ff6,0 0 60px #f0f3; }
+  #tuto h2,#edt h2 { color:#fff; text-shadow:0 0 10px #0ff; text-transform:uppercase; letter-spacing:1.5px; }
+  #tuto canvas,#edt canvas { background:#02030a; border:1px solid #0ff5; }
+  #tuto .pts i.a { background:#0ff; box-shadow:0 0 8px #0ff; }
+  #edt select { background:#060a1f; color:#e8ffff; border:1px solid #0ff7; }
+  #cv { background:#02030a; }
+  #opt .carte { background:linear-gradient(#050818,#050818) padding-box,linear-gradient(90deg,#0ff,#f0f,#ff0,#0ff) border-box; border:2px solid transparent; background-size:100% 100%,300% 100%; animation:bord 6s linear infinite; }
+  #opt h2 { text-transform:uppercase; letter-spacing:1.5px; text-shadow:0 0 10px #0ff; }
+  #pop { background:rgba(3,5,18,.94); border-top:2px solid #0ff; box-shadow:0 -6px 24px #0ff4; }
+  #pop .ent { color:#9ff; text-shadow:0 0 6px #0ff8; }
+
+  #tuto { background:radial-gradient(circle at 50% 30%,rgba(40,0,70,.88),rgba(2,3,12,.96)); }
+  #tuto .carte,#edt .carte { border:2px solid transparent; background:linear-gradient(#050818,#050818) padding-box,linear-gradient(90deg,#0ff,#f0f,#ff0,#0ff) border-box; background-size:100% 100%,300% 100%; animation:bord 6s linear infinite; }
+  #tuto p { color:#cfffff; text-shadow:0 0 6px #0ff5; }
+  #tuto .pts i { background:#173; }
+  #tuto .bt .suiv { color:#eaffea; }
+  #edt { background:radial-gradient(circle at 50% 20%,rgba(40,0,70,.88),rgba(2,3,12,.97)); }
+  #edt .ligne span { color:#7ff; text-transform:uppercase; letter-spacing:1px; font-size:11.5px; text-shadow:0 0 6px #0ff8; }
+  #edt .ligne button.sel { background:linear-gradient(#10204a,#10204a) padding-box,linear-gradient(90deg,#fffb00,#f0f,#fffb00) border-box; color:#fffb00; text-shadow:0 0 8px #fffb00; }
+  #edt th { color:#0ff; text-transform:uppercase; letter-spacing:1px; text-shadow:0 0 6px #0ff8; }
+  #edt td { color:#7ff; text-shadow:0 0 5px #0ff6; }
+  #edt select { border:1px solid #0ff8; box-shadow:0 0 8px #0ff3 inset; font-weight:700; }
+  #edt select:disabled { opacity:.55; }
+  #edt .note { color:#8cf; }
+</style>
+</head>
+<body>
+<div id="haut">
+  <button id="b-obj"></button><button id="b-mode"></button><button id="b-niveau"></button><button id="b-options">⚙ Options</button>
+</div>
+<div id="opt"><div class="carte"><h2>⚙ Options</h2>
+  <div class="grille"><button id="b-vue"></button><button id="b-camp"></button><button id="b-popup"></button><button id="b-son">🔊 Son</button><button id="b-regles">? Règles</button><button id="b-editeur">✎ Départs</button></div>
+  <button id="opt-fermer" class="ferm">Fermer</button></div></div>
+<div id="pop"><div class="ent"><span id="pop-titre"></span><button id="pop-x">×</button></div><canvas id="pop-cv"></canvas></div>
+<button id="pop-tab">▲ Tuiles</button>
+<div id="zone"><div id="wrap"><canvas id="cv"></canvas><div id="surplateau"></div></div></div>
+<div id="bas">
+  <div id="statut"></div>
+  <div id="actions">
+    <button id="b-tourner">↻ 1/6</button><button id="b-poser">✓ Poser</button>
+    <button id="b-annuler">↶ Annuler</button><button id="b-passer">Passer</button><button id="b-menu" aria-label="Menu">☰</button>
+  </div>
+</div>
+<script type="text/plain" id="moteur">
+// Losanges — © 2026 Yohann Lecarpentier. Jeu de plateau original créé par Yohann Lecarpentier.
+// ===================== MOTEUR + IA (sans interface) =====================
+const NB_COL = 13, NB_LIG = 27, NB_JOUEURS = 4 /* maximum */, TOTAL_DEFAUT = 5, TOTAL_MAX = 7, NS = 4 * (TOTAL_MAX + 1), PARITE = 1, POIDS_TILE = 10;
+const MODE_TILE = 0, MODE_TOTAL = 1, MODE_CHAOS = 2;
+const SQ3 = Math.sqrt(3);
+const ORIENT = [
+  { v: [[-2, 0], [0, -2], [2, 0], [0, 2]], tri: [[0, 1, 3], [2, 1, 3]] },
+  { v: [[-1, -3], [1, -1], [1, 3], [-1, 1]], tri: [[0, 1, 3], [2, 1, 3]] },
+  { v: [[1, -3], [-1, -1], [-1, 3], [1, 1]], tri: [[0, 1, 3], [2, 1, 3]] },
+];
+// Tous les emplacements (C, R, o) sur la grille, avec triangles et côtés numérotés (ids denses).
+const PL = [], PLK = new Map(), TRI = new Map(), ARE = new Map();
+function ident(map, key) { let v = map.get(key); if (v === undefined) { v = map.size; map.set(key, v); } return v; }
+const vid = (c, r) => c * 64 + r;
+for (let o = 0; o < 3; o++) for (let C = 0; C <= 2 * NB_COL; C++) for (let R = 0; R <= 2 * NB_LIG; R++) {
+  const som = []; let ok = true;
+  for (const [dx, dy] of ORIENT[o].v) {
+    const a = C + dx, b = R + dy;
+    if (a % 2 || b % 2) { ok = false; break; }
+    const c = a / 2, r = b / 2;
+    if (!(c >= 0 && c < NB_COL && r >= 0 && r < NB_LIG) || ((c + r) % 2) !== PARITE) { ok = false; break; }
+    som.push([c, r]);
+  }
+  if (!ok) continue;
+  const tri = ORIENT[o].tri.map(t => {
+    const ids = t.map(k => vid(som[k][0], som[k][1])).sort((x, y) => x - y);
+    return ident(TRI, ids[0] * 1048576 + ids[1] * 1024 + ids[2]);
+  });
+  const ar = [];
+  for (let k = 0; k < 4; k++) {
+    const a = vid(som[k][0], som[k][1]), b = vid(som[(k + 1) % 4][0], som[(k + 1) % 4][1]);
+    ar.push(ident(ARE, Math.min(a, b) * 1024 + Math.max(a, b)));
+  }
+  PLK.set((C * 64 + R) * 4 + o, PL.length);
+  PL.push({ C, R, o, som, tri, ar });
+}
+const NP = PL.length, NT = TRI.size, NE = ARE.size;
+const PAR_ARETE = Array.from({ length: NE }, () => []);
+PL.forEach((p, i) => p.ar.forEach(a => PAR_ARETE[a].push(i)));
+const STAMP = new Int32Array(NP); let stampN = 0;
+
+// Rosace de départ : 6 losanges autour du sommet central, couleurs (face, dos).
+const ROSACE_BLEU_VERT = [[0, 2], [1, 3], [0, 1], [2, 1], [3, 0], [2, 3]];
+const ROSACE_ORANGE_VIOLET = [[0, 2], [1, 3], [1, 0], [2, 1], [3, 0], [3, 2]];
+const ROSACE_3 = [[0, 1], [1, 2], [2, 0], [0, 2], [1, 0], [2, 1]];       // 3 joueurs : chaque couleur 2 fois en face, 2 fois au dos
+const ROSACE_2 = [[0, 1], [1, 0], [0, 1], [1, 0], [0, 1], [1, 0]];       // 2 joueurs : alternance
+let _rosace = null;
+function rosace_centrale() {
+  if (_rosace) return _rosace;
+  const cc = (NB_COL - 1) / 2, cr = (NB_LIG - 1) / 2, reseau = [];
+  for (let c = 0; c < NB_COL; c++) for (let r = 0; r < NB_LIG; r++) if ((c + r) % 2 === PARITE) reseau.push([c, r]);
+  reseau.sort((a, b) => Math.hypot((a[0] - cc) * SQ3, a[1] - cr) - Math.hypot((b[0] - cc) * SQ3, b[1] - cr));
+  for (const v of reseau) {
+    const vx = v[0] * SQ3, vy = v[1], res = [];
+    for (let o = 0; o < 3; o++) for (let C = 2 * v[0] - 4; C <= 2 * v[0] + 4; C++) for (let R = 2 * v[1] - 6; R <= 2 * v[1] + 6; R++) {
+      const pl = PLK.get((C * 64 + R) * 4 + o);
+      if (pl === undefined) continue;
+      const s = PL[pl].som;
+      if ((s[0][0] === v[0] && s[0][1] === v[1]) || (s[2][0] === v[0] && s[2][1] === v[1])) {
+        const px = C / 2 * SQ3, py = R / 2;
+        const ang = ((Math.atan2(px - vx, -(py - vy)) % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+        res.push([ang, pl]);
+      }
+    }
+    if (res.length === 6) { res.sort((a, b) => a[0] - b[0]); _rosace = res.map(x => x[1]); return _rosace; }
+  }
+  throw new Error("Aucune rosace centrale possible");
+}
+
+// 2 joueurs : hexagone de 3 losanges (angle de 120° au centre) autour du sommet du réseau le plus central.
+let _hexa = null;
+function hexagone_central() {
+  if (_hexa) return _hexa;
+  const cc = (NB_COL - 1) / 2, cr = (NB_LIG - 1) / 2, reseau = [];
+  for (let c = 0; c < NB_COL; c++) for (let r = 0; r < NB_LIG; r++) if ((c + r) % 2 === PARITE) reseau.push([c, r]);
+  reseau.sort((a, b) => Math.hypot((a[0] - cc) * SQ3, a[1] - cr) - Math.hypot((b[0] - cc) * SQ3, b[1] - cr));
+  for (const v of reseau) {
+    const obtus = [];
+    for (let o = 0; o < 3; o++) for (let C = 2 * v[0] - 4; C <= 2 * v[0] + 4; C++) for (let R = 2 * v[1] - 4; R <= 2 * v[1] + 4; R++) {
+      const pl = PLK.get((C * 64 + R) * 4 + o);
+      if (pl === undefined) continue;
+      const s = PL[pl].som, i = s.findIndex(q => q[0] === v[0] && q[1] === v[1]);
+      if (i < 0) continue;
+      const opp = s[(i + 2) % 4];
+      if (Math.hypot((opp[0] - v[0]) * SQ3, opp[1] - v[1]) < 2.4) obtus.push(pl);        // petite diagonale : angle de 120°
+    }
+    for (let a = 0; a < obtus.length; a++) for (let b = a + 1; b < obtus.length; b++) for (let c = b + 1; c < obtus.length; c++) {
+      const t = new Set([...PL[obtus[a]].tri, ...PL[obtus[b]].tri, ...PL[obtus[c]].tri]);
+      if (t.size === 6) {
+        const vx = v[0] * SQ3, vy = v[1];
+        _hexa = [obtus[a], obtus[b], obtus[c]].map(pl => {
+          const px = PL[pl].C / 2 * SQ3, py = PL[pl].R / 2;
+          return [((Math.atan2(px - vx, -(py - vy)) % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI), pl];
+        }).sort((x, y) => x[0] - y[0]).map(x => x[1]);
+        return _hexa;
+      }
+    }
+  }
+  throw new Error("Aucun hexagone central possible");
+}
+
+// ===================== SCHÉMAS DE DÉPART 2 ET 3 : TABLEAUX ÉDITABLES (aussi modifiables dans le menu « ✎ Départs ») =====================
+// SCHEMAS_DEFAUT[clé][nombre de joueurs] (clé 1 = « Départ 2 », clé 2 = « Départ 3 » dans le menu ; 2 joueurs = équipes) = 6 cases, dans l'ordre de la rosace (case 0 en haut, puis sens horaire).
+// Chaque case = [face, valeur de la face, dos, valeur du dos] où
+//   face / dos = rang du joueur dans l'ORDRE DE JEU (0 = premier à jouer, 1 = deuxième, …) ou G = gris (neutre, sans propriétaire).
+// Schéma 1 = départ classique (hexagone à 2 joueurs, rosace à 3-4) : non éditable ici. Schémas 2 et 3 : ci-dessous.
+// Une case grise des deux côtés n'est jamais retournée. Une valeur supérieure au « total des faces » est ramenée à ce total.
+// Les équipes utilisent la ligne « 2 ».
+const G = null;
+const START_ROUGE = true;       // true : valeurs des tuiles de départ écrites en rouge
+const SCHEMAS_DEFAUT = {
+  1: {   // « Départ 2 » : équilibré, neutres intercalés
+    2: [[0, 3, G, 3], [G, 0, G, 0], [1, 2, G, 2], [G, 0, G, 0], [1, 1, G, 1], [G, 0, G, 0]],
+    3: [[0, 3, G, 2], [G, 0, G, 0], [1, 2, G, 3], [G, 0, G, 0], [2, 1, G, 4], [G, 0, G, 0]],
+    4: [[0, 3, G, 2], [G, 0, G, 0], [1, 2, G, 3], [2, 1, G, 4], [G, 0, G, 0], [3, 0, G, 5]],
+  },
+  2: {   // « Départ 3 »
+    2: [[0, 1, G, 4], [G, 0, G, 0], [1, 2, G, 3], [G, 0, G, 0], [1, 3, G, 2], [G, 0, G, 0]],
+    3: [[0, 1, G, 4], [2, 4, G, 1], [1, 2, G, 3], [0, 2, G, 3], [2, 3, G, 2], [1, 3, G, 2]],
+    4: [[0, 1, 2, 4], [0, 2, 1, 3], [2, 4, 3, 1], [1, 2, 3, 3], [1, 3, 0, 2], [3, 4, 2, 1]],
+  },
+};
+const SCHEMAS = JSON.parse(JSON.stringify(SCHEMAS_DEFAUT));      // copie de travail (modifiée par l'éditeur)
+const cmpCle = (a, b) => { for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return a[i] - b[i]; return 0; };
+
+class Partie {
+  constructor(premier, mode, total, np, equipes, schema_depart) {
+    this.np = np === undefined ? 4 : np;                          // nombre de joueurs (2, 3 ou 4)
+    this.mode = mode === undefined ? MODE_CHAOS : mode;
+    this.depart = schema_depart ? (schema_depart | 0) : 0;                                // schéma de départ : 0 = hexagone (2 j.) / rosace (3-4 j.) ; 1 = rosace équilibrée avec tuiles neutres grises
+    this.equipes = !!equipes && this.np === 2;                  // 2 équipes de 2 joueurs : 2 couleurs, 1 gardien et 1 réserve par équipe
+    this.tour = 0;                                               // nombre de tours joués (sert à savoir quel coéquipier joue)
+    this.total = total === undefined ? TOTAL_DEFAUT : total;     // total recto + verso de chaque pièce
+    this.poses = []; this.occupe = new Uint8Array(NT);
+    this.stock = [];
+    for (let j = 0; j < this.np; j++) {
+      const s = new Int8Array(NS);
+      for (let v = 0; v <= this.total; v++) for (let d = 0; d < this.np; d++) if (d !== j) s[v * 4 + d] = this.np === 2 ? 2 : 1;      // 2 joueurs : deux exemplaires de chaque pièce
+      this.stock.push(s);
+    }
+    this.gardien = new Array(this.np).fill(-1);
+    if (premier === null || premier === undefined) premier = Math.floor(Math.random() * this.np);
+    const schema = this.np === 2 ? ROSACE_2 : this.np === 3 ? ROSACE_3 : (premier === 0 || premier === 2) ? ROSACE_BLEU_VERT : ROSACE_ORANGE_VIOLET;
+    // 2 joueurs : hexagone de 3 losanges ; le premier joueur n'a qu'un losange de sa couleur (gardien d'office), l'autre en a deux
+    const depart = this.np === 2 ? hexagone_central() : rosace_centrale();
+    const schema2 = [[premier, 1 - premier], [1 - premier, premier], [1 - premier, premier]];
+    if (this.depart >= 1) {
+      // schéma 2 : lu dans le tableau SCHEMA2 (voir plus haut). Rangs de joueurs comptés à partir du premier joueur tiré au sort.
+      const ordre = Array.from({ length: this.np }, (_, i) => (premier + i) % this.np);
+      const coul = r => r === G || r === null ? -1 : ordre[r % this.np];
+      rosace_centrale().forEach((pl, k) => {
+        const [f, vf, d, vd] = SCHEMAS[this.depart][this.np][k];
+        const v1 = Math.min(vf, this.total), v2 = Math.min(vd, this.total);
+        this.poses.push({ pl, couleur: coul(f), val: v1, autre: [coul(d), v2], neutre: START_ROUGE });
+        for (const t of PL[pl].tri) this.occupe[t] = 1;
+      });
+    } else depart.forEach((pl, k) => {
+      const [fc, dc] = this.np === 2 ? schema2[k] : schema[k];
+      this.poses.push({ pl, couleur: fc, val: 0, autre: [dc, 0], neutre: true });
+      for (const t of PL[pl].tri) this.occupe[t] = 1;
+    });
+    if (this.avec_gardiens()) for (let j = 0; j < this.np; j++) {
+      const siens = []; this.poses.forEach((p, i) => { if (p.couleur === j) siens.push(i); });
+      if (siens.length === 1) this.gardien[j] = siens[0];
+    }
+    this.joueur = premier; this.phase = "gardiens"; this.attente_gardien = null;
+    this._gardien_suivant();
+  }
+  joueurs() { return Array.from({ length: this.np }, (_, i) => i); }
+  avec_gardiens() { return this.mode !== MODE_CHAOS; }
+  copie() {
+    const c = Object.create(Partie.prototype);
+    c.depart = this.depart; c.equipes = this.equipes; c.tour = this.tour; c.mode = this.mode; c.total = this.total; c.np = this.np; c.poses = this.poses.slice(); c.occupe = this.occupe.slice();
+    c.stock = this.stock.map(s => s.slice()); c.gardien = this.gardien.slice();
+    c.attente_gardien = this.attente_gardien; c.joueur = this.joueur; c.phase = this.phase;
+    return c;
+  }
+  etat() { return this.copie(); }
+  restaurer(e) {
+    const c = e.copie();
+    this.poses = c.poses; this.occupe = c.occupe; this.stock = c.stock; this.gardien = c.gardien;
+    this.attente_gardien = c.attente_gardien; this.joueur = c.joueur; this.phase = c.phase; this.tour = c.tour;
+  }
+  siege() { return Math.floor(this.tour / 2) % 2; }          // en équipes : 0 = 1er joueur de l'équipe, 1 = le coéquipier
+  // -- gardiens
+  _gardien_suivant() {
+    for (let k = 0; k < (this.avec_gardiens() ? this.np : 0); k++) {
+      const j = (this.joueur + k) % this.np;
+      if (this.gardien[j] < 0) { this.attente_gardien = j; return; }
+    }
+    this.attente_gardien = null; this.phase = "pose";
+  }
+  choisir_gardien(i) { this.gardien[this.attente_gardien] = i; this._gardien_suivant(); }
+  protege(i) { const p = this.poses[i]; return (p.couleur < 0 && p.autre[0] < 0) || this.gardien.indexOf(i) >= 0; }   // tuile grise des deux côtés : jamais retournée
+  adjacents(i) {
+    const a = PL[this.poses[i].pl].ar, res = [];
+    for (let k = 0; k < this.poses.length; k++) {
+      if (k === i) continue;
+      const b = PL[this.poses[k].pl].ar;
+      if (a.some(x => b.indexOf(x) >= 0)) res.push(k);
+    }
+    return res;
+  }
+  _parcours(j) {
+    const g = this.gardien[j], parents = new Map([[g, null]]), file = [g];
+    while (file.length) {
+      const i = file.shift();
+      for (const k of this.adjacents(i)) if (!parents.has(k) && this.poses[k].couleur === j) { parents.set(k, i); file.push(k); }
+    }
+    return parents;
+  }
+  destinations(j) {
+    if (!this.avec_gardiens()) return [];
+    if (this.gardien[j] < 0) { const r = []; this.poses.forEach((p, i) => { if (p.couleur === j) r.push(i); }); return r; }
+    return [...this._parcours(j).keys()].filter(i => i !== this.gardien[j]).sort((a, b) => a - b);
+  }
+  chemin(j, cible) {
+    if (this.gardien[j] < 0) return [cible];
+    const parents = this._parcours(j);
+    if (!parents.has(cible)) return [];
+    const ch = []; let i = cible;
+    while (i !== null) { ch.push(i); i = parents.get(i); }
+    return ch.reverse();
+  }
+  // -- pose
+  est_libre(pl) { const t = PL[pl].tri; return !this.occupe[t[0]] && !this.occupe[t[1]]; }
+  emplacements_legaux() {
+    const res = []; stampN++;
+    for (const p of this.poses) for (const a of PL[p.pl].ar) for (const q of PAR_ARETE[a]) {
+      if (STAMP[q] !== stampN && this.est_libre(q)) { STAMP[q] = stampN; res.push(q); }
+    }
+    if (res.length) return res;
+    for (let q = 0; q < NP; q++) if (this.est_libre(q)) res.push(q);
+    return res;
+  }
+  peut_jouer(s) { return this.stock[this.joueur][s] > 0; }
+  visible(s, cote, joueur) {
+    if (joueur === undefined) joueur = this.joueur;
+    const v = s >> 2, dos = s & 3;
+    return cote === 0 ? [joueur, v] : [dos, this.total - v];
+  }
+  cachee(s, cote, joueur) {
+    if (joueur === undefined) joueur = this.joueur;
+    const v = s >> 2, dos = s & 3;
+    return cote === 0 ? [dos, this.total - v] : [joueur, v];
+  }
+  retournables(pl, val) {
+    const mes = PL[pl].ar, res = [];
+    for (let i = 0; i < this.poses.length; i++) {
+      const p = this.poses[i];
+      if (!(p.val < val) || this.protege(i)) continue;
+      const ar = PL[p.pl].ar;
+      if (mes.some(x => ar.indexOf(x) >= 0)) res.push(i);
+    }
+    return res;
+  }
+  appliquer(pl, s, cote) {
+    const [couleur, val] = this.visible(s, cote);
+    const flips = this.retournables(pl, val);
+    for (const i of flips) {
+      const p = this.poses[i];
+      this.poses[i] = { pl: p.pl, couleur: p.autre[0], val: p.autre[1], autre: [p.couleur, p.val], neutre: p.neutre };
+    }
+    this.poses.push({ pl, couleur, val, autre: this.cachee(s, cote), neutre: false });
+    for (const t of PL[pl].tri) this.occupe[t] = 1;
+    this.stock[this.joueur][s]--;
+    return flips;
+  }
+  poser(pl, s, cote) {
+    const flips = this.appliquer(pl, s, cote);
+    if (this.fini()) this.phase = "fini";
+    else if (this.destinations(this.joueur).length) this.phase = "deplacement";
+    else this._suivant();
+    return flips;
+  }
+  deplacer_gardien(i) { this.gardien[this.joueur] = i; this._suivant(); }
+  passer() { if (this.phase === "deplacement") this._suivant(); }
+  _suivant() { this.joueur = (this.joueur + 1) % this.np; this.phase = "pose"; this.tour++; }
+  // -- fin de partie
+  fini() { return this.stock.every(s => { for (let k = 0; k < NS; k++) if (s[k] > 0) return false; return true; }); }
+  scores() {
+    const res = [];
+    for (let c = 0; c < this.np; c++) {
+      let n = 0, somme = 0;
+      for (const p of this.poses) if (p.couleur === c) { n++; somme += p.val; }
+      res.push([n, somme]);
+    }
+    return res;
+  }
+  cle(c, sc) {
+    const [n, somme] = (sc || this.scores())[c];
+    if (this.mode === MODE_TILE) return [-n, -somme];
+    return this.mode === MODE_TOTAL ? [-somme] : [somme];
+  }
+  classement() {
+    const sc = this.scores();
+    return this.joueurs().sort((a, b) => cmpCle(this.cle(a, sc), this.cle(b, sc)) || a - b);
+  }
+  vainqueur() {
+    const sc = this.scores(), o = this.classement();
+    return cmpCle(this.cle(o[0], sc), this.cle(o[1], sc)) === 0 ? null : o[0];
+  }
+  en_tete() {
+    const sc = this.scores(), cles = this.joueurs().map(c => this.cle(c, sc));
+    if (cles.every(k => cmpCle(k, cles[0]) === 0)) return [];
+    let m = cles[0]; for (const k of cles) if (cmpCle(k, m) < 0) m = k;
+    return this.joueurs().filter(c => cmpCle(cles[c], m) === 0);
+  }
+}
+
+// ===================== INTELLIGENCE ARTIFICIELLE =====================
+class IA {
+  constructor(niveau = 1) {
+    this.niveau = niveau;
+    this.ALPHA = 0.6; this.LARGEUR_RACINE = 8; this.GARDIENS = 1;
+    this.PROFONDEUR = { 2: [2, [5]], 3: [3, [5, 3]] };
+    this.TOLERANCE = { 2: 0.25, 3: 0.15 };
+    this.signe = 1; this.poids = 0;
+  }
+  rand() { return Math.random(); }
+  choice(a) { return a[Math.floor(Math.random() * a.length)]; }
+  shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+  emplacements(partie) { return partie.emplacements_legaux(); }
+  _regler(partie) {
+    this.signe = partie.mode === MODE_CHAOS ? -1 : 1;
+    this.poids = partie.mode === MODE_TILE ? POIDS_TILE : 0;
+  }
+  contrib(val) { return this.signe * (this.poids + val); }
+  valeur(f, j) {
+    let mx = -Infinity, sm = 0;
+    for (let c = 0; c < f.length; c++) if (c !== j) { if (f[c] > mx) mx = f[c]; sm += f[c]; }
+    return this.ALPHA * (f[j] - mx) + (1 - this.ALPHA) * (f[j] - sm / (f.length - 1));
+  }
+  _sommes(partie) {
+    const f = new Array(partie.np).fill(0);
+    for (const p of partie.poses) f[p.couleur] += this.contrib(p.val);
+    return f;
+  }
+  _gain_face(partie, vois, couleur, val, joueur, sc, base) {
+    const d = sc.slice();
+    d[couleur] += this.contrib(val);
+    for (const i of vois) {
+      const p = partie.poses[i];
+      if (p.val < val) {
+        d[p.couleur] -= this.contrib(p.val);
+        d[p.autre[0]] += this.contrib(p.autre[1]);
+      }
+    }
+    return this.valeur(d, joueur) - base;
+  }
+  _preparer(partie, joueur) {
+    const idx = new Map();
+    partie.poses.forEach((p, i) => {
+      if (partie.protege(i)) return;
+      for (const a of PL[p.pl].ar) { let l = idx.get(a); if (!l) idx.set(a, l = []); l.push(i); }
+    });
+    const faces = new Map();
+    const st = partie.stock[joueur];
+    for (let s = 0; s < NS; s++) if (st[s] > 0) for (const cote of [0, 1]) {
+      const [c, v] = partie.visible(s, cote, joueur), key = c * 8 + v;
+      let e = faces.get(key); if (!e) faces.set(key, e = { couleur: c, val: v, lst: [] });
+      e.lst.push([s, cote]);
+    }
+    const sc = this._sommes(partie);
+    return [idx, faces, sc, this.valeur(sc, joueur)];
+  }
+  notes(partie, joueur) {
+    this._regler(partie);
+    const [idx, faces, sc, base] = this._preparer(partie, joueur);
+    const res = [];
+    for (const pl of this.emplacements(partie)) {
+      const vois = [];
+      for (const a of PL[pl].ar) { const l = idx.get(a); if (l) for (const i of l) if (vois.indexOf(i) < 0) vois.push(i); }
+      for (const f of faces.values()) {
+        const g = this._gain_face(partie, vois, f.couleur, f.val, joueur, sc, base);
+        for (const [s, cote] of f.lst) res.push([g, { pl, s, cote }]);
+      }
+    }
+    return res;
+  }
+  meilleur_par_piece(notes) {
+    const m = new Map();
+    for (const [g, coup] of notes) {
+      const k = coup.s * 2 + coup.cote, e = m.get(k);
+      if (!e || g > e[0] || (g === e[0] && this.rand() < 0.3)) m.set(k, [g, coup]);
+    }
+    const res = this.shuffle([...m.values()]);
+    res.sort((a, b) => b[0] - a[0]);
+    return res;
+  }
+  candidats_varies(partie, joueur, notes, k, par_face = 2) {
+    const faces = new Map();
+    for (const [g, coup] of notes) {
+      const [c, v] = partie.visible(coup.s, coup.cote, joueur), key = c * 8 + v;
+      let f = faces.get(key); if (!f) faces.set(key, f = new Map());
+      let pl = f.get(coup.pl); if (!pl) f.set(coup.pl, pl = [g, []]);
+      pl[1].push(coup);
+    }
+    let res = [];
+    for (const placements of faces.values()) {
+      const dec = [...placements.values()].map(t => [-t[0], this.rand(), t]);
+      dec.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+      for (const d of dec.slice(0, par_face)) res.push([d[2][0], this.choice(d[2][1])]);
+    }
+    this.shuffle(res);
+    res.sort((a, b) => b[0] - a[0]);
+    return res.slice(0, k);
+  }
+  glouton(partie, joueur) {
+    let m = null;
+    for (const [g, coup] of this.notes(partie, joueur)) if (m === null || g > m[0]) m = [g, coup];
+    return m === null ? null : m[1];
+  }
+  // -- gardien
+  menace(partie, i, j) {
+    const p = partie.poses[i];
+    let libre = false;
+    for (const a of PL[p.pl].ar) for (const q of PAR_ARETE[a]) if (partie.est_libre(q)) { libre = true; break; }
+    if (!libre) return 0;
+    let n = 0;
+    for (let a = 0; a < partie.np; a++) {
+      if (a === j) continue;
+      const st = partie.stock[a];
+      for (let s = 0; s < NS; s++) if (st[s] > 0) { const v = s >> 2; n += st[s] * ((v > p.val) + (partie.total - v > p.val)); }
+    }
+    return n;
+  }
+  enjeu(partie, i, j) {
+    this._regler(partie);
+    if (partie.mode === MODE_CHAOS) return partie.total - partie.poses[i].val;
+    return this.menace(partie, i, j) * (this.poids + partie.poses[i].val + 1);
+  }
+  choisir_gardien(partie) {
+    const j = partie.attente_gardien, siens = [];
+    partie.poses.forEach((p, i) => { if (p.couleur === j) siens.push(i); });
+    let best = null, bv = null;
+    for (const i of siens) { const v = [this.enjeu(partie, i, j), this.rand()]; if (bv === null || cmpCle(v, bv) > 0) { bv = v; best = i; } }
+    return best;
+  }
+  destinations_gardien(partie, j) {
+    const actuel = partie.gardien[j];
+    const reste = actuel >= 0 ? this.enjeu(partie, actuel, j) : 0;
+    const res = partie.destinations(j).map(d => [d, this.enjeu(partie, d, j) - reste]);
+    this.shuffle(res);
+    return res.sort((a, b) => b[1] - a[1]);
+  }
+  deplacer_gardien(partie, j) {
+    if (this.niveau === 0 && this.rand() < 0.5) return null;
+    const d = this.destinations_gardien(partie, j);
+    return d.length && d[0][1] > 0 ? d[0][0] : null;
+  }
+  // -- choix du coup : retourne {coup, dest}
+  jouer(partie) {
+    const j = partie.joueur;
+    this._regler(partie);
+    const notes = this.notes(partie, j);
+    if (this.niveau >= 2) return this._jouer_profond(partie, notes);
+    const variees = this.meilleur_par_piece(notes);
+    let coup;
+    if (this.niveau === 0) coup = this.rand() < 0.35 ? this.choice(notes)[1] : this.choice(variees.slice(0, 6))[1];
+    else {
+      const seuil = variees[0][0] - (partie.mode === MODE_CHAOS ? 0.7 : 1.2);
+      coup = this.choice(variees.filter(t => t[0] >= seuil))[1];
+    }
+    const apres = partie.copie();
+    apres.appliquer(coup.pl, coup.s, coup.cote);
+    return { coup, dest: this.deplacer_gardien(apres, j) };
+  }
+  _valeur_apres(s, j, rondes, largeurs) {
+    for (let k = 1; k < s.np; k++) {
+      if (s.fini()) break;
+      const o = (j + k) % s.np;
+      s.joueur = o;
+      const coup = this.glouton(s, o);
+      if (coup) s.appliquer(coup.pl, coup.s, coup.cote);
+    }
+    s.joueur = j;
+    if (rondes <= 1 || s.fini()) return this.valeur(this._sommes(s), j);
+    let meilleur = null;
+    for (const [, coup] of this.candidats_varies(s, j, this.notes(s, j), largeurs[0])) {
+      const t = s.copie();
+      t.appliquer(coup.pl, coup.s, coup.cote);
+      const v = this._valeur_apres(t, j, rondes - 1, largeurs.slice(1));
+      if (meilleur === null || v > meilleur) meilleur = v;
+    }
+    return meilleur === null ? this.valeur(this._sommes(s), j) : meilleur;
+  }
+  _jouer_profond(partie, notes) {
+    const j = partie.joueur, niv = Math.min(this.niveau, 3);
+    const [rondes, largeurs] = this.PROFONDEUR[niv];
+    const candidats = this.candidats_varies(partie, j, notes, this.LARGEUR_RACINE);
+    const evalues = [];
+    candidats.forEach(([, coup], rang) => {
+      const apres = partie.copie();
+      apres.appliquer(coup.pl, coup.s, coup.cote);
+      const options = [null];
+      if (rang < 3) for (const [d] of this.destinations_gardien(apres, j).slice(0, this.GARDIENS)) options.push(d);
+      const base = apres.gardien.slice();
+      for (const dest of options) {
+        const s = apres.copie();
+        s.gardien = base.slice();
+        if (dest !== null) s.gardien[j] = dest;
+        evalues.push([this._valeur_apres(s, j, rondes, largeurs), coup, dest]);
+      }
+    });
+    const meilleur = Math.max(...evalues.map(e => e[0]));
+    const e = this.choice(evalues.filter(x => x[0] >= meilleur - this.TOLERANCE[niv]));
+    return { coup: e[1], dest: e[2] };
+  }
+}
+
+</script>
+<script>
+"use strict";
+// Losanges — © 2026 Yohann Lecarpentier. Jeu de plateau original créé par Yohann Lecarpentier.
+// ===================== INTERFACE (canvas, tactile + souris) =====================
+const M = new Function(document.getElementById("moteur").textContent +
+  "\nreturn {Partie,IA,PL,NP,NB_COL,NB_LIG,NB_JOUEURS,TOTAL_DEFAUT,TOTAL_MAX,NS,MODE_TILE,MODE_TOTAL,MODE_CHAOS,SQ3,SCHEMAS,SCHEMAS_DEFAUT,ROSACE_3,ROSACE_BLEU_VERT};")();
+const { Partie, IA, PL, NP, NB_COL, NB_LIG, NB_JOUEURS, TOTAL_DEFAUT, TOTAL_MAX, NS, MODE_TILE, MODE_TOTAL, MODE_CHAOS, SQ3, SCHEMAS, SCHEMAS_DEFAUT, ROSACE_3, ROSACE_BLEU_VERT } = M;
+
+// schémas de départ édités (menu « ✎ Départs ») : rechargés depuis le stockage local
+try {
+  const sv = JSON.parse(localStorage.getItem("losanges_schemas"));
+  const ok = c => Array.isArray(c) && c.length === 4 && [c[0], c[2]].every(x => x === null || (Number.isInteger(x) && x >= 0 && x <= 3)) && [c[1], c[3]].every(x => Number.isInteger(x) && x >= 0 && x <= 9);
+  if (sv && sv.v === 2) for (const n of [1, 2]) for (const np of [2, 3, 4]) { const t = sv[n] && sv[n][np]; if (Array.isArray(t) && t.length === 6 && t.every(ok)) SCHEMAS[n][np] = t; }
+} catch (e) {}
+const NOMS = ["Bleu", "Orange", "Vert", "Violet"];
+const COULEURS = ["#00e5ff", "#ff8a00", "#39ff14", "#d04cff"];
+const CONTOURS = ["#00a8c0", "#c25e00", "#22b30c", "#9a2fd0"];
+// équipes (4 joueurs) : 2 couleurs seulement ; on remplace temporairement les couleurs 0 et 1 par celles de l'équipe choisie
+const ORIG = { noms: NOMS.slice(), coul: COULEURS.slice(), cont: CONTOURS.slice() };
+const PAIRES = [null, [0, 1], [0, 2], [0, 3], [1, 2], [1, 3], [2, 3]];
+function appliquer_palette(eq) {
+  for (let i = 0; i < 4; i++) {
+    const o = (eq && i < 2) ? PAIRES[eq][i] : i;
+    NOMS[i] = ORIG.noms[o]; COULEURS[i] = ORIG.coul[o]; CONTOURS[i] = ORIG.cont[o];
+  }
+}
+NOMS[-1] = "Neutre"; COULEURS[-1] = "#8a93c0"; CONTOURS[-1] = "#4b5380";     // tuiles neutres grises (couleur -1)
+const FOND = "#04050d", FOND_PANNEAU = "#070a18", OMBRE = "#000000", SURLIGNAGE = "#ff2bd6";
+const CHOIX = "#fffb00", OR = "#ffe14d", ROUGE = "#ff2a2a";
+const MODES = ["Classic-Tile", "Classic-Total", "Chaos"];
+const DESCRIPTIONS = [
+  "Le plus de losanges de sa couleur l'emporte (égalité : plus grande somme).",
+  "La plus grande SOMME de valeurs visibles l'emporte.",
+  "La plus PETITE somme l'emporte. Poser sur un dos peut offrir des points aux autres.",
+];
+const NIVEAUX = ["Facile", "Moyen", "Difficile", "Expert"];
+const LONG_MS = 400;         // appui long sur le plateau : retourne la tuile sur son autre face (+180°)
+const BALAYAGE = 360;        // cercle du doigt : degrés de balayage pour un cran de rotation
+const D_MAX = 30, FR = 0.62, DELAI_IA = 450;
+const DUREE_POSE = 0.46, DUREE_VOL = 0.66, DUREE_FLIP = 0.56, DUREE_PILE = 2.3, DUREE_RESULTAT = 1.15;
+const GENRES_PIECE = ["pose", "flip", "pop", "gardien"];
+const ARCHE = (() => {
+  const g = [];
+  for (const deg of [180, 170, 160, 150, 140, 130, 120]) { const a = deg * Math.PI / 180; g.push([8 + 16 * Math.cos(a), -1 - 16 * Math.sin(a)]); }
+  const d = g.slice(0, -1).reverse().map(([x, y]) => [-x, y]);
+  return [[-8, 11], ...g, ...d, [8, 11]];
+})();
+
+// ---------- dimensions (fixées par regler_taille)
+let NR = 6, NJ = 4, NC = 3;
+let D, DX, S, SU, SP, MARGE, ECART, LARGEUR, HAUTEUR, PW, PH, LB, HB, WTOT, HTOT, TALL, EP, PAS_RES;
+let SOMPX = [], CENPX = [];
+function regler_taille(d, tall, nr = 6, nj = 4) {
+  NR = nr; NJ = nj; NC = nj === 2 ? 2 : nj - 1; D = d; DX = D * SQ3; S = D / 28; SU = Math.max(S, 0.8); TALL = tall;
+  MARGE = Math.round(38 * S); ECART = Math.round(22 * S);
+  LARGEUR = 2 * MARGE + (NB_COL - 1) * DX; HAUTEUR = 2 * MARGE + (NB_LIG - 1) * D;
+  if (!tall) {
+    HB = HAUTEUR / 2; EP = ECART; LB = NC * (2 * FR * DX + ECART / 4);
+    const f = Math.min(1, (0.68 * HB / NR) / (1.25 * 2 * FR * D));      // beaucoup de lignes : pièces de réserve plus petites
+    PW = FR * DX * f; PH = FR * D * f; WTOT = LARGEUR + (NJ === 2 ? 2 * ECART + LB : 3 * ECART + 2 * LB); HTOT = HAUTEUR;
+  } else {
+    EP = 10; LB = (LARGEUR - 3 * EP) / 2;
+    PW = Math.min(FR * DX, LB / NC * 0.46); PH = PW / SQ3;
+    HB = NR * (1.25 * 2 * PH) / 0.68; WTOT = LARGEUR; HTOT = HAUTEUR + Math.ceil(NJ / 2) * HB;
+  }
+  PAS_RES = 0.68 * HB / NR;
+  SP = PW / (FR * SQ3 * 28);
+  SOMPX = PL.map(p => p.som.map(([c, r]) => [MARGE + c * DX, MARGE + r * D]));
+  CENPX = PL.map(p => [MARGE + p.C / 2 * DX, MARGE + p.R / 2 * D]);
+}
+function tailles_possibles(W, H, nj = 4) {
+  const dh = H / (2 * 38 / 28 + NB_LIG - 1);
+  const dl = (W - 8) / (2 * 38 / 28 + (NB_COL - 1) * SQ3 + ((nj === 2 ? 2 : 3) * 22 / 28 + (nj === 2 ? 2 : 2 * (nj - 1)) * (2 * FR * SQ3 + 5.5 / 28)));
+  const dt = (W - 8) / (2 * 38 / 28 + (NB_COL - 1) * SQ3);
+  return { wide: Math.max(8, Math.min(D_MAX, dh, dl)), tall: Math.max(8, Math.min(D_MAX, dt)) };
+}
+
+// ---------- utilitaires
+const maintenant = () => performance.now() / 1000;
+const borne = (u, a = 0, b = 1) => Math.max(a, Math.min(b, u));
+const ease_in = u => u * u;
+const ease_out = u => 1 - Math.pow(1 - u, 3);
+const ease_in_out = u => u * u * (3 - 2 * u);
+const ease_out_back = u => { const c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * Math.pow(u - 1, 3) + c1 * Math.pow(u - 1, 2); };
+const dist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
+function melange(hexa, t, vers = "#ffffff") {
+  const a = [1, 3, 5].map(i => parseInt(hexa.substr(i, 2), 16)), b = [1, 3, 5].map(i => parseInt(vers.substr(i, 2), 16));
+  return "#" + a.map((x, k) => Math.round(x + (b[k] - x) * t).toString(16).padStart(2, "0")).join("");
+}
+function dans_polygone(x, y, pts) {
+  let pos = false, neg = false;
+  for (let k = 0; k < pts.length; k++) {
+    const [x1, y1] = pts[k], [x2, y2] = pts[(k + 1) % pts.length];
+    const s = (x2 - x1) * (y - y1) - (y2 - y1) * (x - x1);
+    if (s > 0) pos = true; if (s < 0) neg = true;
+  }
+  return !(pos && neg);
+}
+function reduire(flat, cx, cy, f) { return flat.map((v, k) => k % 2 === 0 ? cx + (v - cx) * f : cy + (v - cy) * f); }
+function sommets_alignes(a, b) {
+  const aire = p => { let s = 0; for (let i = 0; i < 4; i++) s += p[i][0] * p[(i + 1) % 4][1] - p[(i + 1) % 4][0] * p[i][1]; return s; };
+  b = b.slice();
+  if (aire(a) * aire(b) < 0) b = [b[0], b[3], b[2], b[1]];
+  let kb = 0, sb = Infinity;
+  for (let s = 0; s < 4; s++) { let t = 0; for (let i = 0; i < 4; i++) t += Math.pow(dist(a[i], b[(i + s) % 4]), 2); if (t < sb) { sb = t; kb = s; } }
+  return [0, 1, 2, 3].map(i => b[(i + kb) % 4]);
+}
+const fondre = (a, b, u) => a.map((p, i) => [p[0] + (b[i][0] - p[0]) * u, p[1] + (b[i][1] - p[1]) * u]);
+function transformer(pts, sx = 1, sy = 1, dx = 0, dy = 0) {
+  const cx = pts.reduce((s, p) => s + p[0], 0) / pts.length, cy = pts.reduce((s, p) => s + p[1], 0) / pts.length;
+  const plat = [];
+  for (const [x, y] of pts) plat.push(cx + (x - cx) * sx + dx, cy + (y - cy) * sy + dy);
+  return [plat, [cx + dx, cy + dy]];
+}
+function position_chemin(pts, m) {
+  const segs = pts.slice(1).map((b, i) => [pts[i], b, dist(pts[i], b)]);
+  const total = segs.reduce((s, x) => s + x[2], 0);
+  if (total === 0) return pts[0];
+  let reste = m * total;
+  for (let k = 0; k < segs.length; k++) {
+    const [a, b, long] = segs[k];
+    if (reste <= long || k === segs.length - 1) { const u = long ? borne(reste / long) : 1; return [a[0] + (b[0] - a[0]) * u, a[1] + (b[1] - a[1]) * u]; }
+    reste -= long;
+  }
+  return pts[pts.length - 1];
+}
+const flat = pts => pts.flatMap(p => p);
+
+// ---------- primitives de dessin (équivalents tkinter)
+function poly(g, pts, o = {}) {
+  g.beginPath(); g.moveTo(pts[0], pts[1]);
+  for (let k = 2; k < pts.length; k += 2) g.lineTo(pts[k], pts[k + 1]);
+  g.closePath();
+  if (o.fill) { g.fillStyle = o.fill; g.fill(); }
+  if (o.outline) { g.lineWidth = o.width || 1; g.strokeStyle = o.outline; g.lineJoin = "round"; g.setLineDash(o.dash || []); g.stroke(); g.setLineDash([]); }
+}
+function oval(g, x0, y0, x1, y1, o = {}) {
+  g.beginPath(); g.ellipse((x0 + x1) / 2, (y0 + y1) / 2, Math.abs(x1 - x0) / 2, Math.abs(y1 - y0) / 2, 0, 0, 2 * Math.PI);
+  if (o.fill) { g.fillStyle = o.fill; g.fill(); }
+  if (o.outline) { g.lineWidth = o.width || 1; g.strokeStyle = o.outline; g.stroke(); }
+}
+function rect(g, x0, y0, x1, y1, o = {}) {
+  if (o.fill) { g.fillStyle = o.fill; g.fillRect(x0, y0, x1 - x0, y1 - y0); }
+  if (o.outline) { g.lineWidth = o.width || 1; g.strokeStyle = o.outline; g.strokeRect(x0, y0, x1 - x0, y1 - y0); }
+}
+function ligne(g, x0, y0, x1, y1, col, w) {
+  g.beginPath(); g.moveTo(x0, y0); g.lineTo(x1, y1); g.strokeStyle = col; g.lineWidth = w; g.lineCap = "butt"; g.stroke();
+}
+const FONTE = '-apple-system, "Helvetica Neue", Arial, sans-serif';
+function police(taille, gras = true, ss = S) { return (gras ? "bold " : "") + Math.max(8, Math.round(taille * ss * 1.2)) + "px " + FONTE; }
+function ecrire(g, x, y, txt, fill, font, anchor = "center") {
+  g.font = font; g.fillStyle = fill; g.textAlign = anchor === "w" ? "left" : anchor === "e" ? "right" : "center"; g.textBaseline = "middle"; g.fillText(txt, x, y);
+}
+function texte(g, x, y, txt, couleur, taille = 15, o = {}) {
+  const ss = o.ss || S, f = police(taille, o.gras !== false, ss), halo = o.halo === undefined ? "#fff4d6" : o.halo;
+  if (halo) for (const [dx, dy] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) ecrire(g, x + dx, y + dy, txt, halo, f);
+  ecrire(g, x, y, txt, couleur, f);
+}
+function lignes_enroulees(g, txt, maxw) {
+  const res = []; let cur = "";
+  for (const mot of txt.split(" ")) {
+    const t = cur ? cur + " " + mot : mot;
+    if (cur && g.measureText(t).width > maxw) { res.push(cur); cur = mot; } else cur = t;
+  }
+  if (cur) res.push(cur);
+  return res;
+}
+
+// ---------- application
+class App {
+  constructor() {
+    this.cvEl = document.getElementById("cv");
+    this.gf = this.cvEl.getContext("2d");
+    this.off = document.createElement("canvas"); this.gs = this.off.getContext("2d");
+    this.elStatut = document.getElementById("statut");
+    this.b = {
+      obj: document.getElementById("b-obj"), mode: document.getElementById("b-mode"), niveau: document.getElementById("b-niveau"),
+      camp: document.getElementById("b-camp"), vue: document.getElementById("b-vue"), popup: document.getElementById("b-popup"), tourner: document.getElementById("b-tourner"),
+      poser: document.getElementById("b-poser"), menu: document.getElementById("b-menu"), annuler: document.getElementById("b-annuler"), passer: document.getElementById("b-passer"),
+    };
+    this.cfg = [0, 1, 2].map(() => ({ np: 4, total: TOTAL_DEFAUT, eq: 0, depart: 0 }));   // pour chaque mode : nombre de joueurs et total recto + verso des pièces
+    try {
+      const t = JSON.parse(localStorage.getItem("losanges_cfg"));
+      if (Array.isArray(t) && t.length === 3 && t.every(c => c && Number.isInteger(c.np) && c.np >= 2 && c.np <= 4 && Number.isInteger(c.total) && c.total >= 1 && c.total <= TOTAL_MAX)) this.cfg = t.map(c => ({ np: c.np, total: c.total, eq: (c.np === 4 && c.eq >= 1 && c.eq <= 6) ? c.eq : 0, depart: (c.depart === 1 || c.depart === 2) ? c.depart : 0 }));
+    } catch (e) {}
+    this.popup = true; try { this.popup = localStorage.getItem("losanges_popup") !== "0"; } catch (e) {}
+    this.pop_sig = ""; this.pop_ouvert = false; this.pop_cle = "";
+    this.mode = 2; this.niveau = 1; this.objectif = MODE_CHAOS; this.humain = 0; this.vue = "auto";
+    this.menu = false; this.survol_menu = null; this.survol_reserve = null; this.t_survol_reserve = 0; this.t_survol_fin = null;
+    this.ia = new IA(this.niveau); this.gen = 0; this.ia_planifiee = false; this.ia_dest = null;
+    this.anims = []; this.intro = null; this.fantome = null; this.t_fin = null;
+    this.souris = [0, 0]; this.apercu_tactile = false; this._tp = null; this.dpr = 1;
+    this.worker = null; this.wcb = new Map(); this.wid = 0; this.worker_occupe = false;
+    this.creer_worker();
+    this.branchements();
+    this.relayout(true);
+    this.nouvelle_partie();
+    requestAnimationFrame(() => this.tick());
+  }
+
+  // -- mise en page adaptative
+  relayout(premiere = false) {
+    const W = Math.floor(document.documentElement.clientWidth), Hfen = window.innerHeight;
+    const haut = this.menu ? document.getElementById("haut").offsetHeight : 0, bas = document.getElementById("bas").offsetHeight;
+    const H = Math.max(200, Hfen - haut - bas - 6);
+    const nj = (this.partie && !this.menu) ? this.partie.np : 4, t = tailles_possibles(W, H, nj);   // écran de choix : disposition FIXE (4 joueurs)
+    let tall;
+    if (this.vue === "large") tall = false; else if (this.vue === "haut") tall = true;
+    else tall = (W < Hfen) ? !(t.wide >= 0.6 * t.tall && t.wide >= 18) : false;
+    regler_taille(tall ? t.tall : t.wide, tall, (this.partie && !this.menu) ? this.partie.total + 1 : 6, nj);
+    this.dpr = Math.min(3, window.devicePixelRatio || 1);
+    for (const c of [this.cvEl, this.off]) { c.width = Math.round(WTOT * this.dpr); c.height = Math.round(HTOT * this.dpr); }
+    this.cvEl.style.width = WTOT + "px"; this.cvEl.style.height = HTOT + "px";
+    const sp = document.getElementById("surplateau"); sp.style.width = LARGEUR + "px"; sp.style.height = HAUTEUR + "px";
+    this.fantome = null; this.anims = [];
+    if (!premiere) this.mettre_a_jour();
+  }
+
+  // -- worker de l'IA (calcul long hors du fil principal)
+  creer_worker() {
+    try {
+      const src = document.getElementById("moteur").textContent + `
+onmessage = e => { const { id, niveau, partie } = e.data; Object.setPrototypeOf(partie, Partie.prototype);
+  let res; try { res = new IA(niveau).jouer(partie); } catch (err) { res = new IA(1).jouer(partie); }
+  postMessage({ id, res }); };`;
+      const w = new Worker(URL.createObjectURL(new Blob([src], { type: "text/javascript" })));
+      w.onmessage = e => { const cb = this.wcb.get(e.data.id); this.wcb.delete(e.data.id); this.worker_occupe = false; if (cb) cb(e.data.res); };
+      w.onerror = () => { this.worker = null; this.worker_occupe = false; const cbs = [...this.wcb.values()]; this.wcb.clear(); cbs.forEach(cb => cb(null)); };
+      this.worker = w;
+    } catch (err) { this.worker = null; }
+  }
+
+  // -- état
+  nb_col(k) { const c = this.cfg[k]; return c.eq ? 2 : c.np; }                 // équipes : 2 couleurs seulement
+  creer_partie(premier, k) {
+    const c = this.cfg[k]; appliquer_palette(c.eq);
+    return new Partie(premier, k, c.total, this.nb_col(k), !!c.eq, c.depart);
+  }
+  nouvelle_partie() {
+    this.gen++; this.ia_planifiee = false; this.ia_dest = null;
+    if (this.worker && this.worker_occupe) { this.worker.terminate(); this.worker = null; this.wcb.clear(); this.worker_occupe = false; this.creer_worker(); }
+    this.partie = this.creer_partie(0, this.objectif);
+    if (this.humain >= this.partie.np) this.humain = 0;
+    this.menu = true; this.vue_menu(true); this.survol_menu = null; this.intro = null; this.anims = []; this.fantome = null; this.t_fin = null;
+    this.historique = []; this.k = 0; this.sel = null; this.survol = null; this.cible = null;
+    this.dernier = null; this.dernier_flips = 0; this.apercu_tactile = false;
+    this.maj_boutons(); this.mettre_a_jour();
+  }
+  choisir_objectif(m) {
+    if (!this.menu) return;
+    this.objectif = m; this.menu = false;
+    const c = this.cfg[m], premier = Math.floor(Math.random() * this.nb_col(m));
+    if (this.humain >= this.nb_col(m)) this.humain = 0;
+    this.partie = this.creer_partie(premier, m);
+    this.vue_menu(false);
+    this.intro = { t0: maintenant(), gagnant: premier };
+    this.survol_menu = null; this.maj_boutons(); this.mettre_a_jour();
+  }
+  vue_menu(ouvert) {      // menus du haut : en flux à l'écran de choix, ensuite masqués (bouton ☰ pour les rouvrir)
+    document.body.classList.toggle("jeu", !ouvert);
+    document.body.classList.remove("menuouvert");
+    if (this.cvEl.width) this.relayout(true);
+  }
+  maj_boutons() {
+    const un = this.mode === 1;
+    const c = this.cfg[this.objectif];
+    this.b.obj.textContent = this.menu ? "Choix du mode" : `Objectif : ${MODES[this.objectif]} (${c.np} j.${c.eq ? " en équipes" : ""}, total ${c.total})`;
+    this.b.mode.textContent = this.menu ? (un ? "Vs ordis" : "Humains") : un ? `Vous + ${this.cfg[this.objectif].np - 1} ordi${this.cfg[this.objectif].np > 2 ? "s" : ""}` : `${this.cfg[this.objectif].np} humains`;
+    this.b.niveau.textContent = "Niveau : " + NIVEAUX[this.niveau]; this.b.niveau.disabled = !un;
+    this.b.camp.textContent = "Vous : " + NOMS[this.humain]; this.b.camp.disabled = !un;
+    this.b.vue.textContent = "Vue : " + this.vue;
+    this.b.popup.textContent = "Tuiles pop-up : " + (this.popup ? "oui" : "non");
+  }
+  changer_mode() { this.mode = this.mode === 1 ? 2 : 1; this.nouvelle_partie(); }
+  changer_niveau() { if (this.mode !== 1) return; this.niveau = (this.niveau + 1) % 4; this.ia.niveau = this.niveau; this.maj_boutons(); this.mettre_a_jour(); }
+  changer_camp() { if (this.mode !== 1) return; this.humain = (this.humain + 1) % this.nb_col(this.objectif); this.nouvelle_partie(); }
+  changer_vue() { this.vue = { auto: "large", large: "haut", haut: "auto" }[this.vue]; this.maj_boutons(); this.relayout(); }
+
+  tour_ia() {
+    const p = this.partie;
+    if (this.mode !== 1) return false;
+    if (p.phase === "gardiens") return p.attente_gardien !== this.humain;
+    return (p.phase === "pose" || p.phase === "deplacement") && (p.joueur !== this.humain || (p.equipes && p.siege() !== 0));   // en équipes : vous jouez 1 tour sur 2 pour votre couleur, votre coéquipier est l'ordinateur
+  }
+  anim_en_cours() { return this.anims.some(a => GENRES_PIECE.includes(a.genre)); }
+  verrou() { return this.menu || this.intro !== null || this.anim_en_cours(); }
+  pieces_cachees() {
+    if (this.intro !== null || this.menu) return new Set(this.partie.poses.map((_, i) => i));
+    return new Set(this.anims.filter(a => ["pose", "flip", "pop"].includes(a.genre)).map(a => a.piece));
+  }
+
+  changer_cfg(k, champ, delta) {
+    const c = this.cfg[k], [lo, hi] = champ === "np" ? [2, 4] : [1, TOTAL_MAX];
+    const v = Math.max(lo, Math.min(hi, c[champ] + delta));
+    if (v === c[champ]) return;
+    c[champ] = v; if (c.np !== 4) c.eq = 0;
+    try { localStorage.setItem("losanges_cfg", JSON.stringify(this.cfg)); } catch (e) {}
+    this.objectif = k; this.partie = this.creer_partie(0, k);        // aperçu des réserves de ce mode
+    if (this.humain >= this.nb_col(k)) this.humain = 0;
+    this.maj_boutons(); this.relayout(true); this.mettre_a_jour();
+  }
+  clic_menu(x, y) {
+    for (let k = 0; k < 3; k++) {
+      const E = this.rect_eq(k), D = this.rect_dep(k);
+      if (x >= E[0] && x <= E[2] && y >= E[1] && y <= E[3]) { this.changer_eq(k); return; }
+      if (x >= D[0] && x <= D[2] && y >= D[1] && y <= D[3]) { this.changer_depart(k); return; }
+      const R = this.rects_cfg(k);
+      for (const [nom, champ, d] of [["jm", "np", -1], ["jp", "np", 1], ["fm", "total", -1], ["fp", "total", 1]]) {
+        const rc = R[nom];
+        if (x >= rc[0] && x <= rc[2] && y >= rc[1] && y <= rc[3]) { this.changer_cfg(k, champ, d); return; }
+      }
+    }
+    const k = this.carte_sous_curseur(x, y);
+    if (k !== null) this.choisir_objectif(k);
+  }
+  // -- ordinateur
+  planifier_ia(delai) {
+    if (this.ia_planifiee || this.intro !== null || this.menu || !this.tour_ia()) return;
+    this.ia_planifiee = true;
+    const gen = this.gen;
+    setTimeout(() => this.jouer_ia(gen), delai === undefined ? DELAI_IA : delai);
+  }
+  jouer_ia(gen) {
+    if (gen !== undefined && gen !== this.gen) return;
+    this.ia_planifiee = false;
+    if (!this.tour_ia()) return;
+    if (this.verrou()) { this.planifier_ia(60); return; }
+    const p = this.partie;
+    if (p.phase === "gardiens") {
+      const i = this.ia.choisir_gardien(p); p.choisir_gardien(i); this.onde_piece(i, CHOIX);
+    } else if (p.phase === "pose") {
+      this.calcul_ia(gen); return;
+    } else {
+      const dest = this.ia_dest; this.ia_dest = null;
+      if (dest !== null && p.destinations(p.joueur).includes(dest)) this.deplacer_gardien_anime(dest); else p.passer();
+    }
+    this.survol = this.trouver_position(...this.souris); this.mettre_a_jour();
+  }
+  calcul_ia(gen) {
+    this.ia_planifiee = true;
+    const copie = this.partie.copie(), niveau = this.ia.niveau;
+    const fin = res => {
+      if (gen !== this.gen) return;
+      this.ia_planifiee = false;
+      if (!res) res = new IA(niveau).jouer(copie);
+      if (this.tour_ia() && this.partie.phase === "pose") { this.jouer_coup_ia(res); this.survol = this.trouver_position(...this.souris); this.mettre_a_jour(); }
+    };
+    if (niveau >= 2 && this.worker) {
+      const id = ++this.wid; this.wcb.set(id, fin); this.worker_occupe = true;
+      this.worker.postMessage({ id, niveau, partie: copie });
+    } else setTimeout(() => fin(this.ia.jouer(copie)), 20);
+  }
+  jouer_coup_ia(res) {
+    const p = this.partie, j = p.joueur, coup = res.coup;
+    this.ia_dest = res.dest;
+    const anciens = this.etats();
+    const flips = p.poser(coup.pl, coup.s, coup.cote);
+    this.dernier = p.poses.length - 1; this.dernier_flips = flips.length;
+    const [sx, sy] = this.positions_reserve(j, coup.s, Math.min(this.partie.stock[j][coup.s], this.copies() - 1));
+    const depart = [[sx - PW, sy], [sx, sy - PH], [sx + PW, sy], [sx, sy + PH]];
+    this.animer_pose(this.dernier, flips, anciens, depart, true, this.face_reserve(j, coup.s).slice(0, 2));
+  }
+
+  // -- animations
+  etats() { return this.partie.poses.map(q => [q.couleur, q.val, q.neutre]); }
+  ajouter_anim(genre, duree, delai, kw) {
+    const a = Object.assign({ genre, t0: maintenant() + (delai || 0), dur: duree }, kw);
+    this.anims.push(a); return a;
+  }
+  animer_pose(i, flips, anciens, depart, vol = false, etat_depart = null) {
+    const p = this.partie, piece = p.poses[i];
+    const cible = SOMPX[piece.pl];
+    depart = sommets_alignes(cible, depart);
+    const dur = vol ? DUREE_VOL : DUREE_POSE, contact = vol ? 0.74 : 0.58;
+    this.ajouter_anim("pose", dur, 0, { piece: i, depart, cible, vol, contact, etat_depart });
+    const tc = dur * contact;
+    this.ajouter_anim("onde", 0.55, tc, { poly: cible, couleur: "#fff3b0" });
+    const c0 = CENPX[piece.pl];
+    const ordre = flips.slice().sort((a, b) => dist(CENPX[p.poses[a].pl], c0) - dist(CENPX[p.poses[b].pl], c0));
+    ordre.forEach((k, rang) => this.ajouter_anim("flip", DUREE_FLIP, tc + 0.05 + 0.11 * rang, { piece: k, avant: anciens[k] }));
+  }
+  onde_piece(i, couleur) { this.ajouter_anim("onde", 0.55, 0, { poly: SOMPX[this.partie.poses[i].pl], couleur }); }
+  deplacer_gardien_anime(i) {
+    const p = this.partie, j = p.joueur;
+    const pts = p.chemin(j, i).map(k => CENPX[p.poses[k].pl]);
+    let lon = 0; for (let k = 1; k < pts.length; k++) lon += dist(pts[k - 1], pts[k]);
+    this.ajouter_anim("gardien", borne(0.30 + lon / 520, 0.45, 1.1), 0, { j, pts, dest: i });
+    p.deplacer_gardien(i);
+  }
+  orient() { return this.k % 3; }
+  cote() { return Math.floor(this.k / 3); }
+  choisir(s) {
+    const p = this.partie;
+    if (p.phase !== "pose" || !p.peut_jouer(s) || this.tour_ia() || this.verrou()) return;
+    this.sel = s; this.survol = this.trouver_position(...this.souris); this.mettre_a_jour();
+  }
+  choisir_valeur(w) {
+    if (this.menu) { if (w >= 1 && w <= 3) this.choisir_objectif(w - 1); return; }
+    const p = this.partie, st = p.stock[p.joueur], dispo = [];
+    for (let s = 0; s < NS; s++) if (st[s] > 0 && this.valeur_affichee(s) === w) dispo.push(s);
+    if (!dispo.length) return;
+    const k = dispo.indexOf(this.sel);
+    this.choisir(k >= 0 ? dispo[(k + 1) % dispo.length] : dispo[0]);
+  }
+  // -- pop-up des tuiles du joueur humain (option) : choisir une tuile sans aller dans le panneau de réserve
+  pop_dims() { const p = this.partie, cols = p.np === 2 ? 2 : p.np - 1, rows = p.total + 1, cw = Math.min(60, Math.floor((window.innerWidth - 24) / cols)), ch = Math.min(30, Math.floor((window.innerHeight * 0.34) / rows)); return { cols, rows, cw, ch }; }
+  pop_visible() {
+    const p = this.partie;
+    return this.popup && !this.menu && this.intro === null && p.phase === "pose" && !this.tour_ia() && !this.verrou() && !document.getElementById("tuto").classList.contains("on") && !document.getElementById("edt").classList.contains("on");
+  }
+  maj_popup(force) {
+    const el = document.getElementById("pop"), tab = document.getElementById("pop-tab"), p = this.partie;
+    if (!p) return;
+    const vis = this.pop_visible(), bas = document.getElementById("bas").getBoundingClientRect(), bot = Math.max(0, window.innerHeight - bas.top);
+    const cle = p.poses.length + "|" + p.joueur + "|" + p.phase;
+    if (vis && cle !== this.pop_cle) { this.pop_cle = cle; this.pop_ouvert = true; }       // nouveau tour : le pop-up s'ouvre
+    if (!vis) this.pop_cle = vis ? this.pop_cle : (p.phase === "pose" && !this.tour_ia() ? this.pop_cle : "");
+    const ouvert = vis && this.pop_ouvert;
+    const sig = [ouvert, vis, this.sel, p.stock[p.joueur].join(), bot, window.innerWidth].join("|");
+    if (sig === this.pop_sig && !force) return;
+    this.pop_sig = sig;
+    el.classList.toggle("on", ouvert); el.style.bottom = bot + "px";
+    tab.classList.toggle("on", vis && !ouvert); tab.style.bottom = (bot + 6) + "px";
+    if (!ouvert) return;
+    document.getElementById("pop-titre").innerHTML = `<b style="color:${COULEURS[p.joueur]}">${NOMS[p.joueur]}</b> — choisissez une tuile`;
+    const { cols, rows, cw, ch } = this.pop_dims(), cv = document.getElementById("pop-cv"), d = Math.min(3, window.devicePixelRatio || 1);
+    cv.width = cw * cols * d; cv.height = ch * rows * d; cv.style.width = cw * cols + "px"; cv.style.height = ch * rows + "px";
+    const g = cv.getContext("2d"); g.setTransform(d, 0, 0, d, 0, 0); g.clearRect(0, 0, cw * cols, ch * rows);
+    const autres = [0, 1, 2, 3].slice(0, p.np).filter(x => x !== p.joueur);
+    for (let row = 0; row < rows; row++) for (let col = 0; col < cols; col++) {
+      const v = p.mode === MODE_CHAOS ? row : p.total - row, dos = p.np === 2 ? 1 - p.joueur : autres[col], s = v * 4 + dos, n = p.stock[p.joueur][s], c = p.np === 2 ? col : 0;
+      const dispo = c < n, cx = cw * (col + 0.5), cy = ch * (row + 0.5), [cr, vr, pr] = this.face_reserve(p.joueur, s);
+      const sel = dispo && s === this.sel && c === 0;
+      this.dessiner_losange(g, [cx - cw * 0.46, cy, cx, cy - ch * 0.46, cx + cw * 0.46, cy, cx, cy + ch * 0.46], cx, cy, cr, vr, { grise: !dispo, pastille: pr, largeur: sel ? 3.5 : 1.5, contour: sel ? "#ffffff" : undefined, ss: ch / 30 * 0.85, echtxt: 0.9 });
+    }
+  }
+  clic_popup(e) {
+    const p = this.partie, cv = document.getElementById("pop-cv"), r = cv.getBoundingClientRect(), { cols, rows, cw, ch } = this.pop_dims();
+    const col = Math.floor((e.clientX - r.left) / cw), row = Math.floor((e.clientY - r.top) / ch);
+    if (col < 0 || row < 0 || col >= cols || row >= rows) return;
+    const autres = [0, 1, 2, 3].slice(0, p.np).filter(x => x !== p.joueur);
+    const v = p.mode === MODE_CHAOS ? row : p.total - row, dos = p.np === 2 ? 1 - p.joueur : autres[col], s = v * 4 + dos;
+    if (p.stock[p.joueur][s] <= (p.np === 2 ? col : 0)) return;
+    this.choisir(s); this.pop_ouvert = false; this.maj_popup(true);
+  }
+  selection_valide() {
+    const st = this.partie.stock[this.partie.joueur];
+    if (this.sel === null || st[this.sel] === 0) {
+      let best = null;
+      for (let s = 0; s < NS; s++) if (st[s] > 0 && (best === null || (s >> 2) > (best >> 2) || ((s >> 2) === (best >> 2) && (s & 3) < (best & 3)))) best = s;
+      if (best !== null) this.sel = best;
+    }
+  }
+  retourner_apercu() {      // même position, autre face (cas 1 → cas 4) avec l'animation de retournement
+    const [c, v] = this.partie.visible(this.sel, this.cote()), pas = this.partie.cachee(this.sel, this.cote())[0];
+    this.flip_fantome = { t0: maintenant(), avant: [c, v, pas] };
+    this.k = (this.k + 3) % 6;
+    this.survol = this.trouver_position(...this.souris); this.barre_etat();
+  }
+  tourner(sens = 1) {
+    this.k = (this.k + sens + 6) % 6;
+    this.survol = this.trouver_position(...this.souris); this.barre_etat();
+  }
+
+  // -- couleurs : g(tag)
+  G(tag) { return tag === "dyn" ? this.gs : this.gf; }
+
+  // -- briques de dessin
+  dessiner_grille(g) {
+    const r = 2.5 * S;
+    for (let c = 0; c < NB_COL; c++) for (let rr = 0; rr < NB_LIG; rr++) {
+      const x = MARGE + c * DX, y = MARGE + rr * D;
+      oval(g, x - r, y - r, x + r, y + r, { fill: "#5a6585" });
+    }
+  }
+  dessiner_gardien(g, cx, cy, j, val, neutre, ech = 1) {
+    const s = 0.95 * S * ech;
+    oval(g, cx - 18 * s, cy - 18 * s, cx + 18 * s, cy + 18 * s, { fill: CONTOURS[j], outline: OR, width: Math.max(1, 2 * s) });
+    oval(g, cx - 14 * s, cy - 14 * s, cx + 14 * s, cy + 14 * s, { outline: melange(CONTOURS[j], 0.35), width: 1 });
+    poly(g, ARCHE.flatMap(([x, y]) => [cx + x * s, cy + y * s]), { fill: "#f4e6b8", outline: "#6b4f1d", width: 1 });
+    ligne(g, cx, cy - 19 * s, cx, cy - 27 * s, OR, Math.max(1, 2 * s));
+    ligne(g, cx - 3.5 * s, cy - 23.5 * s, cx + 3.5 * s, cy - 23.5 * s, OR, Math.max(1, 2 * s));
+    texte(g, cx, cy + s, String(val), neutre ? ROUGE : "#2b1d08", 12 * ech, { halo: null });
+  }
+  dessiner_losange(g, pl, cx, cy, couleur, val, o = {}) {
+    const ss = o.ss || S, largeur = o.largeur === undefined ? 2 : o.largeur;
+    if (o.ombre) poly(g, pl.map((c, k) => c + (k % 2 === 0 ? 3 * ss : 4 * ss)), { fill: OMBRE });
+    const fill = o.fantome ? melange(COULEURS[couleur], 0.45) : o.grise ? "#3a4058" : COULEURS[couleur];
+    poly(g, pl, { fill, outline: o.contour || CONTOURS[couleur], width: largeur * ss, dash: o.dash });
+    if (!o.grise && !o.fantome) poly(g, reduire(pl, cx, cy, 0.78), { fill: melange(COULEURS[couleur], 0.22) });
+    if (o.gardien !== undefined && o.gardien !== null) this.dessiner_gardien(g, cx, cy, o.gardien, val, o.neutre, o.ech || 1);
+    else if (o.texte !== false) {
+      const ct = o.neutre ? ROUGE : (o.grise ? "#6f7899" : "#2b1d08");
+      texte(g, cx, cy, String(val), ct, 15 * (o.echtxt || 1), { halo: o.grise ? null : "#fff4d6", ss });
+    }
+    if (o.pastille !== undefined && o.pastille !== null) {
+      const r = 4.2 * ss;
+      let best = null, bd = -1;
+      for (let k = 0; k < 8; k += 2) { const d = (pl[k] - cx) ** 2 + (pl[k + 1] - cy) ** 2; if (d > bd) { bd = d; best = [pl[k] - cx, pl[k + 1] - cy]; } }
+      const px = cx + 0.62 * best[0], py = cy + 0.62 * best[1];
+      oval(g, px - r, py - r, px + r, py + r, { fill: o.grise ? "#555c78" : COULEURS[o.pastille], outline: OMBRE, width: Math.max(1, ss) });
+    }
+  }
+
+  // -- panneau des réserves
+  origine_bloc(j) {
+    if (!TALL) return NJ === 2 ? [LARGEUR + ECART, j * HB] : [LARGEUR + ECART + (j % 2) * (LB + ECART), (j >> 1) * HB];
+    return [EP + (j % 2) * (LB + EP), HAUTEUR + (j >> 1) * HB];
+  }
+  colonne_x(j) { return this.origine_bloc(j)[0] + LB / 2; }
+  face_reserve(j, s) {
+    const v = s >> 2, dos = s & 3;
+    return this.partie.mode === MODE_CHAOS ? [dos, this.partie.total - v, j] : [j, v, dos];
+  }
+  valeur_affichee(s) { return this.face_reserve(0, s)[1]; }
+  copies() { return this.partie.np === 2 ? 2 : 1; }        // 2 joueurs : deux exemplaires de chaque pièce, côte à côte
+  positions_reserve(j, s, c = 0) {
+    const v = s >> 2, dos = s & 3;
+    const ligne = this.partie.mode === MODE_CHAOS ? v : this.partie.total - v;
+    const col = this.partie.np === 2 ? c : [0, 1, 2, 3].slice(0, this.partie.np).filter(x => x !== j).indexOf(dos);
+    const [x0, y0] = this.origine_bloc(j), wc = LB / NC;
+    return [x0 + wc * (col + 0.5), y0 + 0.19 * HB + (ligne + 0.5) * PAS_RES];
+  }
+  reserve_sous_curseur(x, y, tol = 1) {
+    for (let j = 0; j < this.partie.np; j++) for (let s = 0; s < NS; s++) {
+      if ((s & 3) === j || (s & 3) >= this.partie.np || (s >> 2) > this.partie.total) continue;
+      for (let c = 0; c < this.copies(); c++) {
+        const [cx, cy] = this.positions_reserve(j, s, c);
+        if (Math.abs(x - cx) / PW + Math.abs(y - cy) / PH <= tol) return [j, s, c];
+      }
+    }
+    return null;
+  }
+
+  // -- calque statique (pièces, réserves) : redessiné à chaque changement
+  mettre_a_jour() {
+    const g = this.gs, p = this.partie;
+    g.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
+    g.clearRect(0, 0, WTOT, HTOT);
+    this.dessiner_grille(g);
+    this.selection_valide();
+    if (p.phase !== "pose" || this.tour_ia()) this.survol = null;
+    if (p.phase !== "deplacement" || this.tour_ia()) this.cible = null;
+    const cachees = this.pieces_cachees();
+    const sans_emblem = new Set(this.anims.filter(a => a.genre === "gardien").map(a => a.dest));
+    p.poses.forEach((piece, i) => {
+      if (cachees.has(i)) return;
+      const [cx, cy] = CENPX[piece.pl];
+      const gd = (p.gardien.includes(i) && !sans_emblem.has(i)) ? p.gardien.indexOf(i) : null;
+      this.dessiner_losange(g, flat(SOMPX[piece.pl]), cx, cy, piece.couleur, piece.val,
+        { neutre: piece.neutre, gardien: gd, ombre: true, pastille: piece.autre[0] });
+    });
+    // réserves
+    if (!TALL) rect(g, LARGEUR, 0, WTOT, HTOT, { fill: "rgba(3,6,20,0.74)", outline: "rgba(0,229,255,0.5)", width: 1.5 });
+    else rect(g, 0, HAUTEUR, WTOT, HTOT, { fill: "rgba(3,6,20,0.74)", outline: "rgba(0,229,255,0.5)", width: 1.5 });
+    const sc = p.scores(), tete = p.en_tete();
+    for (let j = 0; j < p.np; j++) {
+      const x0 = this.colonne_x(j), y0 = this.origine_bloc(j)[1];
+      const actif = (p.phase === "gardiens" ? j === p.attente_gardien : j === p.joueur) &&
+        ["gardiens", "pose", "deplacement"].includes(p.phase) && this.intro === null && !this.menu;
+      const est_ia = this.mode === 1 && j !== this.humain, eqp = p.equipes ? " · équipe" : "";
+      texte(g, x0, y0 + 0.056 * HB, NOMS[j] + (est_ia ? " · IA" : eqp), COULEURS[j], 13, { halo: null, ss: SP });
+      let et = "";
+      if (actif) et = est_ia ? (p.phase === "pose" ? "réfléchit…" : "gardien…") : (p.phase === "pose" ? "à jouer" : "gardien ?");
+      ecrire(g, x0, y0 + 0.116 * HB, et, "#c9d1f2", police(9, false, SP));
+      for (let s = 0; s < NS; s++) {
+        if ((s & 3) === j || (s & 3) >= p.np || (s >> 2) > p.total) continue;
+        const n = p.stock[j][s];
+        for (let c = 0; c < this.copies(); c++) {
+          const [cx, cy] = this.positions_reserve(j, s, c), dispo = c < n;       // exemplaire c disponible si c < nombre restant
+          const pl = [cx - PW, cy, cx, cy - PH, cx + PW, cy, cx, cy + PH];
+          const choisi = actif && p.phase === "pose" && s === this.sel && dispo && c === 0;
+          const [cr, vr, pr] = this.face_reserve(j, s);
+          this.dessiner_losange(g, pl, cx, cy, cr, vr, { grise: !dispo, pastille: pr, largeur: choisi ? 4 : 1.5,
+            contour: choisi ? "#ffffff" : undefined, ombre: dispo, echtxt: 0.8, ss: SP });
+        }
+      }
+      const [n_, s_] = sc[j], etoile = tete.includes(j) ? "★ " : "";
+      const [grand, petit] = p.mode === MODE_TILE ? [`${n_} losanges`, `somme ${s_}`] : [`score ${s_}`, `${n_} losanges`];
+      texte(g, x0, y0 + HB - 0.128 * HB, etoile + grand, COULEURS[j], 12, { halo: null, ss: SP });
+      ecrire(g, x0, y0 + HB - 0.080 * HB, petit, "#8e98bf", police(8, false, SP));
+    }
+    const larg_pied = TALL ? WTOT : WTOT - LARGEUR, f_pied = police(7.5, false, SP);
+    g.font = f_pied;
+    const pieds = p.mode === MODE_CHAOS ? ["réserves : face adverse (pastille = propriétaire)", "face adverse (pastille = propriétaire)", "face adverse"]
+      : ["médaillon = gardien · réserves : votre face (pastille = dos)", "votre face (pastille = dos)", "votre face"];
+    const pied = pieds.find(t => g.measureText(t).width <= larg_pied - 6) || pieds[2];
+    ecrire(g, TALL ? WTOT / 2 : LARGEUR + (WTOT - LARGEUR) / 2, HTOT - 5 * SP, pied, "#8e98bf", f_pied);
+    this.barre_etat();
+    this.planifier_ia();
+  }
+  apercu() {
+    const p = this.partie, [couleur, val] = p.visible(this.sel, this.cote());
+    let flips = [];
+    if (p.phase === "pose" && this.survol !== null) flips = p.retournables(this.survol, val);
+    return [couleur, val, flips];
+  }
+  texte_premier(g) {
+    if (this.mode === 1) return g === this.humain ? "Vous commencez !" : `${NOMS[g]} (ordinateur) commence !`;
+    return `${NOMS[g]} commence !`;
+  }
+  barre_etat() {
+    const p = this.partie, sc = p.scores();
+    const locked = this.verrou() || this.tour_ia();
+    this.b.passer.disabled = !(p.phase === "deplacement" && !locked);
+    this.b.poser.disabled = !(p.phase === "pose" && this.survol !== null && !locked);
+    this.b.tourner.disabled = !(p.phase === "pose" && !locked);
+    this.b.tourner.textContent = `↻ ${this.k + 1}/6`;
+    this.b.annuler.disabled = !(this.historique.length && !locked);
+    const r = this.survol_reserve;
+    let txt;
+    if (r !== null && p.stock[r[0]][r[1]] > (r[2] || 0) && !this.menu) {
+      const [j, s] = r, v = s >> 2, dos = s & 3;
+      txt = `Pièce de ${NOMS[j]} : face ${NOMS[j]} ${v}  /  dos ${NOMS[dos]} ${p.total - v}`;
+    } else if (this.menu) txt = "Choisissez le mode de jeu : 1 Classic-Tile | 2 Classic-Total | 3 Chaos";
+    else if (this.intro !== null) txt = "Tirage au sort du premier joueur… (touchez pour passer)";
+    else if (this.tour_ia()) {
+      const quoi = { gardiens: "choisit son gardien", pose: "réfléchit", deplacement: "place son gardien" };
+      txt = `L'ordinateur (${NOMS[p.phase === "gardiens" ? p.attente_gardien : p.joueur]}, niveau ${NIVEAUX[this.niveau].toLowerCase()}) ${quoi[p.phase]}…`;
+    } else if (p.phase === "gardiens") txt = `Début : ${NOMS[p.attente_gardien]}, touchez l'un de vos 2 losanges de départ pour y poser votre gardien | ${NOMS[p.joueur]} jouera en premier`;
+    else if (p.phase === "deplacement") txt = `${NOMS[p.joueur]} : touchez un losange surligné pour y déplacer votre gardien, ou touchez-le (ou « Passer ») pour le laisser`;
+    else if (p.phase === "fini") {
+      const v = p.vainqueur();
+      const ordre = p.classement().map(c => `${NOMS[c]} ${p.mode === MODE_TILE ? sc[c][0] : sc[c][1]}`).join("  ");
+      txt = `[${MODES[p.mode]}] Partie terminée : ${v === null ? "égalité en tête" : NOMS[v] + " gagne"}. ${ordre}`;
+    } else {
+      const [couleur, val, flips] = this.apercu();
+      txt = `[${MODES[p.mode]}] Tour : ${NOMS[p.joueur]}${p.equipes ? ` (joueur ${p.siege() + 1} de l'équipe)` : ""} | position ${this.k + 1}/6 : face ${NOMS[couleur].toLowerCase()} ${val} (dos ${NOMS[p.cachee(this.sel, this.cote())[0]].toLowerCase()})`;
+      if (this.survol !== null) {
+        if (flips.length) {
+          const propres = flips.filter(i => p.poses[i].couleur === p.joueur).length;
+          txt += ` | retournerait ${flips.length} losange(s)` + (propres ? ` dont ${propres} des vôtres` : "");
+        } else txt += " | ne retourne rien";
+        const j = p.joueur;
+        let dn = couleur === j ? 1 : 0, ds = couleur === j ? val : 0;
+        for (const i of flips) {
+          const q = p.poses[i];
+          dn += (q.autre[0] === j) - (q.couleur === j);
+          ds += (q.autre[0] === j ? q.autre[1] : 0) - (q.couleur === j ? q.val : 0);
+        }
+        txt += p.mode === MODE_TILE ? ` | vos losanges ${sc[j][0]} → ${sc[j][0] + dn}` : ` | votre score ${sc[j][1]} → ${sc[j][1] + ds}`;
+        if (this.apercu_tactile) txt += " | retouchez ou « Poser » | appui long = retourner · cercle = tourner";
+      } else txt += " | aucune place permise pour cette orientation";
+      if (this.dernier_flips) txt += ` | dernier coup : ${this.dernier_flips} retourné(s)`;
+    }
+    this.elStatut.textContent = txt;
+  }
+
+  // -- calque animé (chaque image)
+  halo(g, pl, couleur, pulse, fort = true) {
+    const c = fort ? couleur : melange(couleur, 0.5, FOND);
+    for (const [w, col] of [[(10 + 5 * pulse) * S, melange(c, 0.7, FOND)], [(6 + 3 * pulse) * S, c], [2.5 * S, melange(c, 0.6)]])
+      poly(g, pl, { outline: col, width: w });
+  }
+  pas(g, pts, decalage) {
+    const segs = []; let total = 0;
+    for (let i = 1; i < pts.length; i++) { const long = dist(pts[i - 1], pts[i]); segs.push([pts[i - 1], pts[i], long, total]); total += long; }
+    const esp = 17 * S; let s = ((decalage % esp) + esp) % esp, n = 0;
+    while (s < total) {
+      for (const [a, b, long, debut] of segs) {
+        if (debut <= s && s <= debut + long) {
+          const u = long ? (s - debut) / long : 0;
+          let x = a[0] + (b[0] - a[0]) * u, y = a[1] + (b[1] - a[1]) * u;
+          const ang = Math.atan2(b[1] - a[1], b[0] - a[0]), cote = (n % 2 === 0 ? 4.5 : -4.5) * S;
+          x += -Math.sin(ang) * cote; y += Math.cos(ang) * cote;
+          const pp = [];
+          for (let k = 0; k < 10; k++) {
+            const th = 2 * Math.PI * k / 10, ex = 6.5 * S * Math.cos(th), ey = 3.8 * S * Math.sin(th);
+            pp.push(x + ex * Math.cos(ang) - ey * Math.sin(ang), y + ex * Math.sin(ang) + ey * Math.cos(ang));
+          }
+          poly(g, pp, { fill: "#eaffd0", outline: "#1c4d2a", width: 1 });
+          break;
+        }
+      }
+      s += esp; n++;
+    }
+  }
+  dessiner_fx(now) {
+    const g = this.gf, p = this.partie;
+    const pulse = (Math.sin(now * 5.5) + 1) / 2, occupe = this.verrou();
+    if (["gardiens", "pose", "deplacement"].includes(p.phase) && this.intro === null && !this.menu) {
+      const actuel = p.phase === "gardiens" ? p.attente_gardien : p.joueur;
+      const [bx, by] = this.origine_bloc(actuel), e3 = TALL ? 4 : ECART / 3;
+      rect(g, bx - e3, by + 0.016 * HB, bx + LB + e3, by + 0.964 * HB, { outline: COULEURS[actuel], width: (2 + 2 * pulse) * SP });
+    }
+    if (this.dernier !== null && this.dernier < p.poses.length && p.phase !== "fini" && !this.pieces_cachees().has(this.dernier)) {
+      poly(g, flat(SOMPX[p.poses[this.dernier].pl]), { outline: "#fff3b0", width: (2 + pulse) * S, dash: [6, 4] });
+    }
+    if (!occupe && p.phase === "gardiens" && !this.tour_ia()) {
+      for (const piece of p.poses) if (piece.couleur === p.attente_gardien) this.halo(g, flat(SOMPX[piece.pl]), CHOIX, pulse);
+    } else if (!occupe && p.phase === "deplacement" && !this.tour_ia()) {
+      const dest = p.destinations(p.joueur);
+      for (const i of dest) this.halo(g, flat(SOMPX[p.poses[i].pl]), CHOIX, pulse, i === this.cible);
+      const cur = p.gardien[p.joueur];                    // le gardien actuel : à toucher pour le laisser en place
+      if (cur >= 0) this.halo(g, flat(SOMPX[p.poses[cur].pl]), OR, pulse * 0.6, false);
+      if (dest.includes(this.cible)) {
+        const pts = p.chemin(p.joueur, this.cible).map(i => CENPX[p.poses[i].pl]);
+        this.pas(g, pts, now * 20 * S);
+        const [cx, cy] = pts[pts.length - 1], q = p.poses[this.cible];
+        this.dessiner_gardien(g, cx, cy, p.joueur, q.val, q.neutre);
+      }
+    }
+    if (!occupe && p.phase === "pose" && this.survol !== null) this.dessiner_fantome(now, pulse); else this.fantome = null;
+    for (const a of this.anims) {
+      if (a.genre === "pose") this.dessiner_pose(a, now);
+      else if (a.genre === "flip") this.dessiner_flip(a, now);
+      else if (a.genre === "pop") this.dessiner_pop(a, now);
+      else if (a.genre === "gardien") this.dessiner_token_gardien(a, now);
+    }
+    for (const a of this.anims) if (a.genre === "onde") this.dessiner_onde(a, now);
+    this.dessiner_tuile_survolee(now);
+    if (this.menu) this.dessiner_menu(now);
+    else if (this.intro !== null) this.dessiner_intro(now);
+    else if (p.phase === "fini" && !occupe) this.dessiner_fin(now);
+    else this.t_fin = null;
+  }
+  dessiner_fantome(now, pulse) {
+    const g = this.gf, p = this.partie, [couleur, val, flips] = this.apercu();
+    for (const i of flips) {
+      const piece = p.poses[i];
+      this.halo(g, flat(SOMPX[piece.pl]), SURLIGNAGE, pulse);
+      const [cx, cy] = CENPX[piece.pl];
+      texte(g, cx, cy + 15 * S, `→ ${piece.autre[1]}`, "#7a0038", 9, { halo: "#ffd6ea" });
+    }
+    let cible = SOMPX[this.survol], pts;
+    if (this.fantome === null) pts = cible;
+    else {
+      cible = sommets_alignes(this.fantome.pts, cible);
+      const dt = borne(now - this.fantome.t, 0, 0.1), alpha = 1 - Math.exp(-dt * 26);
+      pts = fondre(this.fantome.pts, cible, alpha);
+      if (Math.max(...[0, 1, 2, 3].map(i => dist(pts[i], cible[i]))) < 0.4) pts = cible;
+    }
+    this.fantome = { pts, t: now };
+    const ff = this.flip_fantome;
+    let uf = ff ? (now - ff.t0) / DUREE_FLIP : 1;
+    if (ff && uf >= 1) this.flip_fantome = null;
+    if (ff && uf < 1) {
+      uf = borne(uf);
+      const s = Math.sin(Math.PI * uf), kk = Math.abs(Math.cos(Math.PI * uf)), neuf = uf >= 0.5;
+      const sx = Math.max(0.04, kk) * (1 + 0.10 * s), sy = 1 + 0.10 * s, h = 14 * S * s;
+      const [om] = transformer(pts, Math.max(0.2, kk) * (1 + 0.25 * s), 1 + 0.25 * s, 3 * S, 4 * S);
+      poly(g, om, { fill: melange(OMBRE, 0.35 * s, FOND) });
+      const [pl2, [cx2, cy2]] = transformer(pts, sx, sy, 0, -h);
+      const etat = neuf ? [couleur, val] : [ff.avant[0], ff.avant[1]];
+      this.dessiner_losange(g, pl2, cx2, cy2, etat[0], etat[1], { contour: "#ffffff", largeur: 2 + pulse, dash: [5, 3], fantome: true, texte: kk > 0.3, pastille: neuf ? ff.avant[2] : p.cachee(this.sel, this.cote())[0] });
+      const w = borne((uf - 0.45) / 0.55);
+      for (let j = 0; j < 6 && w > 0; j++) {
+        const ang = j * Math.PI / 3 + 0.5, r = ease_out(w) * 34 * S, tl = 3.2 * S * (1 - w);
+        if (tl > 0.5) { const x = cx2 + r * Math.cos(ang), y = cy2 - h + r * Math.sin(ang); oval(g, x - tl, y - tl, x + tl, y + tl, { fill: melange("#fff3b0", w * 0.9, FOND) }); }
+      }
+      return;
+    }
+    const [pl, [cx, cy]] = transformer(pts);
+    this.dessiner_losange(g, pl, cx, cy, couleur, val, { contour: "#ffffff", largeur: 2 + pulse, dash: [5, 3], fantome: true, pastille: p.cachee(this.sel, this.cote())[0] });
+  }
+  dessiner_pose(a, now) {
+    const g = this.gf, p = this.partie;
+    let u = (now - a.t0) / a.dur;
+    if (u < 0) return;
+    u = borne(u);
+    const piece = p.poses[a.piece], c0 = a.contact, final = [piece.couleur, piece.val];
+    let forme, etat, h, sx, sy;
+    if (a.vol) {
+      const m = ease_in_out(borne(u / c0));
+      forme = fondre(a.depart, a.cible, m);
+      h = 48 * S * Math.sin(Math.PI * m);
+      sx = sy = 1 + 0.14 * Math.sin(Math.PI * m);
+      const depart = a.etat_depart || final;
+      etat = m >= 0.5 ? final : depart;
+      if (depart[0] !== final[0] || depart[1] !== final[1]) sx *= Math.max(0.06, Math.abs(Math.cos(Math.PI * m)));
+    } else {
+      forme = a.cible; etat = final;
+      if (u < 0.14) { const e = ease_out(u / 0.14); h = 26 * S * e; sx = 1 + 0.14 * e; }
+      else if (u < c0) { const f = ease_in((u - 0.14) / (c0 - 0.14)); h = 26 * S * (1 - f); sx = 1 + 0.14 * (1 - f); }
+      else { const s = (u - c0) / (1 - c0); h = 6 * S * Math.sin(Math.PI * s) * (1 - s); sx = 1; }
+      sy = sx;
+    }
+    if (u >= c0) { const s = (u - c0) / (1 - c0), ec = 0.10 * Math.sin(Math.PI * s) * (1 - s); sx *= 1 + ec; sy *= 1 - ec; }
+    const spread = 1 + h / (120 * S);
+    const [om] = transformer(forme, spread, spread, 3 * S, 4 * S);
+    poly(g, om, { fill: melange(OMBRE, borne(h / (60 * S)) * 0.6, FOND) });
+    const [pl, [cx, cy]] = transformer(forme, sx, sy, 0, -h);
+    const same = etat[0] === final[0] && etat[1] === final[1];
+    this.dessiner_losange(g, pl, cx, cy, etat[0], etat[1], { pastille: same ? piece.autre[0] : piece.couleur });
+  }
+  dessiner_flip(a, now) {
+    const g = this.gf, p = this.partie, piece = p.poses[a.piece], pts = SOMPX[piece.pl], avant = a.avant;
+    let u = (now - a.t0) / a.dur;
+    if (u <= 0) {
+      const [pl, [cx, cy]] = transformer(pts);
+      poly(g, pl.map((c, k) => c + (k % 2 === 0 ? 3 * S : 4 * S)), { fill: OMBRE });
+      this.dessiner_losange(g, pl, cx, cy, avant[0], avant[1], { neutre: avant[2], pastille: piece.couleur });
+      return;
+    }
+    u = borne(u);
+    const s = Math.sin(Math.PI * u), k = Math.abs(Math.cos(Math.PI * u)), neuf = u >= 0.5;
+    const etat = neuf ? [piece.couleur, piece.val] : [avant[0], avant[1]];
+    const neutre = neuf ? piece.neutre : avant[2];
+    const sx = Math.max(0.04, k) * (1 + 0.10 * s), sy = 1 + 0.10 * s, h = 14 * S * s;
+    const [om] = transformer(pts, Math.max(0.2, k) * (1 + 0.25 * s), 1 + 0.25 * s, 3 * S, 4 * S);
+    poly(g, om, { fill: melange(OMBRE, 0.35 * s, FOND) });
+    const [pl, [cx, cy]] = transformer(pts, sx, sy, 0, -h);
+    poly(g, pl, { outline: melange(SURLIGNAGE, 1 - s, FOND), width: (2 + 9 * s) * S });
+    this.dessiner_losange(g, pl, cx, cy, etat[0], etat[1], { neutre, texte: k > 0.3, pastille: neuf ? avant[0] : piece.couleur });
+    const w = borne((u - 0.45) / 0.55);
+    for (let j = 0; j < 6 && w > 0; j++) {
+      const ang = j * Math.PI / 3 + 0.5, r = ease_out(w) * 34 * S, taille = 3.2 * S * (1 - w);
+      if (taille > 0.5) { const x = cx + r * Math.cos(ang), y = cy - h + r * Math.sin(ang); oval(g, x - taille, y - taille, x + taille, y + taille, { fill: melange("#fff3b0", w * 0.9, FOND) }); }
+    }
+  }
+  dessiner_pop(a, now) {
+    const g = this.gf, p = this.partie, u = (now - a.t0) / a.dur;
+    if (u < 0) return;
+    const k = Math.max(0.001, ease_out_back(borne(u))), piece = p.poses[a.piece], pts = SOMPX[piece.pl];
+    const [om] = transformer(pts, k, k, 3 * S, 4 * S);
+    poly(g, om, { fill: OMBRE });
+    const [pl, [cx, cy]] = transformer(pts, k, k), i = a.piece;
+    this.dessiner_losange(g, pl, cx, cy, piece.couleur, piece.val, { neutre: piece.neutre, gardien: p.gardien.includes(i) ? p.gardien.indexOf(i) : null, ech: k, texte: k > 0.5, pastille: piece.autre[0] });
+  }
+  dessiner_onde(a, now) {
+    if (now < a.t0) return;
+    const u = borne((now - a.t0) / a.dur), k = 1 + 0.55 * ease_out(u);
+    const [pl] = transformer(a.poly, k, k);
+    poly(this.gf, pl, { outline: melange(a.couleur, u, FOND), width: Math.max(1, (4 - 3 * u) * S) });
+  }
+  dessiner_token_gardien(a, now) {
+    const g = this.gf, p = this.partie, u = borne((now - a.t0) / a.dur);
+    const [x, y] = position_chemin(a.pts, ease_in_out(u)), h = 14 * S * Math.sin(Math.PI * u), r = 15 * S;
+    oval(g, x - r, y + 6 * S - r * 0.35, x + r, y + 6 * S + r * 0.35, { fill: melange(OMBRE, 0.3, FOND) });
+    const piece = p.poses[a.dest];
+    this.dessiner_gardien(g, x, y - h, a.j, piece.val, piece.neutre, 1 + 0.12 * Math.sin(Math.PI * u));
+  }
+  // -- tirage au sort
+  dessiner_roue(cx, cy, R, rot) {
+    const g = this.gf;
+    oval(g, cx - R - 7 * S, cy - R - 7 * S + 5 * S, cx + R + 7 * S, cy + R + 7 * S + 5 * S, { fill: OMBRE });
+    oval(g, cx - R - 7 * S, cy - R - 7 * S, cx + R + 7 * S, cy + R + 7 * S, { fill: "#b8923a", outline: "#7d5f1c", width: 2 * S });
+    const np = this.partie.np, w = 360 / np;
+    for (let k = 0; k < np; k++) {
+      const a0 = k * w + rot, pts = [cx, cy];
+      for (let m = 0; m <= 18; m++) { const a = (a0 + w * m / 18) * Math.PI / 180; pts.push(cx + R * Math.cos(a), cy + R * Math.sin(a)); }
+      poly(g, pts, { fill: COULEURS[k], outline: CONTOURS[k], width: 2 * S });
+      const am = (a0 + w / 2) * Math.PI / 180;
+      texte(g, cx + 0.62 * R * Math.cos(am), cy + 0.62 * R * Math.sin(am), NOMS[k], "#2b1d08", 11, { halo: null, ss: SU });
+    }
+    oval(g, cx - 0.16 * R, cy - 0.16 * R, cx + 0.16 * R, cy + 0.16 * R, { fill: "#b8923a", outline: "#7d5f1c", width: 2 * S });
+    poly(g, [cx - 9 * S, cy - R - 16 * S, cx + 9 * S, cy - R - 16 * S, cx, cy - R + 8 * S], { fill: "#fff3b0", outline: "#7d5f1c", width: 2 * S });
+  }
+  dessiner_intro(now) {
+    const g = this.gf, t = now - this.intro.t0, gg = this.intro.gagnant;
+    rect(g, 0, 0, LARGEUR, HAUTEUR, { fill: "rgba(1,2,10,0.80)" });
+    const cx = LARGEUR / 2, cy = HAUTEUR / 2, R = Math.min(4.2 * D, LARGEUR * 0.3);
+    const u = borne(t / DUREE_PILE), wd = 360 / this.partie.np, total = 360 * 4 + ((((-90 - wd / 2 - wd * gg) % 360) + 360) % 360);
+    this.dessiner_roue(cx, cy, R, total * ease_out(u));
+    if (t < DUREE_PILE) { ecrire(g, cx, cy + R + 50 * SU, "Tirage au sort : qui commence ?", "#8e98bf", police(11, false, SU)); return; }
+    const w = t - DUREE_PILE, e = ease_out(borne(w / 0.7)), r = R * (1.1 + 0.5 * e);
+    oval(g, cx - r, cy - r, cx + r, cy + r, { outline: melange(COULEURS[gg], e, FOND), width: Math.max(1, (5 - 4 * e) * S) });
+    const taille = 26 * ease_out_back(borne(w / 0.4));
+    if (taille > 4) texte(g, cx, cy - R - 40 * SU, this.texte_premier(gg), COULEURS[gg], taille, { halo: null, ss: SU });
+  }
+  dessiner_tuile_survolee(now) {
+    const r = this.survol_reserve;
+    if (r === null || this.partie.stock[r[0]][r[1]] <= (r[2] || 0)) return;
+    const g = this.gf, [j, s, ex] = r, [cx, cy] = this.positions_reserve(j, s, ex || 0);
+    let [couleur, val, pastille] = this.face_reserve(j, s);
+    const theta = (now - this.t_survol_reserve) * 2 * Math.PI / 1.6, c = Math.cos(theta), k = Math.max(0.05, Math.abs(c));
+    if (c < 0) [couleur, val, pastille] = [pastille, this.partie.total - val, couleur];
+    const f = 1.10 + 0.04 * Math.sin(theta);
+    poly(g, [cx - PW * 1.17, cy, cx, cy - PH * 1.17, cx + PW * 1.17, cy, cx, cy + PH * 1.17], { fill: "#0a0e24" });
+    const pl = [cx - PW * f * k, cy, cx, cy - PH * f, cx + PW * f * k, cy, cx, cy + PH * f];
+    poly(g, pl.map((x, i) => x + (i % 2 === 0 ? 3 * SP : 4 * SP)), { fill: OMBRE });
+    this.dessiner_losange(g, pl, cx, cy, couleur, val, { pastille: k > 0.5 ? pastille : null, largeur: 3, contour: "#ffffff", echtxt: 0.9, texte: k > 0.35, ss: SP });
+  }
+  // -- menu de choix du mode
+  cartes_menu() {
+    const x0 = 0.06 * LARGEUR, x1 = 0.94 * LARGEUR, h = 0.22 * HAUTEUR, ec = 0.02 * HAUTEUR;
+    return [0, 1, 2].map(k => [x0, 0.19 * HAUTEUR + k * (h + ec), x1, 0.19 * HAUTEUR + k * (h + ec) + h]);
+  }
+  rects_cfg(k) {                 // boutons − et + (joueurs, total des faces) en bas de la carte k ; s'adaptent à la largeur
+    const [x0, , x1, y1] = this.cartes_menu()[k], h = 30, y = y1 - 6 - h;
+    const w = Math.max(24, Math.min(34, (x1 - x0 - 28 - 152) / 4)), ga = x0 + 14, jm = ga + 48, gb = jm + 2 * w + 26 + 16, fm = gb + 36;
+    return { jm: [jm, y, jm + w, y + h], jv: jm + w + 13, jp: [jm + w + 26, y, jm + 2 * w + 26, y + h],
+             fm: [fm, y, fm + w, y + h], fv: fm + w + 13, fp: [fm + w + 26, y, fm + 2 * w + 26, y + h], yc: y + h / 2, ga, gb };
+  }
+  rect_eq(k) {                   // pastille « équipes » (titre de la carte, tout à droite)
+    const [, y0, x1, y1] = this.cartes_menu()[k], yc = y0 + 0.17 * (y1 - y0), w = 70, h = 24;
+    return [x1 - 10 - w, yc - h / 2, x1 - 10, yc + h / 2];
+  }
+  rect_dep(k) {                  // pastille « schéma de départ » (à gauche de la précédente)
+    const E = this.rect_eq(k); return [E[0] - 6 - 70, E[1], E[0] - 6, E[3]];
+  }
+  changer_depart(k) {
+    const c = this.cfg[k]; c.depart = (c.depart + 1) % 3;
+    try { localStorage.setItem("losanges_cfg", JSON.stringify(this.cfg)); } catch (e) {}
+    this.objectif = k; this.partie = this.creer_partie(0, k);
+    this.maj_boutons(); this.mettre_a_jour();
+  }
+  changer_eq(k) {
+    const c = this.cfg[k]; if (c.np !== 4) return;
+    c.eq = (c.eq + 1) % 7;
+    try { localStorage.setItem("losanges_cfg", JSON.stringify(this.cfg)); } catch (e) {}
+    this.objectif = k; this.partie = this.creer_partie(0, k);
+    if (this.humain >= this.nb_col(k)) this.humain = 0;
+    this.maj_boutons(); this.mettre_a_jour();
+  }
+  carte_sous_curseur(x, y) {
+    const c = this.cartes_menu();
+    for (let k = 0; k < 3; k++) if (x >= c[k][0] && x <= c[k][2] && y >= c[k][1] && y <= c[k][3]) return k;
+    return null;
+  }
+  dessiner_menu(now) {
+    const g = this.gf, pulse = (Math.sin(now * 4) + 1) / 2, teintes = ["#f5a142", "#5fc46a", "#ff5c8a"];
+    rect(g, 0, 0, LARGEUR, HAUTEUR, { fill: "rgba(1,2,10,0.80)" });
+    ecrire(g, LARGEUR / 2, 0.06 * HAUTEUR, "Losanges", "#ffffff", police(30, true, SU));
+    ecrire(g, LARGEUR / 2, 0.115 * HAUTEUR, "Choisissez le mode de jeu", "#c9d1f2", police(13, false, SU));
+    this.cartes_menu().forEach(([x0, y0, x1, y1], k) => {
+      const surv = this.survol_menu === k;
+      rect(g, x0 + 4 * SU, y0 + 5 * SU, x1 + 4 * SU, y1 + 5 * SU, { fill: OMBRE });
+      rect(g, x0, y0, x1, y1, { fill: surv ? "#222843" : FOND_PANNEAU, outline: surv ? teintes[k] : "#3a4363", width: surv ? (2 + 2 * pulse) * SU : 2 * SU });
+      rect(g, x0, y0, x0 + 10 * SU, y1, { fill: teintes[k] });
+      ecrire(g, x0 + 32 * SU, y0 + 0.30 * (y1 - y0), String(k + 1), teintes[k], police(26, true, SU));
+      ecrire(g, x0 + 62 * SU, y0 + 0.17 * (y1 - y0), MODES[k], "#ffffff", police(18, true, SU), "w");
+      const f = police(10, false, SU); g.font = f;
+      const lignes = lignes_enroulees(g, DESCRIPTIONS[k], x1 - x0 - 72 * SU);
+      lignes.forEach((l, i) => ecrire(g, x0 + 62 * SU, y0 + 0.36 * (y1 - y0) + i * 14 * SU, l, "#c9d1f2", f, "w"));
+      const c = this.cfg[k], R = this.rects_cfg(k), yc = R.yc;
+      {
+        const E = this.rect_eq(k), actif = c.np === 4, ey = (E[1] + E[3]) / 2, ex = (E[0] + E[2]) / 2;
+        rect(g, E[0], E[1], E[2], E[3], { fill: actif ? (c.eq ? "#2c3a66" : "#2b3354") : "#1b2036", outline: actif ? (c.eq ? "#e6ff4d" : "#3d4875") : "#2a3150", width: 1.5 });
+        if (!actif) ecrire(g, ex, ey, "Éq. 4 j.", "#5c6590", police(8.5, false, SU));
+        else if (!c.eq) ecrire(g, ex, ey, "Éq. : non", "#c9d1f2", police(9.5, true, SU));
+        else {
+          ecrire(g, E[0] + 16, ey, "Éq.", "#e6ff4d", police(9.5, true, SU));
+          const dx = E[0] + 30;
+          oval(g, dx, ey - 5, dx + 10, ey + 5, { fill: ORIG.coul[PAIRES[c.eq][0]], outline: "#ffffff", width: 1 });
+          ecrire(g, dx + 17, ey, "vs", "#8e98bf", police(8, false, SU));
+          oval(g, dx + 24, ey - 5, dx + 34, ey + 5, { fill: ORIG.coul[PAIRES[c.eq][1]], outline: "#ffffff", width: 1 });
+        }
+        const D = this.rect_dep(k);
+        rect(g, D[0], D[1], D[2], D[3], { fill: c.depart ? "#2c3a66" : "#2b3354", outline: c.depart ? "#e6ff4d" : "#3d4875", width: 1.5 });
+        ecrire(g, (D[0] + D[2]) / 2, ey, "Départ " + (c.depart + 1), c.depart ? "#e6ff4d" : "#c9d1f2", police(9.5, true, SU));
+      }
+      ecrire(g, R.ga, yc, "Joueurs", "#ffffff", police(10.5, true, SU), "w");
+      ecrire(g, R.gb, yc, "Faces", "#ffffff", police(10.5, true, SU), "w");
+      for (const [rc, sg] of [[R.jm, "−"], [R.jp, "+"], [R.fm, "−"], [R.fp, "+"]]) {
+        rect(g, rc[0], rc[1], rc[2], rc[3], { fill: "#2b3354", outline: "#3d4875", width: 1.5 });
+        ecrire(g, (rc[0] + rc[2]) / 2, yc, sg, "#ffffff", "bold 20px " + FONTE);
+      }
+      ecrire(g, R.jv, yc, String(c.np), teintes[k], "bold 18px " + FONTE);
+      ecrire(g, R.fv, yc, String(c.total), teintes[k], "bold 18px " + FONTE);
+    });
+    ecrire(g, LARGEUR / 2, 0.955 * HAUTEUR, "Touchez un mode · Éq. = équipes · Départ = schéma de départ", "#8e98bf", police(10, false, SU));
+    ecrire(g, LARGEUR / 2, 0.985 * HAUTEUR, "© 2026 Yohann Lecarpentier", "#6f7899", police(9, false, SU));
+  }
+  dessiner_fin(now) {
+    const g = this.gf, p = this.partie;
+    if (this.t_fin === null) this.t_fin = now;
+    const k = ease_out_back(borne((now - this.t_fin) / 0.55)), v = p.vainqueur(), sc = p.scores();
+    const cx = LARGEUR / 2, cy = HAUTEUR / 2, w = 160 * SU * k, h = 92 * SU * k;
+    rect(g, cx - w, cy - h, cx + w, cy + h, { fill: FOND_PANNEAU, outline: v === null ? OR : COULEURS[v], width: 3 * SU });
+    if (k > 0.6) {
+      ecrire(g, cx, cy - 48 * SU, MODES[p.mode], "#8e98bf", police(9, false, SU));
+      texte(g, cx, cy - 66 * SU, v === null ? "Égalité en tête !" : `${NOMS[v]} gagne !`, v === null ? "#ffffff" : COULEURS[v], 20, { halo: null, ss: SU });
+      p.classement().forEach((c, rang) => {
+        ecrire(g, cx, cy - 30 * SU + rang * 22 * SU,
+          p.mode === MODE_TILE ? `${rang + 1}. ${NOMS[c]}  ${sc[c][0]} losanges (somme ${sc[c][1]})` : `${rang + 1}. ${NOMS[c]}  score ${sc[c][1]} (${sc[c][0]} losanges)`,
+          COULEURS[c], police(11, rang === 0, SU));
+      });
+      ecrire(g, cx, cy + 76 * SU, "« Objectif » pour rejouer", "#8e98bf", police(9, false, SU));
+    }
+  }
+  sauter_intro() {
+    if (this.intro === null) return;
+    if (maintenant() - this.intro.t0 < DUREE_PILE) this.intro.t0 = maintenant() - DUREE_PILE;
+    else this.intro.t0 = maintenant() - (DUREE_PILE + DUREE_RESULTAT);
+  }
+  avancer_intro(now) {
+    if (now - this.intro.t0 < DUREE_PILE + DUREE_RESULTAT) return;
+    this.intro = null;
+    for (let rang = 0; rang < this.partie.poses.length; rang++) this.ajouter_anim("pop", 0.55, 0.09 * rang, { piece: rang });
+    this.mettre_a_jour();
+  }
+  tick() {
+    const now = maintenant();
+    if (this.intro !== null) this.avancer_intro(now);
+    if (this.t_survol_fin !== null && now > this.t_survol_fin) { this.t_survol_fin = null; this.survol_reserve = null; this.barre_etat(); }
+    const finies = this.anims.filter(a => now >= a.t0 + a.dur);
+    if (finies.length) {
+      this.anims = this.anims.filter(a => now < a.t0 + a.dur);
+      if (finies.some(a => GENRES_PIECE.includes(a.genre))) { this.survol = this.trouver_position(...this.souris); this.mettre_a_jour(); }
+    }
+    const g = this.gf;
+    g.setTransform(1, 0, 0, 1, 0, 0);
+    g.clearRect(0, 0, this.cvEl.width, this.cvEl.height);
+    g.drawImage(this.off, 0, 0);
+    g.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
+    this.dessiner_fx(now);
+    requestAnimationFrame(() => this.tick());
+  }
+
+  // -- placement avec aimantation
+  dans_plateau(x, y) { return x >= 0 && x <= LARGEUR && y >= 0 && y <= HAUTEUR; }
+  trouver_position(x, y) {
+    const p = this.partie;
+    if (p.phase !== "pose" || !this.dans_plateau(x, y) || this.tour_ia() || this.verrou()) return null;
+    const o = this.orient();
+    let best = null, bd = Infinity;
+    for (const q of p.emplacements_legaux()) {
+      if (PL[q].o !== o) continue;
+      const d = Math.hypot(CENPX[q][0] - x, CENPX[q][1] - y);
+      if (d < bd) { bd = d; best = q; }
+    }
+    return best;
+  }
+  piece_sous_curseur(x, y) {
+    const p = this.partie;
+    for (let i = 0; i < p.poses.length; i++) if (dans_polygone(x, y, SOMPX[p.poses[i].pl])) return i;
+    return null;
+  }
+
+  // -- événements
+  xy(e) { const r = this.cvEl.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; }
+  branchements() {
+    const cv = document.getElementById("wrap");
+    cv.addEventListener("pointerleave", e => { if (e.pointerType === "mouse") { this.survol_reserve = null; } });
+    cv.addEventListener("pointerdown", e => {
+      const [x, y] = this.xy(e);
+      if (e.pointerType === "mouse") {
+        if (e.button === 0) this.sur_clic_gauche(x, y); else this.tourner(1);
+      } else {
+        const tp = { id: e.pointerId, x, y, t: performance.now(), long: false, timer: null, moved: false, agi: false,
+                     board: false, lx: x, ly: y, vx: 0, vy: 0, path: 0, acc: 0 };
+        this._tp = tp;
+        if (this.rotation_possible() && this.dans_plateau(x, y)) {
+          tp.board = true;                                        // plateau : appui long = retourner la tuile (autre face) ; cercle du doigt = rotation continue
+          tp.timer = setTimeout(() => {
+            if (this._tp !== tp || tp.moved) return;
+            tp.agi = true; this.souris = [tp.x, tp.y]; this.retourner_apercu(); this.apercu_tactile = true; this.barre_etat();
+          }, LONG_MS);
+        }
+        const r = !this.menu && !this.dans_plateau(x, y) ? this.reserve_sous_curseur(x, y, 1.15) : null;
+        if (r) tp.timer = setTimeout(() => {                    // toucher long : la tuile tourne tant qu'on appuie
+          if (this._tp !== tp) return;
+          tp.long = true; this.survol_reserve = r; this.t_survol_reserve = maintenant(); this.t_survol_fin = null; this.barre_etat();
+        }, 380);
+      }
+    });
+    cv.addEventListener("pointermove", e => {
+      if (e.pointerType === "mouse") { this.sur_deplacement(...this.xy(e)); return; }
+      const tp = this._tp;
+      if (!tp || tp.id !== e.pointerId || tp.long) return;
+      const [x, y] = this.xy(e), dx = x - tp.lx, dy = y - tp.ly, l = Math.hypot(dx, dy);
+      if (l < 6) return;                                          // échantillonnage tous les 6 px
+      tp.path += l;
+      if (tp.path > 14 && !tp.moved) { tp.moved = true; clearTimeout(tp.timer); tp.timer = null; }
+      if (tp.board && tp.moved && this.rotation_possible()) {
+        if (tp.vx || tp.vy) tp.acc += Math.atan2(tp.vx * dy - tp.vy * dx, tp.vx * dx + tp.vy * dy);   // angle de virage cumulé
+        const tour = 2 * Math.PI * (BALAYAGE / 360) * 0.92;      // petite tolérance : un cercle à main levée est rarement parfait
+        while (Math.abs(tp.acc) >= tour) {
+          const sens = tp.acc > 0 ? 1 : -1;                       // sens horaire = cran suivant
+          tp.acc -= sens * tour; tp.agi = true;
+          this.souris = [tp.x, tp.y]; this.tourner(sens); this.apercu_tactile = true;
+        }
+      }
+      tp.vx = dx; tp.vy = dy; tp.lx = x; tp.ly = y;
+    });
+    cv.addEventListener("pointerup", e => {
+      const tp = this._tp; this._tp = null;
+      if (e.pointerType === "mouse" || !tp || tp.id !== e.pointerId) return;
+      clearTimeout(tp.timer);
+      if (tp.long) { this.t_survol_fin = maintenant() + 0.8; return; }       // relâché : la tuile finit son demi-tour
+      if (tp.moved || tp.agi) return;                                        // geste de rotation : pas un appui
+      const [x, y] = this.xy(e);
+      if (Math.hypot(x - tp.x, y - tp.y) < 12 && performance.now() - tp.t < 700) this.sur_tap(x, y);
+    });
+    cv.addEventListener("pointercancel", () => {
+      const tp = this._tp; this._tp = null;
+      if (tp) { clearTimeout(tp.timer); if (tp.long) this.t_survol_fin = maintenant() + 0.8; }
+    });
+    cv.addEventListener("contextmenu", e => e.preventDefault());
+    cv.addEventListener("wheel", e => { e.preventDefault(); this.tourner(e.deltaY < 0 ? 1 : -1); }, { passive: false });
+    const B = this.b;
+    B.obj.onclick = () => this.nouvelle_partie(); B.mode.onclick = () => this.changer_mode();
+    B.niveau.onclick = () => this.changer_niveau(); B.camp.onclick = () => this.changer_camp();
+    B.vue.onclick = () => this.changer_vue();
+    const opt = document.getElementById("opt");
+    document.getElementById("b-options").onclick = () => { document.body.classList.remove("menuouvert"); opt.classList.add("on"); };
+    document.getElementById("opt-fermer").onclick = () => opt.classList.remove("on");
+    opt.addEventListener("pointerdown", e => { if (e.target === opt) opt.classList.remove("on"); });
+    for (const id of ["b-regles", "b-editeur", "b-camp"]) document.getElementById(id).addEventListener("click", () => opt.classList.remove("on"));
+    B.popup.onclick = () => { this.popup = !this.popup; try { localStorage.setItem("losanges_popup", this.popup ? "1" : "0"); } catch (e) {} this.pop_cle = ""; this.pop_ouvert = this.popup; this.maj_boutons(); this.maj_popup(true); };
+    document.getElementById("pop-x").onclick = () => { this.pop_ouvert = false; this.maj_popup(true); };
+    document.getElementById("pop-tab").onclick = () => { this.pop_ouvert = true; this.maj_popup(true); };
+    document.getElementById("pop-cv").addEventListener("pointerup", e => this.clic_popup(e));
+    setInterval(() => this.maj_popup(), 150);
+    B.menu.onclick = () => document.body.classList.toggle("menuouvert");
+    for (const k of ["obj", "mode", "camp", "vue"]) B[k].addEventListener("click", () => document.body.classList.remove("menuouvert"));
+    B.tourner.onclick = () => this.tourner(1); B.annuler.onclick = () => this.annuler();
+    B.passer.onclick = () => this.passer();
+    B.poser.onclick = () => { if (this.survol !== null && this.partie.phase === "pose" && !this.verrou() && !this.tour_ia()) this.poser_a(this.survol); };
+    window.addEventListener("keydown", e => {
+      if (e.metaKey || e.ctrlKey) return;
+      const k = e.key.toLowerCase();
+      if (k === "u") this.annuler(); else if (k === "c" || k === "o") this.nouvelle_partie();
+      else if (k === " ") { e.preventDefault(); this.passer(); } else if (k === "m") this.changer_mode();
+      else if (k === "n") this.changer_niveau(); else if (k === "s") this.changer_camp();
+      else if (k === "r") this.tourner(1);
+      else if (k === "f") this.retourner_apercu();
+      else if (k === "enter") { if (this.survol !== null && this.partie.phase === "pose" && !this.verrou() && !this.tour_ia()) this.poser_a(this.survol); }
+      else if (/^[0-7]$/.test(k)) this.choisir_valeur(parseInt(k));
+    });
+    let rt = null;
+    const re = () => { clearTimeout(rt); rt = setTimeout(() => this.relayout(), 150); };
+    window.addEventListener("resize", re); window.addEventListener("orientationchange", re);
+  }
+  rotation_possible() {
+    return this.partie.phase === "pose" && !this.menu && this.intro === null && !this.verrou() && !this.tour_ia();
+  }
+  sur_deplacement(x, y) {
+    this.souris = [x, y];
+    const p = this.partie;
+    const r = this.reserve_sous_curseur(x, y);
+    if (!(r === this.survol_reserve || (r && this.survol_reserve && r[0] === this.survol_reserve[0] && r[1] === this.survol_reserve[1] && r[2] === this.survol_reserve[2]))) {
+      this.survol_reserve = r; this.t_survol_reserve = maintenant(); this.t_survol_fin = null;
+    }
+    this.apercu_tactile = false;
+    if (this.menu) { this.survol_menu = this.carte_sous_curseur(x, y); this.barre_etat(); return; }
+    if (this.verrou() || this.tour_ia()) { this.survol = null; this.cible = null; }
+    else if (p.phase === "deplacement") { const i = this.piece_sous_curseur(x, y); this.cible = (i !== null && p.destinations(p.joueur).includes(i)) ? i : null; }
+    else this.survol = this.trouver_position(x, y);
+    this.barre_etat();
+  }
+  clic_reserve(x, y) {
+    const p = this.partie, r = this.reserve_sous_curseur(x, y);
+    if (r && r[0] === p.joueur && p.peut_jouer(r[1])) this.choisir(r[1]);
+  }
+  poser_a(pl) {
+    const p = this.partie;
+    if (!p.peut_jouer(this.sel)) return;
+    this.historique.push(p.etat());
+    const anciens = this.etats();
+    const depart = this.fantome ? this.fantome.pts : SOMPX[pl];
+    const flips = p.poser(pl, this.sel, this.cote());
+    this.dernier = p.poses.length - 1; this.dernier_flips = flips.length;
+    this.animer_pose(this.dernier, flips, anciens, depart);
+    this.fantome = null; this.apercu_tactile = false;
+    this.survol = this.trouver_position(...this.souris); this.mettre_a_jour();
+  }
+  sur_clic_gauche(x, y) {
+    const p = this.partie;
+    this.souris = [x, y];
+    if (this.menu) { this.clic_menu(x, y); return; }
+    if (this.intro !== null) { this.sauter_intro(); return; }
+    if (p.phase === "fini" || this.tour_ia() || this.anim_en_cours()) return;
+    if (!this.dans_plateau(x, y)) { if (p.phase === "pose") this.clic_reserve(x, y); return; }
+    if (p.phase === "gardiens") {
+      const i = this.piece_sous_curseur(x, y);
+      if (i !== null && p.poses[i].couleur === p.attente_gardien) { p.choisir_gardien(i); this.onde_piece(i, CHOIX); }
+    } else if (p.phase === "deplacement") {
+      const i = this.piece_sous_curseur(x, y);
+      if (i !== null && p.destinations(p.joueur).includes(i)) this.deplacer_gardien_anime(i);
+      else if (i !== null && i === p.gardien[p.joueur]) { this.passer(); return; }      // cliquer le gardien lui-même : le laisser
+    } else {
+      const pos = this.trouver_position(x, y);
+      if (pos === null) return;
+      this.poser_a(pos); return;
+    }
+    this.survol = this.trouver_position(x, y); this.mettre_a_jour();
+  }
+  // toucher : un premier appui prévisualise, un second (au même endroit) ou « Poser » valide
+  sur_tap(x, y) {
+    const p = this.partie;
+    this.souris = [x, y];
+    if (this.menu) { this.clic_menu(x, y); return; }
+    if (this.intro !== null) { this.sauter_intro(); return; }
+    const r = this.reserve_sous_curseur(x, y, 1.15);
+    if (r && !this.dans_plateau(x, y)) {                      // tuile de réserve : un appui la choisit (le toucher long la fait tourner)
+      if (p.phase === "pose" && r[0] === p.joueur && !this.tour_ia() && !this.anim_en_cours() && p.peut_jouer(r[1])) this.choisir(r[1]);
+      return;
+    }
+    if (p.phase === "fini" || this.tour_ia() || this.anim_en_cours() || !this.dans_plateau(x, y)) return;
+    if (p.phase === "gardiens") return this.sur_clic_gauche(x, y);
+    if (p.phase === "deplacement") {
+      const i = this.piece_sous_curseur(x, y);
+      if (i !== null && p.destinations(p.joueur).includes(i)) {
+        if (this.cible === i) this.deplacer_gardien_anime(i); else this.cible = i;
+        this.mettre_a_jour();
+      } else if (i !== null && i === p.gardien[p.joueur]) this.passer();             // toucher le gardien lui-même : le laisser
+      return;
+    }
+    const pos = this.trouver_position(x, y);
+    if (pos === null) return;
+    if (pos === this.survol && this.apercu_tactile) { this.poser_a(pos); return; }
+    this.survol = pos; this.apercu_tactile = true; this.barre_etat();
+  }
+  passer() {
+    if (this.intro !== null) { this.sauter_intro(); return; }
+    if (this.partie.phase === "deplacement" && !this.tour_ia() && !this.anim_en_cours()) {
+      this.partie.passer(); this.survol = this.trouver_position(...this.souris); this.mettre_a_jour();
+    }
+  }
+  annuler() {
+    if (!this.historique.length || this.tour_ia() || this.verrou()) return;
+    this.partie.restaurer(this.historique.pop());
+    this.dernier_flips = 0; this.dernier = null; this.ia_dest = null; this.anims = []; this.fantome = null; this.t_fin = null;
+    this.survol = this.trouver_position(...this.souris); this.mettre_a_jour();
+  }
+}
+/* démarrage : voir script final */
+</script>
+<script>
+"use strict";
+// Losanges — © 2026 Yohann Lecarpentier. Jeu de plateau original créé par Yohann Lecarpentier.
+// ===================== TUTORIEL (premier lancement, rouvrable via « ? Règles ») =====================
+// POUR ÉDITER : modifiez le tableau TUTO ci-dessous (titre, texte, demo). Chaque « demo » est une fonction de DEMOS
+// (g = contexte canvas 320×180, t = temps en secondes, la scène boucle). Ajoutez une diapo = ajoutez un objet à TUTO.
+const TUTO = [
+  { titre: "Bienvenue !", demo: "rosace",
+    texte: "Des losanges de 4 couleurs se posent sur un plateau en réseau. Chaque losange a une couleur et une valeur de 0 à 5. Posez, retournez, protégez… et remportez la partie !\n\nUn jeu créé par Yohann Lecarpentier — © 2026." },
+  { titre: "Une pièce, deux faces", demo: "faces",
+    texte: "Chaque losange a deux faces : la vôtre (couleur du joueur + valeur) et un dos (autre couleur, autre valeur). La pastille sur la pièce indique la couleur de son dos. Total des deux faces : 5 par défaut (réglable)." },
+  { titre: "6 positions de pose", demo: "positions",
+    texte: "Un losange se pose dans 3 orientations (0°, 60°, 120°) et sur 2 faces : cela fait 6 positions. Tournez la pièce, ou retournez-la sur son dos, avant de la poser." },
+  { titre: "Poser une pièce", demo: "poser",
+    texte: "Une nouvelle pièce doit toucher une pièce déjà posée par au moins un CÔTÉ. Sur téléphone : touchez le plateau pour voir l'aperçu, puis touchez-le encore (ou « ✓ Poser ») pour valider." },
+  { titre: "Retourner les voisines", demo: "retourner",
+    texte: "Votre pièce retourne toutes les pièces qu'elle touche par un côté dont la valeur visible est STRICTEMENT plus faible que la sienne (même les vôtres). Elles montrent alors leur dos : couleur et valeur changent !" },
+  { titre: "Le gardien", demo: "gardien",
+    texte: "Chaque joueur a un gardien posé sur l'une de ses pièces : elle ne peut plus être retournée. Après avoir posé, vous pouvez le déplacer vers une autre pièce de votre couleur reliée par un chemin de pièces de votre couleur (touchez-la), ou le laisser en place (touchez-le ou « Passer »). Pas de gardien en mode Chaos." },
+  { titre: "Trois façons de gagner", demo: "modes",
+    texte: "Classic-Tile : le plus de losanges de sa couleur. Classic-Total : la plus grande somme de valeurs visibles. Chaos : la plus PETITE somme — attention, poser sur un dos peut offrir des points aux autres !" },
+  { titre: "Jouer en équipes", demo: "equipes",
+    texte: "À 4 joueurs, option « Équipes » sur la carte de chaque mode (touchez la pastille pour choisir les 2 couleurs). Il n'y a alors que 2 couleurs, un seul gardien par équipe et une réserve commune par équipe (pièces en double). Les coéquipiers jouent à tour de rôle pour leur couleur : Équipe A, Équipe B, Équipe A, Équipe B… Gagne l'équipe qui remplit l'objectif du mode." },
+  { titre: "Gestes tactiles", demo: "gestes",
+    texte: "Plateau : un cercle du doigt tourne la pièce de 60° (sens horaire +60°, anti-horaire −60°). Un appui long (0,4 s) la retourne sur son autre face. Réserve : appui long sur une pièce = elle tourne pour montrer ses 2 faces. ☰ rouvre les menus." },
+];
+
+// -- mini rendu
+const TC = ["#00e5ff", "#ff8a00", "#39ff14", "#d04cff"], TK = ["#00a8c0", "#c25e00", "#22b30c", "#9a2fd0"];
+const T_L = 40, T_A = T_L * 0.866, T_B = T_L * 0.5;                    // demi-diagonales d'un losange de côté T_L
+const ease = u => u < 0 ? 0 : u > 1 ? 1 : u * u * (3 - 2 * u);
+const cl = u => Math.max(0, Math.min(1, u));
+function T_losange(g, cx, cy, ang, c, v, o = {}) {
+  const sx = o.sx === undefined ? 1 : o.sx, sc = o.sc || 1, al = o.al === undefined ? 1 : o.al;
+  const ca = Math.cos(ang), sa = Math.sin(ang);
+  const P = [[T_A, 0], [0, T_B], [-T_A, 0], [0, -T_B]].map(([x, y]) => {
+    const X = x * sc, Y = y * sc; return [cx + (X * ca - Y * sa) * sx + 0 , cy + (X * sa + Y * ca)];
+  });
+  g.save(); g.globalAlpha = al;
+  g.beginPath(); P.forEach(([x, y], i) => i ? g.lineTo(x, y) : g.moveTo(x, y)); g.closePath();
+  g.fillStyle = TC[c]; g.fill(); g.lineWidth = o.glow ? 3.5 : 2; g.strokeStyle = o.glow ? "#ff3d9a" : TK[c]; g.stroke();
+  if (sx > 0.35) {
+    g.fillStyle = "#fff"; g.font = "bold 18px -apple-system,Arial"; g.textAlign = "center"; g.textBaseline = "middle";
+    g.fillText(String(v), cx, cy);
+    if (o.dos !== undefined) { g.beginPath(); g.arc(cx + T_A * 0.5 * sc, cy, 4, 0, 7); g.fillStyle = TC[o.dos]; g.fill(); g.lineWidth = 1; g.strokeStyle = "#fff"; g.stroke(); }
+  }
+  g.restore();
+}
+function T_gardien(g, cx, cy, c) {
+  g.save(); g.strokeStyle = "#e8c872"; g.fillStyle = "rgba(20,20,30,.85)"; g.lineWidth = 2;
+  g.beginPath(); g.moveTo(cx - 9, cy + 11); g.lineTo(cx - 9, cy - 2); g.arc(cx, cy - 2, 9, Math.PI, 0); g.lineTo(cx + 9, cy + 11); g.closePath();
+  g.fill(); g.stroke(); g.restore();
+}
+function T_txt(g, x, y, s, col = "#c9d1f2", taille = 13, bold = false) {
+  g.fillStyle = col; g.font = (bold ? "bold " : "") + taille + "px -apple-system,Arial"; g.textAlign = "center"; g.textBaseline = "middle"; g.fillText(s, x, y);
+}
+const OFF_NE = [T_A, -T_B], OFF_SE = [T_A, T_B];
+
+const DEMOS = {
+  rosace(g, t, w, h) {                               // 6 losanges qui apparaissent en rosace autour d'un point
+    const cx = w / 2, cy = h / 2 + 6, T = t % 8, cols = [0, 1, 2, 3, 0, 1], vals = [3, 1, 4, 0, 5, 2];
+    for (let i = 0; i < 6; i++) {
+      const u = ease((T - i * 0.8) / 0.5); if (u <= 0) continue;
+      const th = i * Math.PI / 3 - Math.PI / 2, sc = 0.8 * u;
+      T_losange(g, cx + T_A * sc * Math.cos(th), cy + T_A * sc * Math.sin(th), th, cols[i], vals[i], { sc, al: u });
+    }
+    T_txt(g, w / 2, 14, "Bleu · Orange · Vert · Violet", "#8e98bf", 12);
+  },
+  faces(g, t, w, h) {
+    const u = (t % 4) / 4, k = Math.cos(u * Math.PI * 2), face = k >= 0;
+    T_losange(g, w / 2, h / 2, -Math.PI / 6, face ? 0 : 1, face ? 3 : 2, { sx: Math.max(0.04, Math.abs(k)), sc: 1.5, dos: face ? 1 : 0 });
+    T_txt(g, w / 2, 18, face ? "Votre face : Bleu 3" : "Le dos : Orange 2", "#c9d1f2", 14, true);
+    T_txt(g, w / 2, h - 14, "la pastille = couleur de l'autre face", "#8e98bf", 12);
+  },
+  positions(g, t, w, h) {
+    const i = Math.floor((t % 6) / 1) , ang = [-Math.PI / 6, 0, Math.PI / 6][i % 3] * 0 + (i % 3) * Math.PI / 3 * 0;
+    const rot = [0, 60, 120][i % 3] * Math.PI / 180, dos = i >= 3, f = ease((t % 1) / 0.4);
+    T_losange(g, w / 2, h / 2, rot - Math.PI / 6 + (1 - f) * -Math.PI / 6, dos ? 1 : 0, dos ? 2 : 3, { sc: 1.5, dos: dos ? 0 : 1 });
+    T_txt(g, w / 2, 16, `cas ${i + 1} : ${[0, 60, 120][i % 3]}° · ${dos ? "dos" : "votre face"}`, "#e6ff4d", 14, true);
+    for (let j = 0; j < 6; j++) { g.beginPath(); g.arc(w / 2 - 55 + j * 22, h - 14, j === i ? 6 : 3.5, 0, 7); g.fillStyle = j === i ? "#e6ff4d" : "#4a5272"; g.fill(); }
+  },
+  poser(g, t, w, h) {
+    const cx = w / 2 - 30, cy = h / 2 + 10, u = ease(((t % 4) - 0.5) / 1.2), lue = (t % 4) > 1.7;
+    T_losange(g, cx, cy, 0, 1, 2, { sc: 1.3 });
+    const tx = cx + OFF_NE[0] * 1.3, ty = cy + OFF_NE[1] * 1.3;
+    const x = tx + (1 - u) * 90, y = ty - (1 - u) * 40 - Math.sin(Math.PI * u) * 14;
+    if ((t % 4) > 0.4) T_losange(g, x, y, 0, 0, 3, { sc: 1.3, al: 0.55 + 0.45 * u, glow: lue });
+    if (lue) T_txt(g, w / 2, 16, "contact par un CÔTÉ ✓", "#7ee08a", 14, true);
+    else T_txt(g, w / 2, 16, "approchez la pièce d'un côté", "#8e98bf", 13);
+  },
+  retourner(g, t, w, h) {
+    const cx = w / 2 - 36, cy = h / 2 + 14, T = t % 5, u = ease((T - 0.6) / 0.8), f = cl((T - 2.0) / 0.7);
+    const k = Math.abs(Math.cos(Math.PI * f)), neuf = f >= 0.5;
+    const nx = cx + OFF_NE[0] * 1.3, ny = cy + OFF_NE[1] * 1.3;
+    T_losange(g, cx, cy, 0, neuf ? 2 : 1, neuf ? 3 : 2, { sc: 1.3, sx: Math.max(0.04, k), glow: T > 1.6 && T < 2.0 });
+    const x = nx + (1 - u) * 90, y = ny - (1 - u) * 40;
+    if (T > 0.4) T_losange(g, x, y, 0, 0, 4, { sc: 1.3, al: 0.5 + 0.5 * u });
+    T_txt(g, w / 2, 16, T < 2 ? "le 4 touche un 2 : plus faible !" : "le 2 est retourné : Vert 3", T < 2 ? "#c9d1f2" : "#ff7fbd", 14, true);
+  },
+  gardien(g, t, w, h) {
+    const cx = w / 2 - 36, cy = h / 2 + 14, T = t % 5, u = ease((T - 0.5) / 0.8), p = 0.5 + 0.5 * Math.sin(t * 5);
+    T_losange(g, cx, cy, 0, 1, 1, { sc: 1.3, glow: false });
+    T_gardien(g, cx, cy - 18, 1);
+    const nx = cx + OFF_NE[0] * 1.3, ny = cy + OFF_NE[1] * 1.3;
+    if (T > 0.3) T_losange(g, nx + (1 - u) * 90, ny - (1 - u) * 40, 0, 0, 5, { sc: 1.3, al: 0.5 + 0.5 * u });
+    g.save(); g.strokeStyle = `rgba(232,200,114,${0.35 + 0.5 * p})`; g.lineWidth = 3; g.beginPath(); g.arc(cx, cy - 7, 30 + 3 * p, 0, 7); g.stroke(); g.restore();
+    T_txt(g, w / 2, 16, T > 1.5 ? "protégée : le 5 ne la retourne pas !" : "pièce gardée", "#e8c872", 14, true);
+  },
+  modes(g, t, w, h) {
+    const m = Math.floor((t % 9) / 3), noms = ["Classic-Tile", "Classic-Total", "Chaos"];
+    const txt = ["le plus de pièces de sa couleur", "la plus grande somme", "la plus PETITE somme"];
+    for (let i = 0; i < 3; i++) {
+      const x = 56 + i * 104, a = i === m;
+      g.fillStyle = a ? "#2c3a66" : "#222842"; g.strokeStyle = a ? "#e6ff4d" : "#3d4875"; g.lineWidth = a ? 3 : 1.5;
+      g.beginPath(); g.roundRect(x - 46, h / 2 - 40, 92, 80, 10); g.fill(); g.stroke();
+      T_txt(g, x, h / 2 - 22, noms[i], a ? "#e6ff4d" : "#8e98bf", 12, true);
+      T_txt(g, x, h / 2 + 8, ["♟", "Σ", "☠"][i], a ? "#fff" : "#8e98bf", 28);
+    }
+    T_txt(g, w / 2, h - 14, txt[m], "#c9d1f2", 13);
+  },
+  equipes(g, t, w, h) {
+    const T = t % 8, tour = Math.floor(T / 2), col = [0, 1, 0, 1][tour], seat = [1, 1, 2, 2][tour];
+    for (let i = 0; i < 2; i++) {
+      const cx = 100 + i * 120, cy = h / 2 + 4;
+      T_losange(g, cx, cy, 0, i === 0 ? 0 : 1, 3, { sc: 1.0, glow: col === i });
+      T_gardien(g, cx, cy - 20, i);
+      T_txt(g, cx, cy + 44, "Équipe " + "AB"[i] + " : 2 joueurs", "#c9d1f2", 11, true);
+    }
+    T_txt(g, w / 2, 16, "Tour " + (tour + 1) + " : équipe " + "AB"[col] + ", joueur " + seat, "#e6ff4d", 13, true);
+  },
+  gestes(g, t, w, h) {
+    const T = t % 9, cx = w / 2, cy = h / 2 + 4;
+    if (T < 3) {                                       // cercle horaire
+      const u = T / 3, a = -Math.PI / 2 + u * Math.PI * 2;
+      T_losange(g, cx, cy, Math.floor(u * 1.0) * 0, 0, 3, { sc: 0.9, al: 0.6 });
+      g.strokeStyle = "#4aa3df"; g.lineWidth = 3; g.beginPath(); g.arc(cx, cy, 50, -Math.PI / 2, a); g.stroke();
+      g.fillStyle = "#fff"; g.beginPath(); g.arc(cx + 50 * Math.cos(a), cy + 50 * Math.sin(a), 8, 0, 7); g.fill();
+      T_txt(g, cx, 14, "cercle ↻ : +60°", "#c9d1f2", 14, true);
+    } else if (T < 6) {                                // cercle anti-horaire
+      const u = (T - 3) / 3, a = -Math.PI / 2 - u * Math.PI * 2;
+      T_losange(g, cx, cy, 0, 0, 3, { sc: 0.9, al: 0.6 });
+      g.strokeStyle = "#f5a142"; g.lineWidth = 3; g.beginPath(); g.arc(cx, cy, 50, -Math.PI / 2, a, true); g.stroke();
+      g.fillStyle = "#fff"; g.beginPath(); g.arc(cx + 50 * Math.cos(a), cy + 50 * Math.sin(a), 8, 0, 7); g.fill();
+      T_txt(g, cx, 14, "cercle ↺ : −60°", "#c9d1f2", 14, true);
+    } else {                                           // appui long = retourner
+      const u = (T - 6) / 3, p = cl(u / 0.45), f = cl((u - 0.45) / 0.35), k = Math.abs(Math.cos(Math.PI * f)), neuf = f >= 0.5;
+      T_losange(g, cx, cy, 0, neuf ? 1 : 0, neuf ? 2 : 3, { sc: 1.2, sx: Math.max(0.04, k) });
+      g.strokeStyle = "#e6ff4d"; g.lineWidth = 4; g.beginPath(); g.arc(cx, cy, 44, -Math.PI / 2, -Math.PI / 2 + p * Math.PI * 2); g.stroke();
+      g.fillStyle = "rgba(255,255,255,.85)"; g.beginPath(); g.arc(cx, cy, 8, 0, 7); g.fill();
+      T_txt(g, cx, 14, "appui long 0,4 s : retourner", "#c9d1f2", 14, true);
+    }
+  },
+};
+
+const Tuto = {
+  i: 0, ouvert: false, raf: 0, t0: 0,
+  init() {
+    const st = document.createElement("style");
+    st.textContent = `
+#tuto { position:fixed; inset:0; z-index:50; display:none; align-items:center; justify-content:center; background:rgba(8,10,18,.82); padding:12px; }
+#tuto.on { display:flex; }
+#tuto .carte { width:min(420px,100%); max-height:100%; overflow:auto; background:#161a28; border:1px solid #2c3350; border-radius:16px; padding:14px; box-shadow:0 12px 40px rgba(0,0,0,.6); }
+#tuto canvas { display:block; width:100%; aspect-ratio:320/180; background:#1d2133; border-radius:10px; }
+#tuto h2 { margin:12px 0 6px; font-size:19px; color:#fff; }
+#tuto p { white-space:pre-line; margin:0 0 12px; font-size:14px; line-height:1.4; color:#c9d1f2; min-height:7.5em; }
+#tuto .pts { display:flex; justify-content:center; gap:7px; margin-bottom:12px; }
+#tuto .pts i { width:8px; height:8px; border-radius:50%; background:#3d4875; }
+#tuto .pts i.a { background:#e6ff4d; }
+#tuto .bt { display:flex; gap:8px; }
+#tuto .bt button { flex:1; }
+#tuto .bt .suiv { background:#2f7d4a; border-color:#43a566; }`;
+    document.head.appendChild(st);
+    const d = document.createElement("div"); d.id = "tuto";
+    d.innerHTML = `<div class="carte"><canvas width="640" height="360"></canvas><h2></h2><p></p><div class="pts"></div>
+      <div class="bt"><button class="prec">◀</button><button class="passer">Passer</button><button class="suiv">Suivant ▶</button></div></div>`;
+    document.body.appendChild(d);
+    this.el = d; this.cv = d.querySelector("canvas"); this.g = this.cv.getContext("2d");
+    this.h2 = d.querySelector("h2"); this.p = d.querySelector("p"); this.pts = d.querySelector(".pts");
+    this.pts.innerHTML = TUTO.map(() => "<i></i>").join("");
+    d.querySelector(".prec").onclick = () => this.aller(this.i - 1);
+    d.querySelector(".suiv").onclick = () => this.i >= TUTO.length - 1 ? this.fermer() : this.aller(this.i + 1);
+    d.querySelector(".passer").onclick = () => this.fermer();
+    const b = document.getElementById("b-regles"); if (b) b.onclick = () => this.ouvrir();
+    let vu = false; try { vu = !!localStorage.getItem("losanges_tuto"); } catch (e) {}
+    if (!vu) this.ouvrir();
+  },
+  ouvrir() { this.ouvert = true; this.el.classList.add("on"); document.body.classList.remove("menuouvert"); this.aller(0); this.t0 = performance.now(); this.boucle(); },
+  fermer() {
+    this.ouvert = false; this.el.classList.remove("on"); cancelAnimationFrame(this.raf);
+    try { localStorage.setItem("losanges_tuto", "1"); } catch (e) {}
+  },
+  aller(i) {
+    this.i = Math.max(0, Math.min(TUTO.length - 1, i)); this.t0 = performance.now();
+    const s = TUTO[this.i];
+    this.h2.textContent = s.titre; this.p.textContent = s.texte;
+    [...this.pts.children].forEach((e, k) => e.classList.toggle("a", k === this.i));
+    this.el.querySelector(".prec").disabled = this.i === 0;
+    this.el.querySelector(".suiv").textContent = this.i === TUTO.length - 1 ? "Jouer ✓" : "Suivant ▶";
+  },
+  boucle() {
+    if (!this.ouvert) return;
+    const g = this.g, t = (performance.now() - this.t0) / 1000;
+    g.setTransform(2, 0, 0, 2, 0, 0); g.clearRect(0, 0, 320, 180);
+    const f = DEMOS[TUTO[this.i].demo]; if (f) f(g, t, 320, 180);
+    this.raf = requestAnimationFrame(() => this.boucle());
+  },
+};
+Tuto.init();
+
+</script>
+<script>
+"use strict";
+// Losanges — © 2026 Yohann Lecarpentier. Jeu de plateau original créé par Yohann Lecarpentier.
+// ===================== ÉDITEUR DES SCHÉMAS DE DÉPART (2 et 3) =====================
+// Modifie directement les tableaux SCHEMAS (voir moteur : SCHEMAS_DEFAUT) et mémorise le résultat dans le stockage local.
+// Les changements s'appliquent à la PROCHAINE partie (choisir un mode sur l'écran de choix).
+const Editeur = {
+  n: 0, np: 3, ouvert: false,
+  init() {
+    const st = document.createElement("style");
+    st.textContent = `
+#edt { position:fixed; inset:0; z-index:60; display:none; align-items:flex-start; justify-content:center; background:rgba(8,10,18,.86); padding:10px; overflow:auto; }
+#edt.on { display:flex; }
+#edt .carte { width:min(440px,100%); background:#161a28; border:1px solid #2c3350; border-radius:16px; padding:12px; box-shadow:0 12px 40px rgba(0,0,0,.6); }
+#edt h2 { margin:0 0 8px; font-size:18px; color:#fff; }
+#edt .ligne { display:flex; gap:6px; margin-bottom:8px; align-items:center; flex-wrap:wrap; }
+#edt .ligne span { color:#8e98bf; font-size:12.5px; }
+#edt .ligne button { flex:0 0 auto; min-height:34px; padding:6px 11px; font-size:12.5px; }
+#edt .ligne button.sel { background:#2c3a66; border-color:#e6ff4d; color:#e6ff4d; }
+#edt canvas { display:block; width:100%; max-width:340px; aspect-ratio:340/200; background:#1d2133; border-radius:10px; margin:0 auto 8px; }
+#edt table { width:100%; border-collapse:collapse; margin-bottom:8px; }
+#edt th { color:#8e98bf; font:600 11.5px -apple-system,Arial; text-align:center; padding:2px; }
+#edt td { text-align:center; padding:3px 2px; color:#c9d1f2; font-size:12.5px; }
+#edt select { -webkit-user-select:auto; user-select:auto; width:100%; font:600 14px -apple-system,Arial; color:#fff; background:#2b3354; border:1px solid #3d4875; border-radius:8px; padding:7px 3px; }
+#edt .note { color:#8e98bf; font-size:11.5px; line-height:1.35; margin:0 0 10px; }
+#edt .bt { display:flex; gap:8px; } #edt .bt button { flex:1; }
+#edt .ok { background:#2f7d4a; border-color:#43a566; }`;
+    document.head.appendChild(st);
+    const d = document.createElement("div"); d.id = "edt";
+    d.innerHTML = `<div class="carte"><h2>✎ Schémas de départ</h2>
+      <div class="ligne"><span>Schéma</span><button data-n="0">Départ 1</button><button data-n="1">Départ 2</button><button data-n="2">Départ 3</button></div>
+      <div class="ligne"><span>Joueurs</span><button data-np="2">2 (équipes)</button><button data-np="3">3</button><button data-np="4">4</button></div>
+      <canvas width="680" height="400"></canvas>
+      <table><thead><tr><th>Case</th><th>Face</th><th>Val.</th><th>Dos</th><th>Val.</th></tr></thead><tbody></tbody></table>
+      <p class="note">Cases dans l'ordre de la rosace (1 = en haut, puis sens horaire). Joueur : 1er = celui qui commence (rang d'ordre de jeu), « gris » = neutre sans propriétaire. Une case grise des deux côtés n'est jamais retournée. Appliqué à la prochaine partie.</p>
+      <div class="bt"><button class="raz">Réinitialiser</button><button class="ok fermer">Fermer</button></div></div>`;
+    document.body.appendChild(d);
+    this.note = d.querySelector(".note").textContent;
+    this.el = d; this.cv = d.querySelector("canvas"); this.g = this.cv.getContext("2d"); this.tb = d.querySelector("tbody");
+    d.querySelectorAll("[data-n]").forEach(b => b.onclick = () => { this.n = +b.dataset.n; this.rendre(); });
+    d.querySelectorAll("[data-np]").forEach(b => b.onclick = () => { this.np = +b.dataset.np; this.rendre(); });
+    d.querySelector(".raz").onclick = () => { SCHEMAS[this.n][this.np] = JSON.parse(JSON.stringify(SCHEMAS_DEFAUT[this.n][this.np])); this.sauver(); this.rendre(); };
+    d.querySelector(".fermer").onclick = () => this.fermer();
+    const bt = document.getElementById("b-editeur"); if (bt) bt.onclick = () => this.ouvrir();
+  },
+  // Départ 1 (classique, non éditable) : affiché à titre indicatif, 1er joueur = Bleu. 2 joueurs : hexagone de 3 losanges ; 3-4 joueurs : rosace de 6
+  classique(np) {
+    const t = np === 2 ? [[0, 1], [1, 0], [1, 0]] : np === 3 ? ROSACE_3 : ROSACE_BLEU_VERT;
+    return t.map(([f, d]) => [f, 0, d, 0]);
+  },
+  lignes() { return this.n === 0 ? this.classique(this.np) : SCHEMAS[this.n][this.np]; },
+  ouvrir() { this.ouvert = true; this.el.classList.add("on"); document.body.classList.remove("menuouvert"); this.rendre(); },
+  fermer() { this.ouvert = false; this.el.classList.remove("on"); },
+  sauver() { try { localStorage.setItem("losanges_schemas", JSON.stringify({ v: 2, 1: SCHEMAS[1], 2: SCHEMAS[2] })); } catch (e) {} },
+  options(val) {      // joueurs disponibles : gris + rangs 1..np
+    let h = `<option value="g"${val === null ? " selected" : ""}>gris</option>`;
+    for (let r = 0; r < this.np; r++) h += `<option value="${r}"${val === r ? " selected" : ""}>${r === 0 ? "1er" : (r + 1) + "e"}</option>`;
+    return h;
+  },
+  valeurs(v) { let h = ""; for (let i = 0; i <= 9; i++) h += `<option value="${i}"${v === i ? " selected" : ""}>${i}</option>`; return h; },
+  rendre() {
+    this.el.querySelectorAll("[data-n]").forEach(b => b.classList.toggle("sel", +b.dataset.n === this.n));
+    this.el.querySelectorAll("[data-np]").forEach(b => b.classList.toggle("sel", +b.dataset.np === this.np));
+    const T = this.lignes(), fige = this.n === 0;
+    this.el.querySelector(".raz").disabled = fige;
+    this.el.querySelector(".note").textContent = fige ? "Départ 1 : départ classique (non éditable). Les tuiles de départ sont 0/0 ; les couleurs affichées supposent que le 1er joueur est Bleu. À 2 joueurs (et en équipes) : hexagone de 3 losanges, sinon rosace de 6." : this.note;
+    this.tb.innerHTML = "";
+    T.forEach((c, k) => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td>${k + 1}</td><td><select>${this.options(c[0])}</select></td><td><select>${this.valeurs(c[1])}</select></td><td><select>${this.options(c[2])}</select></td><td><select>${this.valeurs(c[3])}</select></td>`;
+      const S = tr.querySelectorAll("select");
+      if (fige) S.forEach(x => x.disabled = true);
+      const lire = () => {
+        T[k] = [S[0].value === "g" ? null : +S[0].value, +S[1].value, S[2].value === "g" ? null : +S[2].value, +S[3].value];
+        this.sauver(); this.dessiner();
+      };
+      S.forEach(x => x.onchange = lire);
+      this.tb.appendChild(tr);
+    });
+    this.dessiner();
+  },
+  dessiner() {              // aperçu de la rosace (1er joueur = Bleu, 2e = Orange, 3e = Vert, 4e = Violet) ; pastille = couleur du dos
+    const g = this.g, T = this.lignes();
+    g.setTransform(2, 0, 0, 2, 0, 0); g.clearRect(0, 0, 340, 200);
+    if (window.NEO_FOND) window.NEO_FOND(g, 340, 200, performance.now() / 1000);       // habillage Néon (version néon uniquement)
+    TC[-1] = "#9096a8"; TK[-1] = "#555b70";
+    const cx = 170, cy = 104, sc = 1.05;
+    if (this.n === 0 && this.np === 2) {            // hexagone : 3 losanges à 120° autour du centre (angle obtus au centre)
+      T.forEach((c, k) => {
+        const th = -Math.PI / 2 + k * 2 * Math.PI / 3;
+        T_losange(g, cx + T_B * sc * Math.cos(th), cy + T_B * sc * Math.sin(th), th - Math.PI / 2, c[0], c[1], { sc, dos: c[2] });
+        g.fillStyle = "#ff6a6a"; g.font = "bold 11px -apple-system,Arial"; g.textAlign = "center";
+        g.fillText(String(k + 1), cx + (T_B * sc * 2.6) * Math.cos(th), cy + (T_B * sc * 2.6) * Math.sin(th) + 4);
+      });
+      return;
+    }
+    T.forEach((c, k) => {
+      const th = k * Math.PI / 3 - Math.PI / 2;
+      T_losange(g, cx + T_A * sc * Math.cos(th), cy + T_A * sc * Math.sin(th), th, c[0] === null ? -1 : c[0], c[1], { sc, dos: c[2] === null ? -1 : c[2] });
+      g.fillStyle = "#ff6a6a"; g.font = "bold 11px -apple-system,Arial"; g.textAlign = "center";
+      g.fillText(String(k + 1), cx + (T_A * sc * 2.1) * Math.cos(th), cy + (T_A * sc * 2.1) * Math.sin(th) + 4);
+    });
+  },
+};
+Editeur.init();
+
+</script>
+<script>
+"use strict";
+// © 2026 Yohann Lecarpentier — Losanges, édition « Néon » (thème Tron / arcade). Même moteur et mêmes règles que la version classique.
+// Ce fichier ne contient que l'habillage : couleurs, lueurs, fonds animés, particules, sons et menu. Tout est modifiable en tête de fichier.
+const NEO = {
+  VITESSE_HUE: 38,          // vitesse de défilement des couleurs (degrés par seconde)
+  PARTICULES: true,         // gerbes d'étincelles à la pose et aux retournements
+  SCANLINES: true,          // lignes de balayage façon écran cathodique
+  SON: true,                // bips synthétisés (réglable avec le bouton 🔊)
+};
+const hsl = (h, s = 100, l = 60, a = 1) => `hsla(${((h % 360) + 360) % 360},${s}%,${l}%,${a})`;
+function hexA(hex, a) {
+  if (!hex || hex[0] !== "#" || hex.length < 7) return hex;
+  return `rgba(${parseInt(hex.substr(1, 2), 16)},${parseInt(hex.substr(3, 2), 16)},${parseInt(hex.substr(5, 2), 16)},${a})`;
+}
+
+// ---------- primitives : lueur néon sur chaque contour et chaque texte
+const _poly0 = poly;
+poly = function (g, pts, o = {}) {
+  if (!o.outline && typeof o.fill === "string" && o.fill[0] === "#" && o.fill.length === 7 && [1, 3, 5].every(i => parseInt(o.fill.substr(i, 2), 16) < 14)) return;   // ombres portées noires : inutiles sur fond sombre
+  if (o.outline && (o.width || 1) >= 1.2 && o.glow !== false) {
+    g.save(); g.shadowColor = o.outline; g.shadowBlur = Math.min(26, 5 + (o.width || 1) * 2.4); _poly0(g, pts, o); g.restore();
+  } else _poly0(g, pts, o);
+};
+texte = function (g, x, y, txt, couleur, taille = 15, o = {}) {
+  const ss = o.ss || S, f = police(taille, o.gras !== false, ss);
+  g.save(); g.shadowColor = couleur; g.shadowBlur = 9 * ss; ecrire(g, x, y, txt, couleur, f); g.restore();
+};
+function glow_txt(g, x, y, txt, fill, font, glow, flou = 10, anchor = "center") {
+  g.save(); g.shadowColor = glow || fill; g.shadowBlur = flou; ecrire(g, x, y, txt, fill, font, anchor); g.restore();
+}
+function nrect(g, x0, y0, x1, y1, fill, outline, w = 1.5, flou = 10) {
+  g.save(); if (fill) { g.fillStyle = fill; g.fillRect(x0, y0, x1 - x0, y1 - y0); }
+  if (outline) { g.shadowColor = outline; g.shadowBlur = flou; g.lineWidth = w; g.strokeStyle = outline; g.strokeRect(x0, y0, x1 - x0, y1 - y0); }
+  g.restore();
+}
+
+// ---------- losanges de verre néon
+App.prototype.dessiner_losange = function (g, pl, cx, cy, couleur, val, o = {}) {
+  const ss = o.ss || S, largeur = o.largeur === undefined ? 2 : o.largeur, col = COULEURS[couleur], mort = o.grise;
+  const gr = g.createLinearGradient(pl[0], pl[1], pl[4], pl[5]);
+  if (o.fantome) { gr.addColorStop(0, hexA(col, 0.30)); gr.addColorStop(1, hexA(col, 0.10)); }
+  else if (mort) { gr.addColorStop(0, "#0b0f1f"); gr.addColorStop(1, "#080b17"); }
+  else { gr.addColorStop(0, hexA(col, 0.62)); gr.addColorStop(0.55, hexA(col, 0.26)); gr.addColorStop(1, hexA(col, 0.14)); }
+  poly(g, pl, { fill: gr });
+  poly(g, pl, { outline: o.contour || (mort ? "#2f3858" : col), width: (o.contour ? largeur : largeur * 1.25) * ss, dash: o.dash });
+  if (!mort && !o.fantome) poly(g, reduire(pl, cx, cy, 0.70), { outline: hexA("#ffffff", 0.30), width: 1 * ss, glow: false });
+  if (o.gardien !== undefined && o.gardien !== null) this.dessiner_gardien(g, cx, cy, o.gardien, val, o.neutre, o.ech || 1);
+  else if (o.texte !== false) {
+    const ct = o.neutre ? "#ff3b3b" : (mort ? "#4b5575" : "#ffffff");
+    glow_txt(g, cx, cy, String(val), ct, police(15 * (o.echtxt || 1), true, ss), o.neutre ? "#ff0000" : (mort ? null : col), mort ? 0 : 9 * ss);
+  }
+  if (o.pastille !== undefined && o.pastille !== null) {
+    const r = 4.2 * ss;
+    let best = null, bd = -1;
+    for (let k = 0; k < 8; k += 2) { const d = (pl[k] - cx) ** 2 + (pl[k + 1] - cy) ** 2; if (d > bd) { bd = d; best = [pl[k] - cx, pl[k + 1] - cy]; } }
+    const px = cx + 0.62 * best[0], py = cy + 0.62 * best[1], pc = mort ? "#555c78" : COULEURS[o.pastille];
+    g.save(); g.shadowColor = pc; g.shadowBlur = 7 * ss; oval(g, px - r, py - r, px + r, py + r, { fill: pc, outline: "#ffffff", width: Math.max(1, ss * 0.8) }); g.restore();
+  }
+};
+App.prototype.dessiner_gardien = function (g, cx, cy, j, val, neutre, ech = 1) {
+  const s = 0.95 * S * ech, c = COULEURS[j];
+  oval(g, cx - 18 * s, cy - 18 * s, cx + 18 * s, cy + 18 * s, { fill: "rgba(2,4,14,0.78)", outline: c, width: Math.max(1.4, 2.4 * s) });
+  oval(g, cx - 14 * s, cy - 14 * s, cx + 14 * s, cy + 14 * s, { outline: OR, width: Math.max(1, 1.2 * s) });
+  poly(g, ARCHE.flatMap(([x, y]) => [cx + x * s, cy + y * s]), { fill: hexA(c, 0.30), outline: "#ffffff", width: Math.max(1, 1 * s), glow: false });
+  ligne(g, cx, cy - 19 * s, cx, cy - 27 * s, OR, Math.max(1, 2 * s));
+  ligne(g, cx - 3.5 * s, cy - 23.5 * s, cx + 3.5 * s, cy - 23.5 * s, OR, Math.max(1, 2 * s));
+  glow_txt(g, cx, cy + s, String(val), neutre ? "#ff3b3b" : "#ffffff", police(12 * ech, true, S), neutre ? "#ff0000" : c, 8);
+};
+App.prototype.halo = function (g, pl, couleur, pulse, fort = true) {
+  poly(g, pl, { outline: couleur, width: (fort ? 4.5 : 3) * S + 2.5 * pulse * S });
+  poly(g, pl, { outline: "#ffffff", width: 1.2 * S, glow: false });
+};
+App.prototype.dessiner_grille = function () {};      // la grille est animée en direct (voir neon_fond)
+
+// ---------- fond animé : dégradé qui respire, réseau de points parcouru d'ondes, « light cycles » de Tron
+App.prototype.neon_fond = function (now) {
+  const g = this.gf, W = WTOT, H = HTOT, h0 = now * NEO.VITESSE_HUE;
+  const bg = g.createLinearGradient(0, 0, 0, H);
+  bg.addColorStop(0, hsl(240 + 25 * Math.sin(now * 0.21), 80, 3.5)); bg.addColorStop(1, hsl(280 + 35 * Math.sin(now * 0.17 + 1), 85, 6.5));
+  g.fillStyle = bg; g.fillRect(0, 0, W, H);
+  g.save(); g.globalCompositeOperation = "lighter";
+  for (const [k, ph] of [[0, 0], [1, 2.1], [2, 4.2]]) {
+    const x = W * (0.5 + 0.42 * Math.sin(now * 0.23 + ph)), y = H * (0.5 + 0.40 * Math.cos(now * 0.19 + ph * 1.3)), r = Math.max(W, H) * 0.55;
+    const rg = g.createRadialGradient(x, y, 0, x, y, r);
+    rg.addColorStop(0, hsl(h0 + k * 120, 100, 50, 0.13)); rg.addColorStop(1, hsl(h0 + k * 120, 100, 50, 0));
+    g.fillStyle = rg; g.fillRect(0, 0, W, H);
+  }
+  // réseau de points
+  const cx = LARGEUR / 2, cy = HAUTEUR / 2;
+  for (let c = 0; c < NB_COL; c++) for (let r = 0; r < NB_LIG; r++) {
+    const x = MARGE + c * DX, y = MARGE + r * D, d = Math.hypot(x - cx, y - cy);
+    const w = 0.5 + 0.5 * Math.sin(d * 0.022 - now * 2.4), rr = (0.9 + 1.9 * w * w) * S;
+    g.fillStyle = hsl(h0 + d * 0.25, 100, 55 + 25 * w, 0.18 + 0.55 * w * w);
+    g.beginPath(); g.arc(x, y, rr, 0, 6.2832); g.fill();
+  }
+  // light cycles : traînées lumineuses qui courent le long des lignes du réseau
+  for (let i = 0; i < 7; i++) {
+    const per = 5 + (i % 3) * 1.7, ph = (now / per + i * 0.37) % 1, cyc = Math.floor(now / per + i * 0.37);
+    const ligne_i = ((cyc * 7 + i * 5) % NB_LIG), y = MARGE + ligne_i * D, sens = (i + cyc) % 2 ? 1 : -1;
+    const x = sens > 0 ? -60 + ph * (LARGEUR + 120) : LARGEUR + 60 - ph * (LARGEUR + 120), L = 130 * S;
+    const t = g.createLinearGradient(x, 0, x - sens * L, 0), col = h0 + i * 52;
+    t.addColorStop(0, hsl(col, 100, 70, 0.95)); t.addColorStop(1, hsl(col, 100, 50, 0));
+    g.strokeStyle = t; g.lineWidth = 2.2 * S; g.shadowColor = hsl(col, 100, 60); g.shadowBlur = 12;
+    g.beginPath(); g.moveTo(x, y); g.lineTo(x - sens * L, y); g.stroke();
+  }
+  g.restore();
+};
+App.prototype.neon_overlay = function () {
+  const g = this.gf, W = WTOT, H = HTOT, cle = W + "x" + H;
+  if (!this._ov || this._ov.cle !== cle) {
+    const c = document.createElement("canvas"); c.width = Math.max(1, Math.round(W)); c.height = Math.max(1, Math.round(H));
+    const x = c.getContext("2d");
+    if (NEO.SCANLINES) { x.fillStyle = "rgba(0,0,0,0.20)"; for (let y = 0; y < H; y += 3) x.fillRect(0, y, W, 1); }
+    const v = x.createRadialGradient(W / 2, H / 2, Math.min(W, H) * 0.35, W / 2, H / 2, Math.max(W, H) * 0.75);
+    v.addColorStop(0, "rgba(0,0,0,0)"); v.addColorStop(1, "rgba(0,0,0,0.55)"); x.fillStyle = v; x.fillRect(0, 0, W, H);
+    this._ov = { cle, c };
+  }
+  g.drawImage(this._ov.c, 0, 0, W, H);
+};
+
+// ---------- particules
+App.prototype.jaillir = function (x, y, col, n, vit = 90, delai = 0, dur = 0.8) {
+  if (!NEO.PARTICULES) return;
+  this.parts = this.parts || [];
+  for (let i = 0; i < n; i++) {
+    const a = Math.random() * 6.2832, v = vit * (0.3 + Math.random() * 0.9);
+    this.parts.push({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, t0: maintenant() + delai, dur: dur * (0.6 + Math.random() * 0.7), col, r: 1.5 + Math.random() * 2.2 });
+  }
+};
+App.prototype.neon_particules = function (now) {
+  const g = this.gf, ps = this.parts || [];
+  this.parts = ps.filter(p => now < p.t0 + p.dur);
+  g.save(); g.globalCompositeOperation = "lighter";
+  for (const p of this.parts) {
+    const t = now - p.t0; if (t < 0) continue;
+    const u = t / p.dur, d = 1 - Math.pow(1 - u, 2), x = p.x + p.vx * d * p.dur, y = p.y + p.vy * d * p.dur + 18 * u * u * p.dur * 10;
+    g.fillStyle = hexA(p.col, 1 - u); g.shadowColor = p.col; g.shadowBlur = 8;
+    g.beginPath(); g.arc(x, y, p.r * S * (1 - 0.6 * u), 0, 6.2832); g.fill();
+  }
+  g.restore();
+};
+const _ajouter0 = App.prototype.ajouter_anim;
+App.prototype.ajouter_anim = function (genre, duree, delai, kw) {
+  const r = _ajouter0.call(this, genre, duree, delai, kw);
+  try {
+    if (genre === "onde") {
+      const pts = kw.poly, x = pts.reduce((s, p) => s + p[0], 0) / pts.length, y = pts.reduce((s, p) => s + p[1], 0) / pts.length;
+      this.jaillir(x, y, kw.couleur && kw.couleur[0] === "#" ? kw.couleur : "#00f0ff", 18, 120, delai, 0.9); SON.jouer("pose", delai);
+    } else if (genre === "flip") {
+      const q = this.partie.poses[kw.piece], [x, y] = CENPX[q.pl];
+      this.jaillir(x, y, COULEURS[q.couleur] || "#ffffff", 12, 95, delai + duree / 2, 0.8); SON.jouer("flip", delai + duree / 2);
+    } else if (genre === "gardien") SON.jouer("garde", delai);
+  } catch (e) {}
+  return r;
+};
+App.prototype.dessiner_onde = function (a, now) {
+  if (now < a.t0) return;
+  const u = borne((now - a.t0) / a.dur);
+  for (const d of [0, 0.22]) {
+    const uu = borne((u - d) / (1 - d)); if (uu <= 0 || uu >= 1) continue;
+    const k = 1 + 1.1 * ease_out(uu), [pl] = transformer(a.poly, k, k), c = a.couleur[0] === "#" ? a.couleur : "#00f0ff";
+    poly(this.gf, pl, { outline: hexA(c, 1 - uu), width: Math.max(1, (5 - 4 * uu) * S) });
+  }
+};
+
+// ---------- boucle d'affichage : fond animé, plateau, effets, particules, balayage
+App.prototype.tick = function () {
+  const now = maintenant();
+  if (this.intro !== null) this.avancer_intro(now);
+  if (this.t_survol_fin !== null && now > this.t_survol_fin) { this.t_survol_fin = null; this.survol_reserve = null; this.barre_etat(); }
+  const finies = this.anims.filter(a => now >= a.t0 + a.dur);
+  if (finies.length) {
+    this.anims = this.anims.filter(a => now < a.t0 + a.dur);
+    if (finies.some(a => GENRES_PIECE.includes(a.genre))) { this.survol = this.trouver_position(...this.souris); this.mettre_a_jour(); }
+  }
+  const g = this.gf;
+  g.setTransform(1, 0, 0, 1, 0, 0);
+  g.clearRect(0, 0, this.cvEl.width, this.cvEl.height);
+  g.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
+  this.neon_fond(now);
+  this.neon_overlay();                      // lignes de balayage + vignette : DERRIÈRE les tuiles (avant le plateau)
+  g.setTransform(1, 0, 0, 1, 0, 0);
+  g.drawImage(this.off, 0, 0);
+  g.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
+  this.dessiner_fx(now);
+  this.neon_particules(now);
+  this.neon_titre_dom(now);
+  requestAnimationFrame(() => this.tick());
+};
+// bordure arc-en-ciel animée autour du joueur actif + lueur des panneaux
+const _fx0 = App.prototype.dessiner_fx;
+App.prototype.dessiner_fx = function (now) {
+  _fx0.call(this, now);
+  const p = this.partie, g = this.gf;
+  if (!this.menu && this.intro === null && ["gardiens", "pose", "deplacement"].includes(p.phase)) {
+    const actuel = p.phase === "gardiens" ? p.attente_gardien : p.joueur, [bx, by] = this.origine_bloc(actuel), e3 = TALL ? 4 : ECART / 3;
+    g.save(); g.setLineDash([10 * SP, 7 * SP]); g.lineDashOffset = -now * 40 * SP;
+    g.strokeStyle = "#ffffff"; g.lineWidth = 1.4 * SP; g.shadowColor = COULEURS[actuel]; g.shadowBlur = 14;
+    g.strokeRect(bx - e3 - 3 * SP, by + 0.016 * HB - 3 * SP, LB + 2 * e3 + 6 * SP, 0.948 * HB + 6 * SP); g.restore();
+  }
+};
+// titre de la page (barre du bas / boutons) : couleur qui défile
+App.prototype.neon_titre_dom = function (now) {
+  if (now - (this._t_dom || 0) < 0.1) return; this._t_dom = now;
+  document.documentElement.style.setProperty("--hue", String(Math.round((now * NEO.VITESSE_HUE) % 360)));
+};
+
+// ---------- menu de choix du mode, version arcade
+App.prototype.dessiner_menu = function (now) {
+  const g = this.gf, pulse = (Math.sin(now * 4) + 1) / 2, h0 = now * NEO.VITESSE_HUE * 1.4;
+  rect(g, 0, 0, LARGEUR, HAUTEUR, { fill: "rgba(1,2,10,0.50)" });
+  // losanges flottants
+  for (let i = 0; i < 10; i++) {
+    const x = LARGEUR * (0.5 + 0.48 * Math.sin(now * (0.12 + i * 0.013) + i * 1.7)), y = HAUTEUR * (0.5 + 0.48 * Math.cos(now * (0.10 + i * 0.011) + i * 2.3));
+    const s = (14 + (i % 4) * 9) * SU, a = now * (0.4 + (i % 3) * 0.2) * (i % 2 ? 1 : -1), c = Math.cos(a), sn = Math.sin(a);
+    const pts = [[s, 0], [0, s * 0.58], [-s, 0], [0, -s * 0.58]].flatMap(([px, py]) => [x + px * c - py * sn, y + px * sn + py * c]);
+    poly(g, pts, { outline: hsl(h0 + i * 36, 100, 62, 0.28), width: 1.4 * SU });
+  }
+  // titre
+  const tx = LARGEUR / 2, ty = 0.062 * HAUTEUR, f = police(31, true, SU), titre = "L O S A N G E S";
+  g.save(); g.font = f; g.textAlign = "center"; g.textBaseline = "middle";
+  const dec = (1.5 + 1.5 * Math.sin(now * 3)) * SU;
+  g.globalCompositeOperation = "lighter"; g.fillStyle = "rgba(255,0,170,0.8)"; g.fillText(titre, tx - dec, ty); g.fillStyle = "rgba(0,255,255,0.8)"; g.fillText(titre, tx + dec, ty);
+  g.globalCompositeOperation = "source-over";
+  const gr = g.createLinearGradient(tx - 170 * SU, 0, tx + 170 * SU, 0);
+  for (let k = 0; k <= 4; k++) gr.addColorStop(k / 4, hsl(h0 + k * 60, 100, 68));
+  g.shadowColor = hsl(h0, 100, 60); g.shadowBlur = 18; g.fillStyle = gr; g.fillText(titre, tx, ty); g.restore();
+  const bx = ((now * 0.45) % 1.4 - 0.2) * LARGEUR;                   // barre lumineuse qui balaie sous le titre
+  const lg = g.createLinearGradient(bx - 80 * SU, 0, bx + 80 * SU, 0); lg.addColorStop(0, "rgba(0,255,255,0)"); lg.addColorStop(0.5, "rgba(0,255,255,0.95)"); lg.addColorStop(1, "rgba(0,255,255,0)");
+  g.fillStyle = lg; g.fillRect(0.15 * LARGEUR, 0.092 * HAUTEUR, 0.7 * LARGEUR, 2 * SU);
+  glow_txt(g, tx, 0.118 * HAUTEUR, ((now * 1.5) % 2 < 1.7 ? "CHOISISSEZ LE MODE DE JEU" : "PRESS START"), "#7ff", police(11.5, true, SU), "#0ff", 8);
+  const teintes = [0, 1, 2].map(k => hsl(h0 + k * 110, 100, 62));
+  this.cartes_menu().forEach(([x0, y0, x1, y1], k) => {
+    const surv = this.survol_menu === k, tc = teintes[k], hh = 12 * SU;
+    const fond = g.createLinearGradient(x0, y0, x1, y1); fond.addColorStop(0, "rgba(4,8,26,0.88)"); fond.addColorStop(1, hsl(h0 + k * 110, 70, 14, 0.80));
+    nrect(g, x0, y0, x1, y1, fond, tc, (surv ? 2.6 + 1.6 * pulse : 1.8) * SU, surv ? 22 : 12);
+    g.save(); g.fillStyle = tc; g.shadowColor = tc; g.shadowBlur = 14; g.fillRect(x0, y0, 7 * SU, y1 - y0); g.restore();
+    const sc = g.createLinearGradient(x0, 0, x1, 0), pos = ((now * 0.35 + k * 0.33) % 1);      // reflet qui traverse la carte
+    sc.addColorStop(Math.max(0, pos - 0.06), "rgba(255,255,255,0)"); sc.addColorStop(pos, "rgba(255,255,255,0.10)"); sc.addColorStop(Math.min(1, pos + 0.06), "rgba(255,255,255,0)");
+    g.fillStyle = sc; g.fillRect(x0, y0, x1 - x0, y1 - y0);
+    glow_txt(g, x0 + 32 * SU, y0 + 0.30 * (y1 - y0), String(k + 1), tc, police(28, true, SU), tc, 14);
+    glow_txt(g, x0 + 62 * SU, y0 + 0.17 * (y1 - y0), MODES[k].toUpperCase(), "#ffffff", police(14.5, true, SU), tc, 10, "w");
+    const fo = police(10, false, SU); g.font = fo;
+    lignes_enroulees(g, DESCRIPTIONS[k], x1 - x0 - 72 * SU).forEach((l, i) => ecrire(g, x0 + 62 * SU, y0 + 0.36 * (y1 - y0) + i * 14 * SU, l, "#bfe9ff", fo, "w"));
+    const c = this.cfg[k], R = this.rects_cfg(k), yc = R.yc;
+    {
+      const E = this.rect_eq(k), actif = c.np === 4, ey = (E[1] + E[3]) / 2, ex = (E[0] + E[2]) / 2;
+      nrect(g, E[0], E[1], E[2], E[3], actif ? (c.eq ? "rgba(40,60,120,0.8)" : "rgba(10,16,40,0.85)") : "rgba(6,8,18,0.8)", actif ? (c.eq ? "#fffb00" : "#3aa6c9") : "#262c4a", 1.4, actif ? 8 : 0);
+      if (!actif) ecrire(g, ex, ey, "Éq. 4 j.", "#4a5378", police(8.5, false, SU));
+      else if (!c.eq) ecrire(g, ex, ey, "Éq. : non", "#aee", police(9.5, true, SU));
+      else {
+        ecrire(g, E[0] + 16, ey, "Éq.", "#fffb00", police(9.5, true, SU));
+        const dx = E[0] + 30;
+        oval(g, dx, ey - 5, dx + 10, ey + 5, { fill: ORIG.coul[PAIRES[c.eq][0]], outline: "#ffffff", width: 1 });
+        ecrire(g, dx + 17, ey, "vs", "#8fd", police(8, false, SU));
+        oval(g, dx + 24, ey - 5, dx + 34, ey + 5, { fill: ORIG.coul[PAIRES[c.eq][1]], outline: "#ffffff", width: 1 });
+      }
+      const Dd = this.rect_dep(k);
+      nrect(g, Dd[0], Dd[1], Dd[2], Dd[3], c.depart ? "rgba(40,60,120,0.8)" : "rgba(10,16,40,0.85)", c.depart ? "#fffb00" : "#3aa6c9", 1.4, 8);
+      ecrire(g, (Dd[0] + Dd[2]) / 2, ey, "Départ " + (c.depart + 1), c.depart ? "#fffb00" : "#aee", police(9.5, true, SU));
+    }
+    ecrire(g, R.ga, yc, "JOUEURS", "#9ff", police(9.5, true, SU), "w");
+    ecrire(g, R.gb, yc, "FACES", "#9ff", police(9.5, true, SU), "w");
+    for (const [rc, sg] of [[R.jm, "−"], [R.jp, "+"], [R.fm, "−"], [R.fp, "+"]]) {
+      nrect(g, rc[0], rc[1], rc[2], rc[3], "rgba(10,16,40,0.85)", "#3aa6c9", 1.4, 8);
+      glow_txt(g, (rc[0] + rc[2]) / 2, yc, sg, "#ffffff", "bold 20px " + FONTE, "#0ff", 8);
+    }
+    glow_txt(g, R.jv, yc, String(c.np), tc, "bold 19px " + FONTE, tc, 10);
+    glow_txt(g, R.fv, yc, String(c.total), tc, "bold 19px " + FONTE, tc, 10);
+  });
+  ecrire(g, LARGEUR / 2, 0.948 * HAUTEUR, "Touchez un mode · Éq. = équipes · Départ = schéma de départ", "#79c", police(9.5, false, SU));
+  glow_txt(g, LARGEUR / 2, 0.980 * HAUTEUR, "© 2026 Yohann Lecarpentier", hsl(h0 + 200, 100, 75), police(9, true, SU), hsl(h0 + 200, 100, 60), 6);
+};
+
+// ---------- écran de fin : confettis néon
+App.prototype.dessiner_fin = function (now) {
+  const g = this.gf, p = this.partie;
+  if (this.t_fin === null) { this.t_fin = now; SON.jouer("fin", 0); }
+  const k = ease_out_back(borne((now - this.t_fin) / 0.55)), v = p.vainqueur(), sc = p.scores(), h0 = now * 90;
+  if (Math.random() < 0.25) this.jaillir(LARGEUR * Math.random(), HAUTEUR * 0.25 * Math.random(), "#" + [0, 1, 2].map(() => Math.floor(110 + Math.random() * 145).toString(16).padStart(2, "0")).join(""), 2, 40, 0, 1.6);
+  const cx = LARGEUR / 2, cy = HAUTEUR / 2, w = 160 * SU * k, h = 92 * SU * k, bord = v === null ? "#fffb00" : COULEURS[v];
+  nrect(g, cx - w, cy - h, cx + w, cy + h, "rgba(2,4,16,0.92)", bord, (3 + Math.sin(now * 6)) * SU, 26);
+  if (k > 0.6) {
+    ecrire(g, cx, cy - 48 * SU, MODES[p.mode].toUpperCase(), "#79c", police(9, true, SU));
+    texte(g, cx, cy - 66 * SU, v === null ? "ÉGALITÉ EN TÊTE !" : `${NOMS[v].toUpperCase()} GAGNE !`, v === null ? "#ffffff" : COULEURS[v], 20, { ss: SU });
+    p.classement().forEach((c, rang) => {
+      glow_txt(g, cx, cy - 30 * SU + rang * 22 * SU,
+        p.mode === MODE_TILE ? `${rang + 1}. ${NOMS[c]}  ${sc[c][0]} losanges (somme ${sc[c][1]})` : `${rang + 1}. ${NOMS[c]}  score ${sc[c][1]} (${sc[c][0]} losanges)`,
+        COULEURS[c], police(11, rang === 0, SU), COULEURS[c], rang === 0 ? 10 : 4);
+    });
+    ecrire(g, cx, cy + 76 * SU, "« Objectif » pour rejouer", "#79c", police(9, false, SU));
+  }
+};
+
+
+// ---------- bordures du plateau : cadre néon biseauté, lignes de grille, points de bord plus lumineux
+App.prototype.neon_bordure = function (now) {
+  const g = this.gf;
+  if (!this._bb || this._bb.k !== SOMPX) {
+    let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
+    for (const s of SOMPX) for (const [x, y] of s) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+    this._bb = { k: SOMPX, x0, y0, x1, y1 };
+  }
+  const p = 7 * S, { x0, y0, x1, y1 } = this._bb, a = x0 - p, b = y0 - p, c = x1 + p, d = y1 + p, ch = 16 * S, h0 = now * NEO.VITESSE_HUE;
+  const cadre = () => { g.beginPath(); g.moveTo(a + ch, b); g.lineTo(c - ch, b); g.lineTo(c, b + ch); g.lineTo(c, d - ch); g.lineTo(c - ch, d); g.lineTo(a + ch, d); g.lineTo(a, d - ch); g.lineTo(a, b + ch); g.closePath(); };
+  g.save();
+  cadre(); g.clip();                                                       // lignes du réseau, visibles mais discrètes
+  g.lineWidth = 1; g.strokeStyle = "rgba(0,229,255,0.11)"; g.beginPath();
+  for (let i = 0; i < NB_COL; i++) { const x = MARGE + i * DX; g.moveTo(x, b); g.lineTo(x, d); }
+  for (let r = 0; r < NB_LIG; r++) { const y = MARGE + r * D; g.moveTo(a, y); g.lineTo(c, y); }
+  g.stroke();
+  g.fillStyle = "rgba(0,229,255,0.045)"; g.fillRect(a, b, c - a, d - b);   // léger remplissage : on voit la zone de jeu
+  g.restore();
+  g.save();
+  cadre(); g.lineWidth = 2.6 * S; g.strokeStyle = "#00e5ff"; g.shadowColor = "#00e5ff"; g.shadowBlur = 18; g.stroke();     // bord principal
+  g.shadowBlur = 0; g.lineWidth = 1 * S; g.strokeStyle = "rgba(255,255,255,0.85)"; cadre(); g.stroke();                       // liseré blanc
+  const q = 4.5 * S; g.lineWidth = 1 * S; g.strokeStyle = "rgba(255,43,214,0.55)"; g.shadowColor = "#ff2bd6"; g.shadowBlur = 8;
+  g.beginPath(); g.moveTo(a + q + ch, b + q); g.lineTo(c - q - ch, b + q); g.lineTo(c - q, b + q + ch); g.lineTo(c - q, d - q - ch); g.lineTo(c - q - ch, d - q); g.lineTo(a + q + ch, d - q); g.lineTo(a + q, d - q - ch); g.lineTo(a + q, b + q + ch); g.closePath(); g.stroke();   // second cadre rose
+  cadre(); g.setLineDash([60 * S, 520 * S]); g.lineDashOffset = -now * 160 * S; g.lineWidth = 3.4 * S; g.strokeStyle = hsl(h0, 100, 75); g.shadowColor = hsl(h0, 100, 60); g.shadowBlur = 16; g.stroke();   // éclair qui parcourt le bord
+  g.setLineDash([]); g.shadowBlur = 12; g.shadowColor = "#fffb00"; g.strokeStyle = "#fffb00"; g.lineWidth = 3 * S;
+  for (const [x, y, sx, sy] of [[a, b, 1, 1], [c, b, -1, 1], [c, d, -1, -1], [a, d, 1, -1]]) { g.beginPath(); g.moveTo(x + sx * (ch + 14 * S), y); g.lineTo(x + sx * ch, y); g.lineTo(x, y + sy * ch); g.lineTo(x, y + sy * (ch + 14 * S)); g.stroke(); }  // équerres de coin
+  g.restore();
+};
+const _fond0 = App.prototype.neon_fond;
+App.prototype.neon_fond = function (now) { _fond0.call(this, now); if (!this.menu) this.neon_bordure(now); };
+
+// ---------- tutoriel et éditeur de départs : habillage néon
+window.NEO_FOND = function (g, w, h, t) {
+  const bg = g.createLinearGradient(0, 0, 0, h); bg.addColorStop(0, "#02030c"); bg.addColorStop(1, hsl(270 + 30 * Math.sin(t * 0.3), 80, 8));
+  g.fillStyle = bg; g.fillRect(0, 0, w, h);
+  g.save(); g.lineWidth = 1; g.strokeStyle = "rgba(0,229,255,0.13)"; g.beginPath();
+  const off = (t * 14) % 20; for (let x = -off; x < w; x += 20) { g.moveTo(x, 0); g.lineTo(x, h); } for (let y = off; y < h; y += 20) { g.moveTo(0, y); g.lineTo(w, y); }
+  g.stroke();
+  const gl = g.createRadialGradient(w * (0.5 + 0.35 * Math.sin(t * 0.5)), h * 0.5, 0, w * (0.5 + 0.35 * Math.sin(t * 0.5)), h * 0.5, w * 0.6);
+  gl.addColorStop(0, hsl(t * 40, 100, 50, 0.16)); gl.addColorStop(1, "rgba(0,0,0,0)"); g.fillStyle = gl; g.fillRect(0, 0, w, h);
+  g.fillStyle = "rgba(0,0,0,0.18)"; for (let y = 0; y < h; y += 3) g.fillRect(0, y, w, 1);
+  g.strokeStyle = "rgba(0,229,255,0.7)"; g.lineWidth = 1.5; g.shadowColor = "#0ff"; g.shadowBlur = 8; g.strokeRect(1, 1, w - 2, h - 2);
+  g.restore();
+};
+T_losange = function (g, cx, cy, ang, c, v, o = {}) {
+  const sx = o.sx === undefined ? 1 : o.sx, sc = o.sc || 1, al = o.al === undefined ? 1 : o.al, ca = Math.cos(ang), sa = Math.sin(ang), col = TC[c] || "#8a93c0";
+  const P = [[T_A, 0], [0, T_B], [-T_A, 0], [0, -T_B]].map(([x, y]) => { const X = x * sc, Y = y * sc; return [cx + (X * ca - Y * sa) * sx, cy + (X * sa + Y * ca)]; });
+  g.save(); g.globalAlpha = al;
+  const gr = g.createLinearGradient(P[0][0], P[0][1], P[2][0], P[2][1]); gr.addColorStop(0, hexA(col, 0.60)); gr.addColorStop(1, hexA(col, 0.15));
+  g.beginPath(); P.forEach(([x, y], i) => i ? g.lineTo(x, y) : g.moveTo(x, y)); g.closePath();
+  g.fillStyle = gr; g.fill();
+  g.shadowColor = o.glow ? "#ff2bd6" : col; g.shadowBlur = o.glow ? 20 : 10; g.lineWidth = o.glow ? 3.5 : 2.2; g.strokeStyle = o.glow ? "#ff2bd6" : col; g.stroke();
+  g.shadowBlur = 0;
+  if (sx > 0.35) {
+    g.save(); g.shadowColor = col; g.shadowBlur = 9; g.fillStyle = "#fff"; g.font = "bold 18px -apple-system,Arial"; g.textAlign = "center"; g.textBaseline = "middle"; g.fillText(String(v), cx, cy); g.restore();
+    if (o.dos !== undefined) { const dc = TC[o.dos] || "#8a93c0"; g.save(); g.shadowColor = dc; g.shadowBlur = 8; g.beginPath(); g.arc(cx + T_A * 0.5 * sc, cy, 4, 0, 7); g.fillStyle = dc; g.fill(); g.lineWidth = 1; g.strokeStyle = "#fff"; g.stroke(); g.restore(); }
+  }
+  g.restore();
+};
+T_gardien = function (g, cx, cy, c) {
+  g.save(); g.strokeStyle = "#ffe14d"; g.shadowColor = "#ffe14d"; g.shadowBlur = 10; g.fillStyle = "rgba(2,4,14,0.85)"; g.lineWidth = 2;
+  g.beginPath(); g.moveTo(cx - 9, cy + 11); g.lineTo(cx - 9, cy - 2); g.arc(cx, cy - 2, 9, Math.PI, 0); g.lineTo(cx + 9, cy + 11); g.closePath(); g.fill(); g.stroke(); g.restore();
+};
+T_txt = function (g, x, y, s, col = "#c9d1f2", taille = 13, bold = false) {
+  g.save(); g.shadowColor = col; g.shadowBlur = bold ? 9 : 5; g.fillStyle = col; g.font = (bold ? "bold " : "") + taille + "px -apple-system,Arial"; g.textAlign = "center"; g.textBaseline = "middle"; g.fillText(s, x, y); g.restore();
+};
+Tuto.boucle = function () {
+  if (!this.ouvert) return;
+  const g = this.g, t = (performance.now() - this.t0) / 1000;
+  g.setTransform(2, 0, 0, 2, 0, 0); g.clearRect(0, 0, 320, 180);
+  NEO_FOND(g, 320, 180, performance.now() / 1000);
+  const f = DEMOS[TUTO[this.i].demo]; if (f) f(g, t, 320, 180);
+  this.raf = requestAnimationFrame(() => this.boucle());
+};
+const _edtOuvrir = Editeur.ouvrir;
+Editeur.ouvrir = function () {
+  _edtOuvrir.call(this);
+  const boucle = () => { if (!Editeur.ouvert) return; Editeur.dessiner(); requestAnimationFrame(boucle); };
+  requestAnimationFrame(boucle);
+};
+
+// ---------- sons synthétisés (aucun fichier : tout est généré, hors ligne)
+const SON = {
+  ctx: null, actif: NEO.SON,
+  init() { try { if (!this.ctx) { const C = window.AudioContext || window.webkitAudioContext; if (C) this.ctx = new C(); } if (this.ctx && this.ctx.state === "suspended") this.ctx.resume(); } catch (e) {} },
+  bip(f, t0, d = 0.09, type = "square", vol = 0.045, f2 = null) {
+    if (!this.actif || !this.ctx) return;
+    try {
+      const c = this.ctx, o = c.createOscillator(), v = c.createGain(), t = c.currentTime + Math.max(0, t0);
+      o.type = type; o.frequency.setValueAtTime(f, t); if (f2) o.frequency.exponentialRampToValueAtTime(f2, t + d);
+      v.gain.setValueAtTime(0.0001, t); v.gain.exponentialRampToValueAtTime(vol, t + 0.01); v.gain.exponentialRampToValueAtTime(0.0001, t + d);
+      o.connect(v); v.connect(c.destination); o.start(t); o.stop(t + d + 0.02);
+    } catch (e) {}
+  },
+  jouer(nom, delai = 0) {
+    if (!this.actif || !this.ctx) return;
+    if (nom === "pose") { this.bip(180, delai, 0.12, "sawtooth", 0.05, 70); this.bip(660, delai + 0.04, 0.08, "square", 0.03); }
+    else if (nom === "flip") { this.bip(900, delai, 0.16, "triangle", 0.05, 300); this.bip(1400, delai + 0.05, 0.06, "square", 0.02); }
+    else if (nom === "garde") { this.bip(440, delai, 0.07, "square", 0.04); this.bip(880, delai + 0.07, 0.1, "square", 0.04); }
+    else if (nom === "clic") this.bip(1200, delai, 0.04, "square", 0.03);
+    else if (nom === "start") [392, 523, 659, 784, 1046].forEach((f, i) => this.bip(f, delai + i * 0.07, 0.12, "square", 0.04));
+    else if (nom === "fin") [523, 659, 784, 1046, 784, 1046, 1318].forEach((f, i) => this.bip(f, delai + i * 0.11, 0.18, "triangle", 0.06));
+  },
+};
+try { SON.actif = localStorage.getItem("losanges_son") !== "0" && NEO.SON; } catch (e) {}
+document.addEventListener("pointerdown", () => SON.init(), { passive: true });
+document.addEventListener("keydown", () => SON.init());
+const _choisir0 = App.prototype.choisir_objectif;
+App.prototype.choisir_objectif = function (m) { if (this.menu) SON.jouer("start"); return _choisir0.call(this, m); };
+for (const nom of ["changer_cfg", "changer_eq", "changer_depart"]) { const o = App.prototype[nom]; App.prototype[nom] = function (...a) { SON.jouer("clic"); return o.apply(this, a); }; }
+(function () {
+  const b = document.getElementById("b-son"); if (!b) return;
+  const maj = () => { b.textContent = SON.actif ? "🔊 Son" : "🔇 Muet"; };
+  b.onclick = () => { SON.actif = !SON.actif; try { localStorage.setItem("losanges_son", SON.actif ? "1" : "0"); } catch (e) {} SON.init(); SON.jouer("clic"); maj(); };
+  maj();
+})();
+
+</script>
+<script>window.__app = new App();</script>
+</body>
+</html>
