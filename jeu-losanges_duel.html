@@ -692,25 +692,26 @@ const ARCHE = (() => {
 
 // ---------- dimensions (fixées par regler_taille)
 let NR = 6, NJ = 4, NC = 3, GC0 = 0, GR0 = 0, NCOL = NB_COL, NLIG = NB_LIG;     // zone de grille affichée (colonne / ligne de départ, nombre de colonnes / lignes)
-let OFFX = 0, HORIZ = false;
+let OFFX = 0, HORIZ = false, TIGHT = false, K_TOP = 0.19, K_ROWS = 0.68, K_NOM = 0.056, K_ET = 0.116, K_S1 = 0.128, K_S2 = 0.080;
 let D, DX, S, SU, SP, MARGE, ECART, LARGEUR, HAUTEUR, PW, PH, LB, HB, WTOT, HTOT, TALL, EP, PAS_RES;
 let SOMPX = [], CENPX = [];
 function regler_taille(d, tall, nr = 6, nj = 4, grille = 0) {
-  const gz = GRILLES[grille] || GRILLES[0];
+  const gz = GRILLES[grille] || GRILLES[0], T_ = TIGHT && tall;
+  K_TOP = T_ ? 0.12 : 0.19; K_ROWS = T_ ? 0.76 : 0.68; K_NOM = T_ ? 0.040 : 0.056; K_ET = T_ ? 0.085 : 0.116; K_S1 = T_ ? 0.100 : 0.128; K_S2 = T_ ? 0.058 : 0.080;
   GC0 = 6 - gz[0]; GR0 = 13 - gz[1]; NCOL = 2 * gz[0] + 1; NLIG = 2 * gz[1] + 1;
   NR = nr; NJ = nj; NC = nj === 2 ? 2 : nj - 1; D = d; DX = D * SQ3; S = D / 28; SU = Math.max(S, 0.8); TALL = tall;
-  MARGE = Math.round(38 * S); ECART = Math.round(22 * S);
+  MARGE = Math.round((T_ ? 14 : 38) * S); ECART = Math.round(22 * S);
   LARGEUR = 2 * MARGE + (NCOL - 1) * DX; HAUTEUR = 2 * MARGE + (NLIG - 1) * D;
   if (!tall) {
     HB = (HORIZ && nj === 2) ? HAUTEUR : HAUTEUR / 2; EP = ECART; LB = NC * (2 * FR * DX + ECART / 4);
     const f = Math.min(1, (0.68 * HB / NR) / (1.25 * 2 * FR * D));      // beaucoup de lignes : pièces de réserve plus petites
     PW = FR * DX * f; PH = FR * D * f; WTOT = (HORIZ && nj === 2) ? LARGEUR + 2 * (ECART + LB) : LARGEUR + (NJ === 2 ? 2 * ECART + LB : 3 * ECART + 2 * LB); HTOT = HAUTEUR;
   } else {
-    EP = 10; LB = (LARGEUR - 3 * EP) / 2;
+    EP = T_ ? 5 : 10; LB = (LARGEUR - 3 * EP) / 2;
     PW = Math.min(FR * DX, LB / NC * 0.46); PH = PW / SQ3;
-    HB = NR * (1.25 * 2 * PH) / 0.68; WTOT = LARGEUR; HTOT = HAUTEUR + Math.ceil(NJ / 2) * HB;
+    HB = NR * ((T_ ? 1.12 : 1.25) * 2 * PH) / K_ROWS; WTOT = LARGEUR; HTOT = HAUTEUR + Math.ceil(NJ / 2) * HB;
   }
-  PAS_RES = 0.68 * HB / NR;
+  PAS_RES = K_ROWS * HB / NR;
   SP = PW / (FR * SQ3 * 28);
   OFFX = (HORIZ && nj === 2 && !tall) ? LB + ECART : 0;
   SOMPX = PL.map(p => p.som.map(([c, r]) => [OFFX + MARGE + (c - GC0) * DX, MARGE + (r - GR0) * D]));
@@ -853,11 +854,11 @@ class App {
     const haut = this.menu ? document.getElementById("haut").offsetHeight : 0, bas = document.getElementById("bas").offsetHeight;
     const H = Math.max(200, Hfen - haut - bas - 6);
     const nj = (this.partie && !this.menu) ? this.partie.np : 4, gr = (this.partie && !this.menu) ? (this.partie.grille || 0) : 0, t = tailles_possibles(W, H, nj, gr);   // écran de choix : disposition FIXE (4 joueurs)
-    HORIZ = this.vue === "cote" && nj === 2;
+    HORIZ = this.vue === "cote" && nj === 2; TIGHT = this.vue === "serre";
     let tall;
-    if (HORIZ) tall = false; else if (this.vue === "large") tall = false; else if (this.vue === "haut") tall = true;
+    if (HORIZ) tall = false; else if (this.vue === "large") tall = false; else if (this.vue === "haut" || this.vue === "serre") tall = true;
     else tall = (W < Hfen) ? !(t.wide >= 0.6 * t.tall && t.wide >= 18) : false;
-    regler_taille(tall ? t.tall : (HORIZ ? tailles_possibles(W, H, 3, gr).wide : t.wide), tall, (this.partie && !this.menu) ? this.partie.total + 1 : 6, nj, gr);
+    regler_taille(tall ? (TIGHT ? Math.max(8, Math.min(t.tall, H / (2 * GRILLES[gr][1] + 1 + 1.827 * ((this.partie && !this.menu) ? this.partie.total + 1 : 6)))) : t.tall) : (HORIZ ? tailles_possibles(W, H, 3, gr).wide : t.wide), tall, (this.partie && !this.menu) ? this.partie.total + 1 : 6, nj, gr);
     this.dpr = Math.min(3, window.devicePixelRatio || 1);
     for (const c of [this.cvEl, this.off]) { c.width = Math.round(WTOT * this.dpr); c.height = Math.round(HTOT * this.dpr); }
     this.cvEl.style.width = WTOT + "px"; this.cvEl.style.height = HTOT + "px";
@@ -1169,7 +1170,7 @@ onmessage = e => { const { id, niveau, partie } = e.data; Object.setPrototypeOf(
     const ligne = this.partie.mode === MODE_CHAOS ? v : this.partie.total - v;
     const col = this.partie.np === 2 ? c : [0, 1, 2, 3].slice(0, this.partie.np).filter(x => x !== j).indexOf(dos);
     const [x0, y0] = this.origine_bloc(j), wc = LB / NC;
-    return [x0 + wc * (col + 0.5), y0 + 0.19 * HB + (ligne + 0.5) * PAS_RES];
+    return [x0 + wc * (col + 0.5), y0 + K_TOP * HB + (ligne + 0.5) * PAS_RES];
   }
   reserve_sous_curseur(x, y, tol = 1) {
     for (let j = 0; j < this.partie.np; j++) for (let s = 0; s < NS; s++) {
@@ -1209,10 +1210,10 @@ onmessage = e => { const { id, niveau, partie } = e.data; Object.setPrototypeOf(
       const actif = (p.phase === "gardiens" ? j === p.attente_gardien : j === p.joueur) &&
         ["gardiens", "pose", "deplacement"].includes(p.phase) && this.intro === null && !this.menu;
       const est_ia = this.mode === 1 && j !== this.humain, eqp = p.equipes ? " · équipe" : "";
-      texte(g, x0, y0 + 0.056 * HB, NOMS[j] + (est_ia ? " · IA" : eqp), COULEURS[j], 13, { halo: null, ss: SP });
+      texte(g, x0, y0 + K_NOM * HB, NOMS[j] + (est_ia ? " · IA" : eqp), COULEURS[j], 13, { halo: null, ss: SP });
       let et = "";
       if (actif) et = est_ia ? (p.phase === "pose" ? "réfléchit…" : "gardien…") : (p.phase === "pose" ? "à jouer" : "gardien ?");
-      ecrire(g, x0, y0 + 0.116 * HB, et, "#c9d1f2", police(9, false, SP));
+      ecrire(g, x0, y0 + K_ET * HB, et, "#c9d1f2", police(9, false, SP));
       for (let s = 0; s < NS; s++) {
         if ((s & 3) === j || (s & 3) >= p.np || (s >> 2) > p.total) continue;
         const n = p.stock[j][s];
@@ -1227,15 +1228,15 @@ onmessage = e => { const { id, niveau, partie } = e.data; Object.setPrototypeOf(
       }
       const [n_, s_] = sc[j], etoile = tete.includes(j) ? "★ " : "";
       const [grand, petit] = p.mode === MODE_TILE ? [`${n_} losanges`, `somme ${s_}`] : [`score ${s_}`, `${n_} losanges`];
-      texte(g, x0, y0 + HB - 0.128 * HB, etoile + grand, COULEURS[j], 12, { halo: null, ss: SP });
-      ecrire(g, x0, y0 + HB - 0.080 * HB, petit, "#8e98bf", police(8, false, SP));
+      texte(g, x0, y0 + HB - K_S1 * HB, etoile + grand, COULEURS[j], 12, { halo: null, ss: SP });
+      ecrire(g, x0, y0 + HB - K_S2 * HB, petit, "#8e98bf", police(8, false, SP));
     }
     const larg_pied = TALL ? WTOT : (HORIZ && NJ === 2) ? LB : WTOT - LARGEUR, f_pied = police(7.5, false, SP);
     g.font = f_pied;
     const pieds = p.mode === MODE_CHAOS ? ["réserves : face adverse (pastille = propriétaire)", "face adverse (pastille = propriétaire)", "face adverse"]
       : ["médaillon = gardien · réserves : votre face (pastille = dos)", "votre face (pastille = dos)", "votre face"];
     const pied = pieds.find(t => g.measureText(t).width <= larg_pied - 6) || pieds[2];
-    ecrire(g, TALL ? WTOT / 2 : (HORIZ && NJ === 2) ? OFFX + LARGEUR + ECART + LB / 2 : LARGEUR + (WTOT - LARGEUR) / 2, HTOT - 5 * SP, pied, "#8e98bf", f_pied);
+    if (!(TIGHT && TALL)) ecrire(g, TALL ? WTOT / 2 : (HORIZ && NJ === 2) ? OFFX + LARGEUR + ECART + LB / 2 : LARGEUR + (WTOT - LARGEUR) / 2, HTOT - 5 * SP, pied, "#8e98bf", f_pied);
     this.barre_etat();
     this.planifier_ia();
   }
@@ -1616,7 +1617,7 @@ onmessage = e => { const { id, niveau, partie } = e.data; Object.setPrototypeOf(
           p.mode === MODE_TILE ? `${rang + 1}. ${NOMS[c]}  ${sc[c][0]} losanges (somme ${sc[c][1]})` : `${rang + 1}. ${NOMS[c]}  score ${sc[c][1]} (${sc[c][0]} losanges)`,
           COULEURS[c], police(11, rang === 0, SU));
       });
-      ecrire(g, cx, cy + 76 * SU, "« Objectif » pour rejouer", "#8e98bf", police(9, false, SU));
+      ecrire(g, cx, cy + 76 * SU, "↺ pour rejouer", "#8e98bf", police(9, false, SU));
     }
   }
   sauter_intro() {
@@ -2472,7 +2473,7 @@ App.prototype.dessiner_fin = function (now) {
         p.mode === MODE_TILE ? `${rang + 1}. ${NOMS[c]}  ${sc[c][0]} losanges (somme ${sc[c][1]})` : `${rang + 1}. ${NOMS[c]}  score ${sc[c][1]} (${sc[c][0]} losanges)`,
         COULEURS[c], police(11, rang === 0, SU), COULEURS[c], rang === 0 ? 10 : 4);
     });
-    ecrire(g, cx, cy + 76 * SU, "« Objectif » pour rejouer", "#79c", police(9, false, SU));
+    ecrire(g, cx, cy + 76 * SU, "↺ pour rejouer", "#79c", police(9, false, SU));
   }
 };
 
@@ -2686,6 +2687,23 @@ const _maj0 = App.prototype.maj_boutons;
 App.prototype.maj_boutons = function () { _maj0.call(this); this.b.obj.textContent = "↺ Nouvelle partie"; };
 App.prototype.changer_cfg = function () {}; App.prototype.changer_depart = function () {}; App.prototype.changer_eq = function () {};
 
+// ---------- message de victoire : bouton « Fermer »
+(function () {
+  const _fin0 = App.prototype.dessiner_fin, _nv = App.prototype.nouvelle_partie;
+  App.prototype.dessiner_fin = function (now) { if (this.fin_fermee) return; return _fin0.call(this, now); };
+  App.prototype.nouvelle_partie = function () { this.fin_fermee = false; return _nv.call(this); };
+  const b = document.createElement("button"); b.id = "fermer-fin"; b.textContent = "Fermer"; b.style.cssText = "position:fixed;z-index:60;display:none;padding:10px 26px;font-size:15px;";
+  document.body.appendChild(b);
+  b.onclick = () => { const a = window.__app; a.fin_fermee = true; b.style.display = "none"; };
+  setInterval(() => {
+    const a = window.__app; if (!a || !a.partie) return;
+    const vis = a.partie.phase === "fini" && !a.fin_fermee && !a.menu && a.t_fin !== null && !a.anim_en_cours();
+    if (!vis) { b.style.display = "none"; return; }
+    const r = a.cvEl.getBoundingClientRect(), cx = OFFX + LARGEUR / 2, cy = HAUTEUR / 2;
+    b.style.display = "block"; b.style.left = Math.round(r.left + cx - b.offsetWidth / 2) + "px"; b.style.top = Math.round(r.top + cy + 92 * SU + 10) + "px";
+  }, 120);
+})();
+
 </script>
 <script>window.__app = new App();</script>
 <script>
@@ -2694,9 +2712,9 @@ App.prototype.changer_cfg = function () {}; App.prototype.changer_depart = funct
   const a = window.__app;
   try { localStorage.removeItem("losanges_grille"); } catch (e) {}
   GRILLE_CHOIX[2] = 2;                       // grille « Petite » (hexagone de côté 4)
-  const VUES = { haut: "⇅ Vue", cote: "⇄ Vue" };
-  let vue0 = (document.documentElement.clientWidth >= window.innerHeight) ? "cote" : "haut";
-  try { vue0 = localStorage.getItem("losanges_vue_duel") || vue0; } catch (e) {}
+  const VUES = { haut: "⇅ Vertical", serre: "⇅ Serrée", cote: "⇄ Horizontal" }, SUIV = { haut: "serre", serre: "cote", cote: "haut" };
+  let vue0 = (document.documentElement.clientWidth >= window.innerHeight) ? "cote" : "serre";
+  try { vue0 = localStorage.getItem("losanges_vue_duel3") || vue0; } catch (e) {}
   a.vue = vue0; a.popup = false;                           // pas de panneau de tuiles pop-up
   const d = document.createElement("div"); d.id = "choix";
   d.innerHTML = '<div class="bloc"><div class="titre">LOSANGES</div><div class="sous">2 joueurs · 6 faces · plateau hexagonal</div>' +
@@ -2709,7 +2727,7 @@ App.prototype.changer_cfg = function () {}; App.prototype.changer_depart = funct
   const m = document.getElementById("b-menu"), m2 = m.cloneNode(true); m.parentNode.replaceChild(m2, m);
   const bv = document.createElement("button"); bv.id = "b-vue2"; bv.textContent = VUES[a.vue] || VUES.haut;
   m2.parentNode.insertBefore(bv, m2);
-  bv.onclick = () => { a.vue = a.vue === "cote" ? "haut" : "cote"; bv.textContent = VUES[a.vue]; try { localStorage.setItem("losanges_vue_duel", a.vue); } catch (e) {} a.relayout(); };
+  bv.onclick = () => { a.vue = SUIV[a.vue] || "serre"; bv.textContent = VUES[a.vue]; try { localStorage.setItem("losanges_vue_duel3", a.vue); } catch (e) {} a.relayout(); };
   a.relayout();
   m2.textContent = "↺"; m2.setAttribute("aria-label", "Nouvelle partie");
   m2.onclick = () => { d.style.display = "flex"; };
